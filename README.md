@@ -16,6 +16,44 @@ Therefore the JSON-things will be handled by the plugin and you - as a user - ca
 
 ## How to setup?
 
+### The Consumer-Way
+
+#### Install
+
+```Bash
+[sudo] npm install homebridge-server@latest -g
+```
+
+Add the following platform to your Homebridge `config.json`:
+```JSON
+{
+	"platform": "Server",
+	"port": 8765,
+	"name": "Homebridge Server for browser-based Configuration"
+}
+```
+
+#### Usage
+
+Depending on your configuration you need to adapt the call!
+The basic structure is:
+
+```Bash
+homebridge -D -U <HOMEBRIDGE_CONFIG_FOLDER>
+```
+
+so using the above example:
+
+```Bash
+homebridge -D -U ~/.homebridge
+```
+
+After this command, you should be able to access the server on your local machine under `http://localhost:8765`.
+
+### The Developer-Way
+
+#### Install
+
 Clone this repository (to e.g.: `~/Developer/homebridge-server`)
 
 ```Bash
@@ -26,11 +64,12 @@ Add the following platform to your Homebridge `config.json`:
 ```JSON
 {
 	"platform": "Server",
+	"port": 8765,
 	"name": "Homebridge Server for browser-based Configuration"
 }
 ```
 
-## How to use it?
+#### Usage
 
 Depending on your configuration you need to adapt the call!
 The basic structure is:

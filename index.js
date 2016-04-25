@@ -112,8 +112,8 @@ function Server(log, config) {
       response.end();
     });
 
-    server.listen(8765);
-    console.log("Server is listening");
+    server.listen(self.config.port);
+    console.log("Homebridge-Server is listening on port " + self.config.port);
 }
 Server.prototype.accessories = function(callback) {
     var self = this;
