@@ -29,7 +29,7 @@ Add the following platform to your Homebridge `config.json`:
 {
 	"platform": "Server",
 	"port": 8765,
-	"name": "Homebridge Server for browser-based Configuration"
+	"name": "Homebridge Server"
 }
 ```
 
