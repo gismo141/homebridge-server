@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/gismo141/homebridge-server.svg?branch=master)](https://travis-ci.org/gismo141/homebridge-server)
+
 # Homebridge Server - a plugin to configure your homebridge-devices via your Browser
 
 The purpose of this plugin is to change your homebridge configuration via the webbrowser.
