@@ -12,18 +12,30 @@ function Server(log, config) {
     self.log = log;
     var http = require("http");
 
+    // Get the config.json from parents process ...
     var configJSON = require(process.argv[process.argv.indexOf('-U') + 1] + '/config.json');
+    // ... extract the platforms JSON-object and instantiate string value ...
     var platformsJSON = configJSON.platforms;
     var platforms = "";
+    // ... extract the accessories JSON-object and instantiate string value...
     var accessoriesJSON = configJSON.accessories;
     var accessories = "";
 
+    // Prepare cosmetics for the site
+    // - CSS with Twitter bootstrap
+    // - fontface with Apple-like Open Sans
+    // - general header with responsive design
+    // - JS with Twitter bootstrap
     var bootstrap = "<link rel='stylesheet' href='//maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css'>";
     var font = "<link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>";
     var style = "<style>h1, h2, h3, h4, h5, h6 {font-family: 'Open Sans', sans-serif;}p, div {font-family: 'Open Sans', sans-serif;} input[type='radio'], input[type='checkbox'] {line-height: normal; margin: 0;}</style>"
     var header = "<html><meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'><head><title>Homebridge - Configuration</title>" + bootstrap + font + style + "</head>"; 
     var footer = "<script defer='defer' src='//maxcdn.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js'></script></body></html>";
 
+    // Prepare the html-markup as string for the presented tables
+    // - tables are responsive and glow when hovered
+    // - present Type, Name and additional Info
+    // - content is added later by concatenating table1 + 'content' + table2
     var table1 =  (function () {/* 
     <div class="table-responsive"> 
       <table class="table table-hover">
@@ -38,31 +50,44 @@ function Server(log, config) {
         <tbody>
     */}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
 
+    // This closes the html-markup as string for the presented tables
     var table2 =  (function () {/*  
         </tbody>
       </table>
     </div>
     */}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
 
+    // Prepare the platforms for html-markup
+    // - introduces html-table-cell
+    // - adds the info from platform JSON-object
+    // - strips the JSON-identifiers
+    // - adds a checkbox as first table-cell to enable row-selection
     for(var platform in platformsJSON){
         platforms = platforms + "<tr><td><div class='checkbox'><label><input type='checkbox' value=''></label></div></td><td>";
 	platforms = platforms + platformsJSON[platform].platform + "</td><td>";
 	platforms = platforms + platformsJSON[platform].name + "</td><td>";
+        // FIXME
         var tempArray = [];
-        for(var element_accessory in accessory){
-          tempArray.push(element_accessory);
-          tempArray.push(accessory[element_accessory] + '<br>');
+        for(var element_platform in platform){
+          tempArray.push(element_platform);
+          tempArray.push(platform[element_platform] + '<br>');
         }
         tempArray.splice(tempArray.indexOf('name'), 2);
         tempArray.splice(tempArray.indexOf('accessory'), 2);
         platforms = platforms + tempArray + "</td></tr>";
     }
-
+    
+    // Prepare the accessories for html-markup
+    // - introduces html-table-cell
+    // - adds the info from platform JSON-object
+    // - strips the JSON-identifiers
+    // - adds a checkbox as first table-cell to enable row-selection
     for(var id_accessory in accessoriesJSON){
         var accessory = accessoriesJSON[id_accessory];
         accessories = accessories + "<tr><td><div class='checkbox'><label><input type='checkbox' value=''></label></div></td><td>";
         accessories = accessories + accessory.accessory + "</td><td>";
         accessories = accessories + accessory.name + "</td><td>";
+	// FIXME
         var tempArray = [];
         for(var element_accessory in accessory){
           tempArray.push(element_accessory);
@@ -73,10 +98,12 @@ function Server(log, config) {
         accessories = accessories + tempArray + "</td></tr>";
     }
 
+    // Prepares the html-markup for the bridge parameters as forms
     var bridgeName = "<div class='form-group'><label for='homebridgename'>Name:</label><input type='text' class='form-control' id='homebridgename' value='" + configJSON.bridge.name + "'></div>";
     var bridgeUsername = "<div class='form-group'><label for='username'>Username:</label><input type='text' class='form-control' id='username' value='" + configJSON.bridge.username + "'></div>";
     var bridgePin = "<div class='form-group'><label for='pin'>Pin:</label><input type='text' class='form-control' id='pin' value='" + configJSON.bridge.pin + "'></div>";
 
+    // Launches the webserver and transmits the website by concatenating the precreated markup
     var server = http.createServer(function(request, response) {
       response.writeHead(200, {"Content-Type": "text/html"});
       response.write(header);
