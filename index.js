@@ -21,6 +21,8 @@ function Server(log, config) {
     var accessoriesJSON = configJSON.accessories;
     var accessories = "";
 
+    // Get the log-file
+
     // Prepare cosmetics for the site
     // - CSS with Twitter bootstrap
     // - fontface with Apple-like Open Sans
@@ -41,10 +43,10 @@ function Server(log, config) {
       <table class="table table-hover">
         <thead>
           <tr>
-            <th></th>
-            <th>Type</th>
-            <th>Name</th>
-            <th>Info</th>
+            <th width='10%'></th>
+            <th width='20%'>Type</th>
+            <th width='20%'>Name</th>
+            <th width='50%'>Info</th>
           </tr>
         </thead>
         <tbody>
@@ -62,10 +64,11 @@ function Server(log, config) {
     // - adds the info from platform JSON-object
     // - strips the JSON-identifiers
     // - adds a checkbox as first table-cell to enable row-selection
-    for(var platform in platformsJSON){
-        platforms = platforms + "<tr><td><div class='checkbox'><label><input type='checkbox' value=''></label></div></td><td>";
-	platforms = platforms + platformsJSON[platform].platform + "</td><td>";
-	platforms = platforms + platformsJSON[platform].name + "</td><td>";
+    for(var id_platform in platformsJSON){
+        var platform = platformsJSON[id_platform];
+        platforms = platforms + "<tr><td style='vertical-align:middle;'><div class='checkbox'><label><input type='checkbox' value=''></label></div></td><td style='vertical-align:middle;'>";
+	platforms = platforms + platform.platform + "</td><td style='vertical-align:middle;'>";
+	platforms = platforms + platform.name + "</td><td style='vertical-align:middle;'>";
         // FIXME
         var tempArray = [];
         for(var element_platform in platform){
@@ -73,7 +76,7 @@ function Server(log, config) {
           tempArray.push(platform[element_platform] + '<br>');
         }
         tempArray.splice(tempArray.indexOf('name'), 2);
-        tempArray.splice(tempArray.indexOf('accessory'), 2);
+        tempArray.splice(tempArray.indexOf('platform'), 2);
         platforms = platforms + tempArray + "</td></tr>";
     }
     
@@ -84,9 +87,9 @@ function Server(log, config) {
     // - adds a checkbox as first table-cell to enable row-selection
     for(var id_accessory in accessoriesJSON){
         var accessory = accessoriesJSON[id_accessory];
-        accessories = accessories + "<tr><td><div class='checkbox'><label><input type='checkbox' value=''></label></div></td><td>";
-        accessories = accessories + accessory.accessory + "</td><td>";
-        accessories = accessories + accessory.name + "</td><td>";
+        accessories = accessories + "<tr><td style='vertical-align:middle;'><div class='checkbox'><label><input type='checkbox' value=''></label></div></td><td style='vertical-align:middle;'>";
+        accessories = accessories + accessory.accessory + "</td><td style='vertical-align:middle;'>";
+        accessories = accessories + accessory.name + "</td><td style='vertical-align:middle;'>";
 	// FIXME
         var tempArray = [];
         for(var element_accessory in accessory){
@@ -127,12 +130,16 @@ function Server(log, config) {
         response.write("No accessories installed or configured!");
       }
 
-      response.write("<div class='block-center'>");
-      response.write("<div class='btn-group'>");
-      response.write("<input id='add' name='add' type='submit' class='btn btn-default' value='Add Accessory'>");
-      response.write("<input id='Remove' name='Remove' type='submit' class='btn btn-default' value='Remove Accessory' width='87px !important'>");
+      response.write("<div class='row'>");
+      response.write("<div class='col-xs-offset-1 col-sm-offset-1 col-md-offset-2 col-xs-10 col-sm-9 col-md-8 text-center'>");
+      response.write("<div class='btn-group' data-toggle='buttons'>");
+      response.write("<input id='Add' name='Add' type='submit' class='btn btn-default center-block' value='Add Accessory' style='width:135px'>");
+      response.write("<input id='Remove' name='Remove' type='submit' class='btn btn-default center-block' value='Remove Accessory' style='width:135px'>");
       response.write("</div>");
       response.write("</div>");
+      response.write("</div>");
+
+      response.write("<br>");
 
       response.write("</div>");
       response.write(footer);
