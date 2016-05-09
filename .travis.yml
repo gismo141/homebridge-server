@@ -4,19 +4,19 @@ node_js:
 before_install:
   - "sudo apt-get install libavahi-compat-libdnssd-dev"
   - "npm install -g homebridge"
-  - "echo '{ \
-    \"bridge\": { \
-      \"name\": \"Test-Bridge\", \
-      \"username\": \"CC:22:3D:E3:CE:31\", \
-      \"port\": 51826, \
-      \"pin\": \"130-61-401\" \
-    }, \
-    \"platforms\": [ \
-      { \
-      \"platform\": \"Server\", \
-      \"port\": 8765, \
-      \"name\": \"Homebridge Server\" \
-      } \
-    ], \
-    \"accessories\": [] \
-    }' >  > ./config.json"
+  - "echo '{ \n
+    \"bridge\": { \n
+      \"name\": \"Test-Bridge\", \n
+      \"username\": \"CC:22:3D:E3:CE:31\", \n
+      \"port\": 51826, \n
+      \"pin\": \"130-61-401\" \n
+    }, \n
+    \"platforms\": [ \n
+      { \n
+      \"platform\": \"Server\", \n
+      \"port\": 8765, \n
+      \"name\": \"Homebridge Server\" \n
+      } \n
+    ], \n
+    \"accessories\": [] \n
+    }' > ./config.json"
