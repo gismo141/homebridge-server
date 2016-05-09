@@ -1,0 +1,21 @@
+language: node_js
+node_js:
+  - "0.12"
+before_install:
+  - "npm install -g homebridge"
+  - "echo '{ \
+    \"bridge\": { \
+      \"name\": \"Test-Bridge\", \
+      \"username\": \"CC:22:3D:E3:CE:31\", \
+      \"port\": 51826, \
+      \"pin\": \"130-61-401\" \
+    }, \
+    \"platforms\": [ \
+      { \
+      \"platform\": \"Server\", \
+      \"port\": 8765, \
+      \"name\": \"Homebridge Server\" \
+      } \
+    ], \
+    \"accessories\": [] \
+    }' >  > ./config.json"
