@@ -20,5 +20,3 @@ before_install:
     ], \n
     \"accessories\": [] \n
     }' > ~/.homebridge/config.json"
-  after_install:
-    - "ls -al node_modules"
