@@ -3,7 +3,6 @@ node_js:
   - "0.12"
 before_install:
   - "sudo apt-get install libavahi-compat-libdnssd-dev"
-  - "npm install -g homebridge"
   - "echo '{ \n
     \"bridge\": { \n
       \"name\": \"Test-Bridge\", \n

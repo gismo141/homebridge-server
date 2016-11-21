@@ -10,18 +10,18 @@ function Server(log, config) {
     var self = this;
     self.config = config;
     self.log = log;
-    var http = require("http");
+    var fs              = require('fs');
+    var HttpDispatcher  = require('httpdispatcher');
+    var http            = require('http');
+    var dispatcher      = new HttpDispatcher();
+    var restart_required = 0;
 
-    // Get the config.json from parents process ...
-    var configJSON = require(process.argv[process.argv.indexOf('-U') + 1] + '/config.json');
     // ... extract the platforms JSON-object and instantiate string value ...
-    var platformsJSON = configJSON.platforms;
+    var platformsJSON = "";
     var platforms = "";
     // ... extract the accessories JSON-object and instantiate string value...
-    var accessoriesJSON = configJSON.accessories;
+    var accessoriesJSON = "";
     var accessories = "";
-
-    // Get the log-file
 
     // Prepare cosmetics for the site
     // - CSS with Twitter bootstrap
@@ -43,10 +43,10 @@ function Server(log, config) {
       <table class="table table-hover">
         <thead>
           <tr>
-            <th width='10%'></th>
             <th width='20%'>Type</th>
             <th width='20%'>Name</th>
             <th width='50%'>Info</th>
+            <th width='10%'></th>
           </tr>
         </thead>
         <tbody>
@@ -59,16 +59,76 @@ function Server(log, config) {
     </div>
     */}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
 
+    // Prepares the html-markup for the bridge parameters as forms
+    var bridgeName;
+    var bridgeUsername;
+    var bridgePin;
+
+    // Get the config.json from parents process ...
+    var configJSON = require(process.argv[process.argv.indexOf('-U') + 1] + '/config.json');
+
+    // Launches the webserver and transmits the website by concatenating the precreated markup
+    var server = http.createServer(handleRequest);
+
+    dispatcher.onGet("/", function(req, res) {
+      prepareConfig();
+      printMainPage(res);
+      fs.writeFile(process.argv[process.argv.indexOf('-U') + 1] + '/config.json', JSON.stringify(configJSON).replace(',null','').replace('null,','').replace('null',''), "utf8");
+    });
+
+    dispatcher.beforeFilter(/\//, function(req, res, chain) { //any url
+        url = req.url;
+        if(url.indexOf('/remove') !== -1) {
+          object = url.replace('/remove','');
+          res.write("<div class='alert alert-info fade in'><a href='/' class='close' data-dismiss='alert'>&times;</a><strong>Note!</strong> Please restart Homebridge to activate your changes.</div>");
+          res.write(header + "<div class='container'><br><h3>");
+          if(object.indexOf('Platform') !== -1) {
+            platform = object.replace('Platform','');
+            res.write("Successfully removed platform: </h3><label>'" + configJSON.platforms[platform].name + "'</label>");
+            delete configJSON.platforms[platform];
+            platformsJSON = configJSON.platforms;
+          } else if(object.indexOf('Accessory') !== -1) {
+            accessory = object.replace('Accessory','');
+            res.write("Successfully removed accessory: </h3><label>'" + configJSON.accessories[accessory].name + "'</label>");
+            delete configJSON.accessories[accessory];
+            accessoriesJSON = configJSON.accessories;
+          }
+          res.end("</div>" + footer);
+          console.log(platformsJSON.length);
+        }
+        chain.next(req, res, chain);
+    });
+ 
+    dispatcher.onError(function(req, res) {
+        res.writeHead(404);
+        res.end();
+    });
+
+    //We need a function which handles requests and send response
+	function handleRequest(request, response) {
+		try {
+        //log the request on console
+        console.log(request.url);
+        //Disptach
+        dispatcher.dispatch(request, response);
+    } catch(err) {
+        console.log(err);
+    }
+	}
+
+  function prepareConfig() {
     // Prepare the platforms for html-markup
     // - introduces html-table-cell
     // - adds the info from platform JSON-object
     // - strips the JSON-identifiers
     // - adds a checkbox as first table-cell to enable row-selection
+    platformsJSON = configJSON.platforms;
+    platforms = "";
     for(var id_platform in platformsJSON){
         var platform = platformsJSON[id_platform];
-        platforms = platforms + "<tr><td style='vertical-align:middle;'><div class='checkbox'><label><input type='checkbox' value=''></label></div></td><td style='vertical-align:middle;'>";
-	platforms = platforms + platform.platform + "</td><td style='vertical-align:middle;'>";
-	platforms = platforms + platform.name + "</td><td style='vertical-align:middle;'>";
+        platforms = platforms + "<tr><td style='vertical-align:middle;'>";
+        platforms = platforms + platform.platform + "</td><td style='vertical-align:middle;'>";
+        platforms = platforms + platform.name + "</td><td style='vertical-align:middle;'>";
         // FIXME
         var tempArray = [];
         for(var element_platform in platform){
@@ -77,7 +137,8 @@ function Server(log, config) {
         }
         tempArray.splice(tempArray.indexOf('name'), 2);
         tempArray.splice(tempArray.indexOf('platform'), 2);
-        platforms = platforms + tempArray + "</td></tr>";
+        platforms = platforms + tempArray + "</td>";
+        platforms = platforms + "</td><td style='vertical-align:middle;'><a href='/removePlatform" + id_platform + "' class='btn btn-default center-block' style='width:135px'>Remove</a>" + "</td><td style='vertical-align:middle;'></td></tr>";
     }
     
     // Prepare the accessories for html-markup
@@ -85,12 +146,14 @@ function Server(log, config) {
     // - adds the info from platform JSON-object
     // - strips the JSON-identifiers
     // - adds a checkbox as first table-cell to enable row-selection
+    accessoriesJSON = configJSON.accessories;
+    accessories = "";
     for(var id_accessory in accessoriesJSON){
         var accessory = accessoriesJSON[id_accessory];
-        accessories = accessories + "<tr><td style='vertical-align:middle;'><div class='checkbox'><label><input type='checkbox' value=''></label></div></td><td style='vertical-align:middle;'>";
+        accessories = accessories + "<tr><td style='vertical-align:middle;'>";
         accessories = accessories + accessory.accessory + "</td><td style='vertical-align:middle;'>";
         accessories = accessories + accessory.name + "</td><td style='vertical-align:middle;'>";
-	// FIXME
+  // FIXME
         var tempArray = [];
         for(var element_accessory in accessory){
           tempArray.push(element_accessory);
@@ -98,57 +161,56 @@ function Server(log, config) {
         }
         tempArray.splice(tempArray.indexOf('name'), 2);
         tempArray.splice(tempArray.indexOf('accessory'), 2);
-        accessories = accessories + tempArray + "</td></tr>";
+        accessories = accessories + tempArray + "</td>";
+        accessories = accessories + "</td><td style='vertical-align:middle;'><a href='/removePlatform" + id_accessory + "' class='btn btn-default center-block' style='width:135px'>Remove</a>" + "</td><td style='vertical-align:middle;'></td></tr>";
     }
 
     // Prepares the html-markup for the bridge parameters as forms
-    var bridgeName = "<div class='form-group'><label for='homebridgename'>Name:</label><input type='text' class='form-control' id='homebridgename' value='" + configJSON.bridge.name + "'></div>";
-    var bridgeUsername = "<div class='form-group'><label for='username'>Username:</label><input type='text' class='form-control' id='username' value='" + configJSON.bridge.username + "'></div>";
-    var bridgePin = "<div class='form-group'><label for='pin'>Pin:</label><input type='text' class='form-control' id='pin' value='" + configJSON.bridge.pin + "'></div>";
+    bridgeName = "<div class='form-group'><label for='homebridgename'>Name:</label><input type='text' class='form-control' id='homebridgename' value='" + configJSON.bridge.name + "'></div>";
+    bridgeUsername = "<div class='form-group'><label for='username'>Username:</label><input type='text' class='form-control' id='username' value='" + configJSON.bridge.username + "'></div>";
+    bridgePin = "<div class='form-group'><label for='pin'>Pin:</label><input type='text' class='form-control' id='pin' value='" + configJSON.bridge.pin + "'></div>";
+  }
 
-    // Launches the webserver and transmits the website by concatenating the precreated markup
-    var server = http.createServer(function(request, response) {
-      response.writeHead(200, {"Content-Type": "text/html"});
-      response.write(header);
-      response.write("<div class='container'>");
-      response.write("<body><h1>Homebridge</h1>");
+  function printMainPage(res) {
+      res.write(header);
+      res.write("<div class='container'>");
+      res.write("<body><h1>Homebridge</h1>");
 
-      response.write("<h2>Configuration</h2>");
-      response.write(bridgeName + bridgeUsername + bridgePin);
+      res.write("<h2>Configuration</h2>");
+      res.write(bridgeName + bridgeUsername + bridgePin);
 
-      response.write("<h2>Platforms</h2>");
-      if(JSON.stringify(platformsJSON) != "[]") {
-        response.write(table1 + platforms + table2);
+      res.write("<h2>Platforms</h2>");
+      if(0 < Object.keys(platformsJSON).length) {
+        res.write(table1 + platforms + table2);
       } else {
-        response.write("No platforms installed or configured!");
+        res.write("No platforms installed or configured!");
       }
+      res.write("<br><a href='/addPlatform' id='Add' name='AddPlatform' class='btn btn-default center-block' style='width:135px'>Add</a><br>");
 
-      response.write("<h2>Accessories</h2>");
-      if(JSON.stringify(accessoriesJSON) != "[]") {
-        response.write(table1 + accessories + table2);
+      res.write("<h2>Accessories</h2>");
+      if(0 < Object.keys(accessoriesJSON).length) {
+        res.write(table1 + accessories + table2);
       } else {
-        response.write("No accessories installed or configured!");
+        res.write("No accessories installed or configured!");
       }
+      res.write("<br><a href='/addAccessory' id='Add' name='AddAccessory' class='btn btn-default center-block' style='width:135px'>Add</a><br>");
 
-      response.write("<div class='row'>");
-      response.write("<div class='col-xs-offset-1 col-sm-offset-1 col-md-offset-2 col-xs-10 col-sm-9 col-md-8 text-center'>");
-      response.write("<div class='btn-group' data-toggle='buttons'>");
-      response.write("<input id='Add' name='Add' type='submit' class='btn btn-default center-block' value='Add Accessory' style='width:135px'>");
-      response.write("<input id='Remove' name='Remove' type='submit' class='btn btn-default center-block' value='Remove Accessory' style='width:135px'>");
-      response.write("</div>");
-      response.write("</div>");
-      response.write("</div>");
+      res.write("<br>");
 
-      response.write("<br>");
+      res.write("</div>");
+      res.write(footer);
+      res.end();
+  }
 
-      response.write("</div>");
-      response.write(footer);
-      response.end();
-    });
-
-    server.listen(self.config.port);
-    console.log("Homebridge-Server is listening on port " + self.config.port);
+	//Lets start our server
+	server.listen(self.config.port, function(){
+	    //Callback triggered when server is successfully listening. Hurray!
+	    require('dns').lookup(require('os').hostname(), function (err, add, fam) {
+			console.log("Homebridge-Server is listening on: http://%s:%s", add, self.config.port);
+		})
+	});
 }
+
 Server.prototype.accessories = function(callback) {
     var self = this;
     self.accessories = [];
