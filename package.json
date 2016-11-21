@@ -18,10 +18,10 @@
     "homebridge": ">=0.2.0"
   },
   "dependencies": {
-    "homebridge": ">=0.4.9",
-    "httpdispatcher": ">=1.1.0"
+    "httpdispatcher": ">=1.1.0",
+    "homebridge": ">=0.4.9"
   },
   "scripts": {
-    "test": "homebridge -U ~/.homebridge -P . > /dev/null 2>&1 & sleep 10; ( curl -Is http://127.0.0.1:8765 | head -1 ); kill $!"
+    "test": "homebridge -U ~/.homebridge -P . > /dev/null 2>&1 & sleep 10; ( curl -Is http://127.0.0.1:8765/remove | head -1 ); kill $!"
   }
 }
