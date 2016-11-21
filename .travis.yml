@@ -22,3 +22,9 @@ before_install:
     ], \n
     \"accessories\": [] \n
     }' > ~/.homebridge/config.json"
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
