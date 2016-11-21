@@ -3,6 +3,7 @@ node_js:
   - "0.12"
 before_install:
   - "sudo apt-get install libavahi-compat-libdnssd-dev"
+  - "mkdir ~/.homebridge"
   - "echo '{ \n
     \"bridge\": { \n
       \"name\": \"Test-Bridge\", \n
@@ -18,4 +19,4 @@ before_install:
       } \n
     ], \n
     \"accessories\": [] \n
-    }' > ./config.json"
+    }' > ~/.homebridge/config.json"
