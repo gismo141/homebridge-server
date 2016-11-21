@@ -1,6 +1,8 @@
 language: node_js
 node_js:
   - "7.1.0"
+env:
+  - CXX=g++-4.8
 before_install:
   - "sudo apt-get install libavahi-compat-libdnssd-dev"
   - "mkdir ~/.homebridge"
