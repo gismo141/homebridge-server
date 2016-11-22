@@ -60,6 +60,8 @@ Clone this repository (to e.g.: `~/Developer/homebridge-server`)
 
 ```Bash
 git clone https://github.com/gismo141/homebridge-server ~/Developer/homebridge-server
+cd ~/Developer/homebridge-server
+npm install
 ```
 
 Add the following platform to your Homebridge `config.json`:
