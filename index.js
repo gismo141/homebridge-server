@@ -41,9 +41,9 @@ function Server(log, config) {
               <table class="table table-hover">
                 <thead>
                   <tr>
-                    <th width='20%'>Type</th>
-                    <th width='20%'>Name</th>
-                    <th width='50%'>Info</th>
+                    <th width='10%'>Type</th>
+                    <th width='40%'>Name</th>
+                    <th width='40%'>Info</th>
                     <th width='10%'></th>
                   </tr>
                 </thead>
@@ -146,7 +146,7 @@ function Server(log, config) {
             tempArray.splice(tempArray.indexOf('name'), 2);
             tempArray.splice(tempArray.indexOf('platform'), 2);
             platforms = platforms + tempArray + "</td>";
-            platforms = platforms + "</td><td style='vertical-align:middle;'><a href='/removePlatform" + id_platform + "' class='btn btn-default center-block' style='width:135px'>Remove</a>" + "</td><td style='vertical-align:middle;'></td></tr>";
+            platforms = platforms + "</td><td style='vertical-align:middle;'><a href='/removePlatform" + id_platform + "' class='btn btn-default center-block' style='width:30px'>-</a>" + "</td><td style='vertical-align:middle;'></td></tr>";
         }
 
         // Prepare the accessories for html-markup
