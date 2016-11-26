@@ -104,12 +104,18 @@ function Server(log, config) {
                 if (req.method == 'POST') {
                     req.on('data', function(chunk) {
                         var receivedData = decypherText(chunk).replace('PlatformToAdd=','');
-                            configJSON.platforms.push(JSON.parse(receivedData));
-                            if(configJSON.platforms.length == 1) {
-                                configJSON.platforms = JSON.parse(JSON.stringify(configJSON.platforms).replace('[,','['));
+                            try {
+                                configJSON.platforms.push(JSON.parse(receivedData));
+                                if(configJSON.platforms.length == 1) {
+                                    configJSON.platforms = JSON.parse(JSON.stringify(configJSON.platforms).replace('[,','['));
+                                }
+                                saveConfig(res);
+                                console.log("[Homebridge-Server] Saved platform " + JSON.parse(receivedData).name + ".");
+                            } catch (ex) {
+                                res.write(header);
+                                res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/addPlatform' class='close' data-dismiss='alert'>&times;</a><strong>Error!</strong> Invalid JSON-entry detected. Please verify your input!</div>");
+                                printAddPage(res, "Platform", "<code>" + receivedData + "</code>");
                             }
-                            saveConfig(res);
-                            console.log("[Homebridge-Server] Saved platform " + JSON.parse(receivedData).name + ".");
                     });
                     req.on('end', function(chunk) { });
 
@@ -121,12 +127,18 @@ function Server(log, config) {
                 if (req.method == 'POST') {
                     req.on('data', function(chunk) {
                         var receivedData = decypherText(chunk).replace('AccessoryToAdd=','');
-                            configJSON.accessories.push(JSON.parse(receivedData));
-                            if(configJSON.accessories.length == 1) {
-                                configJSON.accessories = JSON.parse(JSON.stringify(configJSON.accessories).replace('[,','['));
+                            try {
+                                configJSON.accessories.push(JSON.parse(receivedData));
+                                if(configJSON.accessories.length == 1) {
+                                    configJSON.accessories = JSON.parse(JSON.stringify(configJSON.accessories).replace('[,','['));
+                                }
+                                saveConfig(res);
+                                console.log("[Homebridge-Server] Saved accessory " + JSON.parse(receivedData).name + ".");
+                            } catch (ex) {
+                                res.write(header);
+                                res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/addAccessory' class='close' data-dismiss='alert'>&times;</a><strong>Error!</strong> Invalid JSON-entry detected. Please verify your input!</div>");
+                                printAddPage(res, "Accessory", "<code>" + receivedData + "</code>");
                             }
-                            saveConfig(res);
-                            console.log("[Homebridge-Server] Saved accessory " + JSON.parse(receivedData).name + ".");
                     });
                     req.on('end', function(chunk) { });
 
@@ -231,9 +243,14 @@ function Server(log, config) {
         }
     }
 
-    function printAddPage(res, type) {
+    function printAddPage(res, type, additionalInput) {
         res.write(header);
         res.write("<div class='container'>");
+
+        if(additionalInput != null) {
+            res.write(additionalInput);
+        }
+
         res.write("<body><h2>Add " + type + "</h2>");
 
         res.write("<form enctype='application/x-www-form-urlencoded' action='/save" + type + "Settings' method='post'>")
