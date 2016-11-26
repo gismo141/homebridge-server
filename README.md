@@ -7,7 +7,7 @@ Therefore the JSON-things will be handled by the plugin and you - as a user - ca
 
 ![Overview](overview.png)
 
-## What will you do with this plugin?
+## What can you do with this plugin?
 
 1. Change the broadcasted name of your Homebridge
 2. Change the MAC-address used to identify your Homebridge
@@ -116,7 +116,8 @@ Just hit the button in the menubar and wait, until your system has rebooted and 
 
 **Disclaimer**
 
-The reboot is imeadiate! If your Homebridge is not running as a service but as a standalone program you launch manually, the Homebridge won't restart automatically.
+The reboot is immediate!
+If your Homebridge is not running as a service but as a standalone program you launch manually, the Homebridge won't restart automatically.
 This only works, if Homebridge is set up as a service on boot!
 
 Please make sure to restart Homebridge manually if you haven't set it up as a service.
@@ -125,7 +126,7 @@ If you want to start homebridge as a service, see [Running Homebridge on Bootup]
 
 ## As a Developer
 
-Clone this repository (to <PLUGIN_DOWNLOAD_FOLDER> e.g.: `~/Developer/homebridge-server`)
+Clone this repository (to `<PLUGIN_DOWNLOAD_FOLDER>` e.g.: `~/Developer/homebridge-server`)
 
 ```Bash
 git clone https://github.com/gismo141/homebridge-server ~/Developer/homebridge-server
@@ -143,13 +144,13 @@ Add the following platform to your Homebridge `config.json`:
 }
 ```
 
-Use the below call to launch Homebridge and adapt it accordingly:
+Adapt the call below and launch Homebridge:
 
 ```Bash
 homebridge -D -U <HOMEBRIDGE_CONFIG_FOLDER> -P <PLUGIN_DOWNLOAD_FOLDER>
 ```
 
-If you want to use the Log-preview, just use the call below and adapt it accordingly:
+If you want to use the Log-preview, adapt the call accordingly:
 
 ```Bash
 homebridge -D -U <HOMEBRIDGE_CONFIG_FOLDER> -P <PLUGIN_DOWNLOAD_FOLDER> > <HOMEBRIDGE_LOG_FILE> 2>&1 &
