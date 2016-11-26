@@ -30,10 +30,28 @@ function Server(log, config) {
     /* + "<link href='//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css' rel='stylesheet'/>"*/;
     var font = "<link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>";
     var style = "<style>h1, h2, h3, h4, h5, h6 {font-family: 'Open Sans', sans-serif;}p, div {font-family: 'Open Sans', sans-serif;} input[type='radio'], input[type='checkbox'] {line-height: normal; margin: 0;}</style>"
-    var header = "<html><meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'><head><title>Homebridge - Configuration</title>" + bootstrap + font + style + "</head>";
-    var footer = "<script defer='defer' src='//maxcdn.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js'></script></body></html>"
+    var header = "<html><meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'><head><title>Homebridge - Configuration</title>" + bootstrap + font + style + "</head><body style='padding-top: 70px;'>";
+    var footer = "</body>"
+        //+ "<script defer='defer' src='//code.jquery.com/jquery-ui-latest.min.js'></script>"
+        //+ "<script defer='defer' src='//code.jquery.com/jquery-latest.min.js'></script>"
+        + "<script defer='defer' src='//maxcdn.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js'></script>"
+        + "</html>"
     /* + "<script src='//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js'></script>"
      + "<script> $(document).ready(function() { $.fn.editable.defaults.mode = 'popup';  $('#username').editable(); }); </script>"*/;
+    var navBar = (function() {/*
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">Homebridge - Configuration</a>
+            </div>
+            <div class="container-fluid">      
+              <ul class="nav navbar-nav navbar-right">
+                  <li><a href="/createBackup">Backup</a></li>
+                  <li><a href="/showLog">Log</a></li>
+                  <li><a href="/reboot">Reboot</a></li>
+                </ul>
+            </div>
+        </nav>
+    */}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
 
     var table1 = (function() {/* 
             <div class="table-responsive"> 
@@ -103,7 +121,7 @@ function Server(log, config) {
             case '/savePlatformSettings':
                 if (req.method == 'POST') {
                     req.on('data', function(chunk) {
-                        var receivedData = decypherText(chunk).replace('PlatformToAdd=','');
+                        var receivedData = stripEscapeCodes(chunk).replace('PlatformToAdd=','');
                             try {
                                 configJSON.platforms.push(JSON.parse(receivedData));
                                 if(configJSON.platforms.length == 1) {
@@ -112,7 +130,7 @@ function Server(log, config) {
                                 saveConfig(res);
                                 console.log("[Homebridge-Server] Saved platform " + JSON.parse(receivedData).name + ".");
                             } catch (ex) {
-                                res.write(header);
+                                res.write(header + navBar);
                                 res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/addPlatform' class='close' data-dismiss='alert'>&times;</a><strong>Error!</strong> Invalid JSON-entry detected. Please verify your input!</div>");
                                 printAddPage(res, "Platform", "<code>" + receivedData + "</code>");
                             }
@@ -126,7 +144,7 @@ function Server(log, config) {
             case '/saveAccessorySettings':
                 if (req.method == 'POST') {
                     req.on('data', function(chunk) {
-                        var receivedData = decypherText(chunk).replace('AccessoryToAdd=','');
+                        var receivedData = stripEscapeCodes(chunk).replace('AccessoryToAdd=','');
                             try {
                                 configJSON.accessories.push(JSON.parse(receivedData));
                                 if(configJSON.accessories.length == 1) {
@@ -135,7 +153,7 @@ function Server(log, config) {
                                 saveConfig(res);
                                 console.log("[Homebridge-Server] Saved accessory " + JSON.parse(receivedData).name + ".");
                             } catch (ex) {
-                                res.write(header);
+                                res.write(header + navBar);
                                 res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/addAccessory' class='close' data-dismiss='alert'>&times;</a><strong>Error!</strong> Invalid JSON-entry detected. Please verify your input!</div>");
                                 printAddPage(res, "Accessory", "<code>" + receivedData + "</code>");
                             }
@@ -145,6 +163,31 @@ function Server(log, config) {
                 } else {
                     console.log("[Homebridge-Server] [405] " + req.method + " to " + req.url);
                 }
+                break;
+            case '/createBackup':
+                saveConfig(res, true);
+                break;
+            case '/showLog':
+                logFile = require('fs');
+                logFile.readFile(self.config.log, 'utf8', function (err, log) {
+                    if (err) {
+                      return console.log(err);
+                    }
+                    res.write(header + navBar);
+                    res.write("<div class='container'>");
+                    res.write("<h2>Log</h2>");
+                    res.write("<code>" + log.replace(/(?:\r\n|\r|\n)/g, '<br />') + "</code>");
+                    res.write("</div>");
+                    res.end(footer);
+                });
+                break;
+            case '/reboot':
+                var exec = require('child_process').exec;
+                var cmd = "sudo reboot";
+
+                exec(cmd, function(error, stdout, stderr) {
+                  // command output is in stdout
+                });
                 break;
             default:
                 url = req.url;
@@ -164,10 +207,11 @@ function Server(log, config) {
         };
     }
 
-    function decypherText(chunk) {
+    function stripEscapeCodes(chunk) {
         var receivedData = chunk.toString()
-         .replace(/\%7B\%0D\%0A/g,'{')
-         .replace(/\%0D\%0A/g,'')
+         .replace(/\%7B/g,'{')
+         .replace(/\%0D/g,'')
+         .replace(/\%0A/g,'')
          .replace(/\%2C/g,',')
          .replace(/\%7D/g,'}')
          .replace(/\%3A/g,':')
@@ -182,7 +226,7 @@ function Server(log, config) {
         return receivedData;
     }
 
-    function saveConfig(res) {
+    function saveConfig(res, backup) {
         var newConfig = JSON.stringify(configJSON)
          .replace(/\[,/g, '[')
          .replace(/,null/g, '')
@@ -191,13 +235,24 @@ function Server(log, config) {
          .replace(/,,/g, ',')
          .replace(/,\]/g, ']');
         newConfig = JSON.stringify(JSON.parse(newConfig), null, 4);
-        fs.writeFile(process.argv[process.argv.indexOf('-U') + 1] + '/config.json', newConfig, "utf8", reloadConfig(res));
+        if(backup != null) {
+            fs.writeFile(process.argv[process.argv.indexOf('-U') + 1] + '/config.json.bak', newConfig, "utf8", function (err, data) {
+                if (err) {
+                  return console.log(err);
+                }
+                res.write(header + navBar);
+                res.write("<div class='alert alert-success alert-dismissible fade in out'><a href='/' class='close' data-dismiss='success'>&times;</a><strong>Succes!</strong> Configuration saved!</div>");
+                res.end(footer);
+            });    
+        } else {
+            res.write(header + navBar);
+            res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/' class='close' data-dismiss='alert'>&times;</a><strong>Note!</strong> Please restart Homebridge to activate your changes.</div>");
+            fs.writeFile(process.argv[process.argv.indexOf('-U') + 1] + '/config.json', newConfig, "utf8", reloadConfig(res));
+        }
     }
 
     function reloadConfig(res) {
         configJSON = require(process.argv[process.argv.indexOf('-U') + 1] + '/config.json');
-        res.write(header);
-        res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/' class='close' data-dismiss='alert'>&times;</a><strong>Note!</strong> Please restart Homebridge to activate your changes.</div>");
         prepareConfig();
         printMainPage(res);
     }
@@ -244,14 +299,14 @@ function Server(log, config) {
     }
 
     function printAddPage(res, type, additionalInput) {
-        res.write(header);
+        res.write(header + navBar);
         res.write("<div class='container'>");
 
         if(additionalInput != null) {
             res.write(additionalInput);
         }
 
-        res.write("<body><h2>Add " + type + "</h2>");
+        res.write("<h2>Add " + type + "</h2>");
 
         res.write("<form enctype='application/x-www-form-urlencoded' action='/save" + type + "Settings' method='post'>")
         res.write("<textarea class='form-control' type='text' name='" + type + "ToAdd' rows='10' placeholder='{ \"" + type  + "\": \"test\" }' required></textarea>");
@@ -271,11 +326,12 @@ function Server(log, config) {
     }
 
     function printMainPage(res) {
-        res.write(header);
+        res.write(header + navBar);
         res.write("<div class='container'>");
-        res.write("<body><h1>Homebridge</h1>");
 
-        res.write("<h2>Configuration</h2>");
+        //res.write("<h1>Homebridge</h1>");
+        //res.write("<h2>Configuration</h2>");
+        
         res.write("<form enctype='application/x-www-form-urlencoded' action='/saveBridgeSettings' method='post'>")
         res.write(bridgeName + bridgeUsername + bridgePin);
         res.write("<input type='submit' class='btn btn-default center-block' style='width:135px' value='Save' />");
