@@ -209,6 +209,8 @@ function Server(log, config) {
 
     function stripEscapeCodes(chunk) {
         var receivedData = chunk.toString()
+         .replace(/\%40/g,'@')
+         .replace(/\%23/g,'#')
          .replace(/\%7B/g,'{')
          .replace(/\%0D/g,'')
          .replace(/\%0A/g,'')
