@@ -99,7 +99,7 @@ function Server(log, config) {
                         var receivedData = chunk.toString();
                         console.log("[Homebridge-Server] received body data: " + receivedData);
                         var arr = receivedData.split("&");
-                        configJSON.bridge.name = arr[0].replace('bridgeName=','');
+                        configJSON.bridge.name = stripEscapeCodes(arr[0].replace('bridgeName=',''));
                         configJSON.bridge.username = arr[1].replace('bridgeUsername=','').replace(/\%3A/g,':');
                         configJSON.bridge.pin = arr[2].replace('bridgePin=','');
                         saveConfig(res);
