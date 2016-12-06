@@ -10,6 +10,8 @@ Therefore the JSON-things will be handled by the plugin and you - as a user - ca
 
 ![Overview](overview.png)
 
+See my blog post [Configure your HomeBridge with HomeBridge-Server](https://gismo141.github.io/configure-your-homebridge-2/) on how I implemented this plugin.
+
 ## What can you do with this plugin?
 
 1. Change the broadcasted name of your Homebridge
