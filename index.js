@@ -242,7 +242,6 @@ function Server(log, config) {
                 break;
             case '/saveBridgeSettings':
                 if (req.method == 'POST') {
-
                     req.on('data', function(chunk) {
                         var receivedData = chunk.toString();
                         console.log("[Homebridge-Server] received body data: " + receivedData);
@@ -254,11 +253,9 @@ function Server(log, config) {
                         console.log("[Homebridge-Server] Saved bridge settings.");
                     });
                     req.on('end', function(chunk) { });
-
                 } else {
                     console.log("[Homebridge-Server] [405] " + req.method + " to " + req.url);
                 }
-
                 break;
             case '/addPlatform':
                 printAddPage(res, "Platform");
@@ -284,7 +281,6 @@ function Server(log, config) {
                             }
                     });
                     req.on('end', function(chunk) { });
-
                 } else {
                     console.log("[Homebridge-Server] [405] " + req.method + " to " + req.url);
                 }
