@@ -13,6 +13,8 @@ function Server(log, config) {
     var fs = require('fs');
     var http = require('http');
 
+    // Get the config.json from parents process ...
+    var configJSON = require(process.argv[process.argv.indexOf('-U') + 1] + '/config.json');
     // ... extract the platforms JSON-object and instantiate string value ...
     var platformsJSON = {};
     var platforms = "";
@@ -78,134 +80,6 @@ function Server(log, config) {
     var bridgeName;
     var bridgeUsername;
     var bridgePin;
-
-    // Get the config.json from parents process ...
-    var configJSON = require(process.argv[process.argv.indexOf('-U') + 1] + '/config.json');
-
-    // Launches the webserver and transmits the website by concatenating the precreated markup
-    var server = http.createServer(handleRequest);
-
-    //We need a function which handles requests and send response
-    function handleRequest(req, res) {
-        switch (req.url) {
-            case '/':
-                prepareConfig();
-                printMainPage(res);
-                break;
-            case '/saveBridgeSettings':
-                if (req.method == 'POST') {
-
-                    req.on('data', function(chunk) {
-                        var receivedData = chunk.toString();
-                        console.log("[Homebridge-Server] received body data: " + receivedData);
-                        var arr = receivedData.split("&");
-                        configJSON.bridge.name = stripEscapeCodes(arr[0].replace('bridgeName=',''));
-                        configJSON.bridge.username = arr[1].replace('bridgeUsername=','').replace(/\%3A/g,':');
-                        configJSON.bridge.pin = arr[2].replace('bridgePin=','');
-                        saveConfig(res);
-                        console.log("[Homebridge-Server] Saved bridge settings.");
-                    });
-                    req.on('end', function(chunk) { });
-
-                } else {
-                    console.log("[Homebridge-Server] [405] " + req.method + " to " + req.url);
-                }
-
-                break;
-            case '/addPlatform':
-                printAddPage(res, "Platform");
-                break;
-            case '/addAccessory':
-                printAddPage(res, "Accessory");
-                break;
-            case '/savePlatformSettings':
-                if (req.method == 'POST') {
-                    req.on('data', function(chunk) {
-                        var receivedData = stripEscapeCodes(chunk).replace('PlatformToAdd=','');
-                            try {
-                                configJSON.platforms.push(JSON.parse(receivedData));
-                                if(configJSON.platforms.length == 1) {
-                                    configJSON.platforms = JSON.parse(JSON.stringify(configJSON.platforms).replace('[,','['));
-                                }
-                                saveConfig(res);
-                                console.log("[Homebridge-Server] Saved platform " + JSON.parse(receivedData).name + ".");
-                            } catch (ex) {
-                                res.write(header + navBar);
-                                res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/addPlatform' class='close' data-dismiss='alert'>&times;</a><strong>Error!</strong> Invalid JSON-entry detected. Please verify your input!</div>");
-                                printAddPage(res, "Platform", "<code>" + receivedData + "</code>");
-                            }
-                    });
-                    req.on('end', function(chunk) { });
-
-                } else {
-                    console.log("[Homebridge-Server] [405] " + req.method + " to " + req.url);
-                }
-                break;
-            case '/saveAccessorySettings':
-                if (req.method == 'POST') {
-                    req.on('data', function(chunk) {
-                        var receivedData = stripEscapeCodes(chunk).replace('AccessoryToAdd=','');
-                            try {
-                                configJSON.accessories.push(JSON.parse(receivedData));
-                                if(configJSON.accessories.length == 1) {
-                                    configJSON.accessories = JSON.parse(JSON.stringify(configJSON.accessories).replace('[,','['));
-                                }
-                                saveConfig(res);
-                                console.log("[Homebridge-Server] Saved accessory " + JSON.parse(receivedData).name + ".");
-                            } catch (ex) {
-                                res.write(header + navBar);
-                                res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/addAccessory' class='close' data-dismiss='alert'>&times;</a><strong>Error!</strong> Invalid JSON-entry detected. Please verify your input!</div>");
-                                printAddPage(res, "Accessory", "<code>" + receivedData + "</code>");
-                            }
-                    });
-                    req.on('end', function(chunk) { });
-
-                } else {
-                    console.log("[Homebridge-Server] [405] " + req.method + " to " + req.url);
-                }
-                break;
-            case '/createBackup':
-                saveConfig(res, true);
-                break;
-            case '/showLog':
-                logFile = require('fs');
-                logFile.readFile(self.config.log, 'utf8', function (err, log) {
-                    if (err) {
-                      return console.log(err);
-                    }
-                    res.write(header + navBar);
-                    res.write("<div class='container'>");
-                    res.write("<h2>Log</h2>");
-                    res.write("<code>" + log.replace(/(?:\r\n|\r|\n)/g, '<br />') + "</code>");
-                    res.write("</div>");
-                    res.end(footer);
-                });
-                break;
-            case '/reboot':
-                var exec = require('child_process').exec;
-                var cmd = "sudo reboot";
-
-                exec(cmd, function(error, stdout, stderr) {
-                  // command output is in stdout
-                });
-                break;
-            default:
-                url = req.url;
-                if (url.indexOf('/remove') !== -1) {
-                    object = url.replace('/remove', '');
-                    if (object.indexOf('Platform') !== -1) {
-                        platform = object.replace('Platform', '');
-                        delete configJSON.platforms[platform];
-                        console.log("[Homebridge-Server] Removed platform " + platform + ".");
-                    } else if (object.indexOf('Accessory') !== -1) {
-                        accessory = object.replace('Accessory', '');
-                        delete configJSON.accessories[accessory];
-                        console.log("[Homebridge-Server] Removed accessory " + accessory + ".");
-                    }
-                    saveConfig(res);
-                }
-        };
-    }
 
     function stripEscapeCodes(chunk) {
         var receivedData = chunk.toString()
@@ -357,6 +231,131 @@ function Server(log, config) {
 
         res.write("</div>");
         res.end(footer);
+    }
+
+    // Launches the webserver and transmits the website by concatenating the precreated markup
+    var server = http.createServer(handleRequest);
+
+    //We need a function which handles requests and send response
+    function handleRequest(req, res) {
+        switch (req.url) {
+            case '/':
+                prepareConfig();
+                printMainPage(res);
+                break;
+            case '/saveBridgeSettings':
+                if (req.method == 'POST') {
+
+                    req.on('data', function(chunk) {
+                        var receivedData = chunk.toString();
+                        console.log("[Homebridge-Server] received body data: " + receivedData);
+                        var arr = receivedData.split("&");
+                        configJSON.bridge.name = stripEscapeCodes(arr[0].replace('bridgeName=',''));
+                        configJSON.bridge.username = arr[1].replace('bridgeUsername=','').replace(/\%3A/g,':');
+                        configJSON.bridge.pin = arr[2].replace('bridgePin=','');
+                        saveConfig(res);
+                        console.log("[Homebridge-Server] Saved bridge settings.");
+                    });
+                    req.on('end', function(chunk) { });
+
+                } else {
+                    console.log("[Homebridge-Server] [405] " + req.method + " to " + req.url);
+                }
+
+                break;
+            case '/addPlatform':
+                printAddPage(res, "Platform");
+                break;
+            case '/addAccessory':
+                printAddPage(res, "Accessory");
+                break;
+            case '/savePlatformSettings':
+                if (req.method == 'POST') {
+                    req.on('data', function(chunk) {
+                        var receivedData = stripEscapeCodes(chunk).replace('PlatformToAdd=','');
+                            try {
+                                configJSON.platforms.push(JSON.parse(receivedData));
+                                if(configJSON.platforms.length == 1) {
+                                    configJSON.platforms = JSON.parse(JSON.stringify(configJSON.platforms).replace('[,','['));
+                                }
+                                saveConfig(res);
+                                console.log("[Homebridge-Server] Saved platform " + JSON.parse(receivedData).name + ".");
+                            } catch (ex) {
+                                res.write(header + navBar);
+                                res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/addPlatform' class='close' data-dismiss='alert'>&times;</a><strong>Error!</strong> Invalid JSON-entry detected. Please verify your input!</div>");
+                                printAddPage(res, "Platform", "<code>" + receivedData + "</code>");
+                            }
+                    });
+                    req.on('end', function(chunk) { });
+
+                } else {
+                    console.log("[Homebridge-Server] [405] " + req.method + " to " + req.url);
+                }
+                break;
+            case '/saveAccessorySettings':
+                if (req.method == 'POST') {
+                    req.on('data', function(chunk) {
+                        var receivedData = stripEscapeCodes(chunk).replace('AccessoryToAdd=','');
+                            try {
+                                configJSON.accessories.push(JSON.parse(receivedData));
+                                if(configJSON.accessories.length == 1) {
+                                    configJSON.accessories = JSON.parse(JSON.stringify(configJSON.accessories).replace('[,','['));
+                                }
+                                saveConfig(res);
+                                console.log("[Homebridge-Server] Saved accessory " + JSON.parse(receivedData).name + ".");
+                            } catch (ex) {
+                                res.write(header + navBar);
+                                res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/addAccessory' class='close' data-dismiss='alert'>&times;</a><strong>Error!</strong> Invalid JSON-entry detected. Please verify your input!</div>");
+                                printAddPage(res, "Accessory", "<code>" + receivedData + "</code>");
+                            }
+                    });
+                    req.on('end', function(chunk) { });
+
+                } else {
+                    console.log("[Homebridge-Server] [405] " + req.method + " to " + req.url);
+                }
+                break;
+            case '/createBackup':
+                saveConfig(res, true);
+                break;
+            case '/showLog':
+                logFile = require('fs');
+                logFile.readFile(self.config.log, 'utf8', function (err, log) {
+                    if (err) {
+                      return console.log(err);
+                    }
+                    res.write(header + navBar);
+                    res.write("<div class='container'>");
+                    res.write("<h2>Log</h2>");
+                    res.write("<code>" + log.replace(/(?:\r\n|\r|\n)/g, '<br />') + "</code>");
+                    res.write("</div>");
+                    res.end(footer);
+                });
+                break;
+            case '/reboot':
+                var exec = require('child_process').exec;
+                var cmd = "sudo reboot";
+
+                exec(cmd, function(error, stdout, stderr) {
+                  // command output is in stdout
+                });
+                break;
+            default:
+                url = req.url;
+                if (url.indexOf('/remove') !== -1) {
+                    object = url.replace('/remove', '');
+                    if (object.indexOf('Platform') !== -1) {
+                        platform = object.replace('Platform', '');
+                        delete configJSON.platforms[platform];
+                        console.log("[Homebridge-Server] Removed platform " + platform + ".");
+                    } else if (object.indexOf('Accessory') !== -1) {
+                        accessory = object.replace('Accessory', '');
+                        delete configJSON.accessories[accessory];
+                        console.log("[Homebridge-Server] Removed accessory " + accessory + ".");
+                    }
+                    saveConfig(res);
+                }
+        };
     }
 
     server.listen(self.config.port, function() {
