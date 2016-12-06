@@ -202,6 +202,12 @@ function Server(log, config) {
         res.end(footer);
     }
 
+    function reloadConfig(res) {
+        configJSON = require(process.argv[process.argv.indexOf('-U') + 1] + '/config.json');
+        prepareConfig();
+        printMainPage(res);
+    }
+
     function saveConfig(res, backup) {
         var newConfig = JSON.stringify(configJSON)
          .replace(/\[,/g, '[')
@@ -225,12 +231,6 @@ function Server(log, config) {
             res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/' class='close' data-dismiss='alert'>&times;</a><strong>Note!</strong> Please restart Homebridge to activate your changes.</div>");
             fs.writeFile(process.argv[process.argv.indexOf('-U') + 1] + '/config.json', newConfig, "utf8", reloadConfig(res));
         }
-    }
-
-    function reloadConfig(res) {
-        configJSON = require(process.argv[process.argv.indexOf('-U') + 1] + '/config.json');
-        prepareConfig();
-        printMainPage(res);
     }
 
     //We need a function which handles requests and send response
