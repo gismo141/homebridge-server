@@ -303,7 +303,6 @@ function Server(log, config) {
                             }
                     });
                     req.on('end', function(chunk) { });
-
                 } else {
                     console.log("[Homebridge-Server] [405] " + req.method + " to " + req.url);
                 }
