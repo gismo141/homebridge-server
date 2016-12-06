@@ -102,37 +102,6 @@ function Server(log, config) {
         return receivedData;
     }
 
-    function saveConfig(res, backup) {
-        var newConfig = JSON.stringify(configJSON)
-         .replace(/\[,/g, '[')
-         .replace(/,null/g, '')
-         .replace(/null,/g, '')
-         .replace(/null/g, '')
-         .replace(/,,/g, ',')
-         .replace(/,\]/g, ']');
-        newConfig = JSON.stringify(JSON.parse(newConfig), null, 4);
-        if(backup != null) {
-            fs.writeFile(process.argv[process.argv.indexOf('-U') + 1] + '/config.json.bak', newConfig, "utf8", function (err, data) {
-                if (err) {
-                  return console.log(err);
-                }
-                res.write(header + navBar);
-                res.write("<div class='alert alert-success alert-dismissible fade in out'><a href='/' class='close' data-dismiss='success'>&times;</a><strong>Succes!</strong> Configuration saved!</div>");
-                res.end(footer);
-            });    
-        } else {
-            res.write(header + navBar);
-            res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/' class='close' data-dismiss='alert'>&times;</a><strong>Note!</strong> Please restart Homebridge to activate your changes.</div>");
-            fs.writeFile(process.argv[process.argv.indexOf('-U') + 1] + '/config.json', newConfig, "utf8", reloadConfig(res));
-        }
-    }
-
-    function reloadConfig(res) {
-        configJSON = require(process.argv[process.argv.indexOf('-U') + 1] + '/config.json');
-        prepareConfig();
-        printMainPage(res);
-    }
-
     function prepareConfig() {
         bridgeName = "<div class='form-group'><label for='homebridgename'>Name:</label><input type='text' class='form-control' name='bridgeName' value='" + configJSON.bridge.name + "'></div>";
         bridgeUsername = "<div class='form-group'><label for='username'>Username:</label><input type='text' class='form-control' name='bridgeUsername' value='" + configJSON.bridge.username + "'></div>";
@@ -231,6 +200,37 @@ function Server(log, config) {
 
         res.write("</div>");
         res.end(footer);
+    }
+
+    function saveConfig(res, backup) {
+        var newConfig = JSON.stringify(configJSON)
+         .replace(/\[,/g, '[')
+         .replace(/,null/g, '')
+         .replace(/null,/g, '')
+         .replace(/null/g, '')
+         .replace(/,,/g, ',')
+         .replace(/,\]/g, ']');
+        newConfig = JSON.stringify(JSON.parse(newConfig), null, 4);
+        if(backup != null) {
+            fs.writeFile(process.argv[process.argv.indexOf('-U') + 1] + '/config.json.bak', newConfig, "utf8", function (err, data) {
+                if (err) {
+                  return console.log(err);
+                }
+                res.write(header + navBar);
+                res.write("<div class='alert alert-success alert-dismissible fade in out'><a href='/' class='close' data-dismiss='success'>&times;</a><strong>Succes!</strong> Configuration saved!</div>");
+                res.end(footer);
+            });    
+        } else {
+            res.write(header + navBar);
+            res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/' class='close' data-dismiss='alert'>&times;</a><strong>Note!</strong> Please restart Homebridge to activate your changes.</div>");
+            fs.writeFile(process.argv[process.argv.indexOf('-U') + 1] + '/config.json', newConfig, "utf8", reloadConfig(res));
+        }
+    }
+
+    function reloadConfig(res) {
+        configJSON = require(process.argv[process.argv.indexOf('-U') + 1] + '/config.json');
+        prepareConfig();
+        printMainPage(res);
     }
 
     // Launches the webserver and transmits the website by concatenating the precreated markup
