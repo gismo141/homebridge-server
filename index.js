@@ -1,4 +1,3 @@
-
 var Service, Characteristic, LastUpdate;
 
 module.exports = function(homebridge) {
