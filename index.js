@@ -233,9 +233,6 @@ function Server(log, config) {
         printMainPage(res);
     }
 
-    // Launches the webserver and transmits the website by concatenating the precreated markup
-    var server = http.createServer(handleRequest);
-
     //We need a function which handles requests and send response
     function handleRequest(req, res) {
         switch (req.url) {
@@ -357,6 +354,9 @@ function Server(log, config) {
                 }
         };
     }
+
+    // Launches the webserver and transmits the website by concatenating the precreated markup
+    var server = http.createServer(handleRequest);
 
     server.listen(self.config.port, function() {
         require('dns').lookup(require('os').hostname(), function(err, add, fam) {
