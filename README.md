@@ -49,7 +49,7 @@ and launch or restart your homebridge, e.g.:
 homebridge -D -U <HOMEBRIDGE_CONFIG_FOLDER>
 ```
 
-See the Wiki on how to [configure](), [install]() and [use]() the plugin for more complex scenarios.
+See the [Wiki](https://github.com/gismo141/homebridge-server/wiki) on how to configure, install and use the plugin for more complex scenarios.
 
 ## Log-File
 
