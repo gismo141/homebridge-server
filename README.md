@@ -1,7 +1,7 @@
-![Build Status](https://travis-ci.org/gismo141/homebridge-server.svg?branch=master)
+[![Build Status](https://travis-ci.org/gismo141/homebridge-server.svg?branch=master)](https://travis-ci.org/gismo141/homebridge-server)
 
-![NPM](https://nodei.co/npm/homebridge-server.png?downloads=true&downloadRank=true)
-![NPM](https://nodei.co/npm-dl/homebridge-server.png?&months=6&height=3)
+[![NPM](https://nodei.co/npm/homebridge-server.png?downloads=true&downloadRank=true)](https://nodei.co/npm/homebridge-server/)
+[![NPM](https://nodei.co/npm-dl/homebridge-server.png?&months=6&height=3)](https://nodei.co/npm/homebridge-server/)
 
 # Homebridge Server - a plugin to configure your homebridge-devices via your Browser
 
