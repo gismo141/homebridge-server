@@ -10,17 +10,31 @@ function Server(log, config) {
     var self = this;
     self.config = config;
     self.log = log;
+
+    var configPath = "";
+
+    if (process.argv.indexOf('-U') > -1) {
+      configPath = process.argv[process.argv.indexOf('-U') + 1].replace(/\/+$/, "");
+    } else {
+      self.log("!!!");
+      self.log("!!!");
+      self.log("ERROR: No 'config.json' found!");
+      self.log("Please specify the path of your 'config.json'! E.g.: '-U /home/pi/.homebridge'");
+      process.exit(1);
+    }
     var fs = require('fs');
     var http = require('http');
 
     // Get the config.json from parents process ...
-    var configJSON = require(process.argv[process.argv.indexOf('-U') + 1] + '/config.json');
+    var configJSON = require(configPath + '/config.json');
     // ... extract the platforms JSON-object and instantiate string value ...
     var platformsJSON = {};
     var platforms = "";
     // ... extract the accessories JSON-object and instantiate string value...
     var accessoriesJSON = {};
     var accessories = "";
+    // ... contains a list of installed plugins.
+    var installedPlugins = "";
 
     // Prepare cosmetics for the site
     // - CSS with Twitter bootstrap
@@ -29,7 +43,7 @@ function Server(log, config) {
     // - JS with Twitter bootstrap
     var bootstrap = "<link rel='stylesheet' href='//maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css'>"
         //+ "<link href='//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css' rel='stylesheet'/>"
-        ;
+    ;
     var font = "<link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>";
     var style = "<style>h1, h2, h3, h4, h5, h6 {font-family: 'Open Sans', sans-serif;}p, div {font-family: 'Open Sans', sans-serif;} input[type='radio'], input[type='checkbox'] {line-height: normal; margin: 0;}</style>"
     var header = "<html><meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'><head><title>Homebridge - Configuration</title>" + bootstrap + font + style + "</head><body style='padding-top: 70px;'>";
@@ -38,43 +52,45 @@ function Server(log, config) {
         //+ "<script> $(document).ready(function() { $.fn.editable.defaults.mode = 'popup';  $('#username').editable(); }); </script>"
         //+ "<script defer='defer' src='//code.jquery.com/jquery-ui-latest.min.js'></script>"
         //+ "<script defer='defer' src='//code.jquery.com/jquery-latest.min.js'></script>"
-        + "<script defer='defer' src='//maxcdn.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js'></script>"
-        + "</html>";
+        +
+        "<script defer='defer' src='//maxcdn.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js'></script>" +
+        "</html>";
     var navBar = (function() {/*
-        <nav class="navbar navbar-default navbar-fixed-top">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="/">Homebridge - Configuration</a>
-            </div>
-            <div class="container-fluid">      
-              <ul class="nav navbar-nav navbar-right">
-                  <li><a href="/createBackup">Backup</a></li>
-                  <li><a href="/showLog">Log</a></li>
-                  <li><a href="/reboot">Reboot</a></li>
-                </ul>
-            </div>
-        </nav>
-    */}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
+      <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="navbar-header">
+      <a class="navbar-brand" href="/">Homebridge - Configuration</a>
+      </div>
+      <div class="container-fluid">
+      <ul class="nav navbar-nav navbar-right">
+      <li><a href="/createBackup">Backup</a></li>
+      <li><a href="/showLog">Log</a></li>
+      <li><a href="/listInstallablePlugins">Plugins</a></li>
+      <li><a href="/reboot">Reboot</a></li>
+      </ul>
+      </div>
+      </nav>
+      */}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
 
-    var table1 = (function() {/* 
-            <div class="table-responsive"> 
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <th width='15%'>Type</th>
-                    <th width='35%'>Name</th>
-                    <th width='40%'>Info</th>
-                    <th width='10%'></th>
-                  </tr>
-                </thead>
-                <tbody>
-    */}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
+    var table1 = (function() {/*
+      <div class="table-responsive">
+      <table class="table table-hover">
+      <thead>
+      <tr>
+      <th width='15%'>Type</th>
+      <th width='35%'>Name</th>
+      <th width='40%'>Info</th>
+      <th width='10%'></th>
+      </tr>
+      </thead>
+      <tbody>
+      */}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
 
     // This closes the html-markup as string for the presented tables
-    var table2 = (function() {/*  
-                </tbody>
-              </table>
-            </div>
-    */}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
+    var table2 = (function() {/*
+      </tbody>
+      </table>
+      </div>
+      */}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
 
     // Prepares the html-markup for the bridge parameters as forms
     var bridgeName;
@@ -83,23 +99,88 @@ function Server(log, config) {
 
     function stripEscapeCodes(chunk) {
         var receivedData = chunk.toString()
-         .replace(/\%40/g,'@')
-         .replace(/\%23/g,'#')
-         .replace(/\%7B/g,'{')
-         .replace(/\%0D/g,'')
-         .replace(/\%0A/g,'')
-         .replace(/\%2C/g,',')
-         .replace(/\%7D/g,'}')
-         .replace(/\%3A/g,':')
-         .replace(/\%22/g,'"')
-         .replace(/\+/g,' ')
-         .replace(/\+\+/g,'')
-         .replace(/\%2F/g,'/')
-         .replace(/\%3C/g,'<')
-         .replace(/\%3E/g,'>')
-         .replace(/\%5B/g,'[')
-         .replace(/\%5D/g,']');
+            .replace(/\%40/g, '@')
+            .replace(/\%23/g, '#')
+            .replace(/\%7B/g, '{')
+            .replace(/\%0D/g, '')
+            .replace(/\%0A/g, '')
+            .replace(/\%2C/g, ',')
+            .replace(/\%7D/g, '}')
+            .replace(/\%3A/g, ':')
+            .replace(/\%22/g, '"')
+            .replace(/\+/g, ' ')
+            .replace(/\+\+/g, '')
+            .replace(/\%2F/g, '/')
+            .replace(/\%3C/g, '<')
+            .replace(/\%3E/g, '>')
+            .replace(/\%5B/g, '[')
+            .replace(/\%5D/g, ']');
         return receivedData;
+    }
+
+    var http = require("http");
+    var https = require("https");
+
+    function executeBash(cmd) {
+        var exec = require('child_process').exec;
+        exec(cmd, function(error, stdout, stderr) {
+            self.log("Executing: " + cmd);
+            fs.writeFile(configPath + '/exec.out', stdout, "utf8", function(err, result) {
+                if (err) {
+                    return self.log(err);
+                }
+            });
+        });
+    }
+
+    function getInstalledPlugins(res) {
+        executeBash("npm list -g | grep 'homebridge'");
+        fs.readFile(configPath + '/exec.out', "utf8", function(err, result) {
+            if (err) {
+                return self.log(err);
+            } else {
+                installedPlugins = result;
+            }
+        });
+    }
+
+    /**
+     * getJSON:  REST get request returning JSON object(s)
+     * @param options: http options object
+     * @param callback: callback to pass the results JSON object(s) back
+     */
+    function getJSON(options, onResult) {
+        var prot = options.port == 443 ? https : http;
+        var req = prot.request(options, function(res) {
+            var output = '';
+            res.setEncoding('utf8');
+            res.on('data', function(chunk) {
+                output += chunk;
+            });
+            res.on('end', function() {
+                var obj = JSON.parse(output);
+                onResult(res.statusCode, obj);
+            });
+        });
+        req.on('error', function(err) {
+            self.log('error: ' + err.message);
+        });
+        req.end();
+    };
+
+    function getPluginsFromNPMS(res, search) {
+        var options = {
+            host: 'api.npms.io',
+            port: 443,
+            path: '/v2/search?q=' + (!search || 0 === search.length ? '' : search + '+') + 'keywords:homebridge-plugin+not:deprecated+not:insecure&size=250',
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+        getJSON(options, function(statusCode, result) {
+            printPluginPage(res, result);
+        });
     }
 
     function prepareConfig() {
@@ -121,12 +202,12 @@ function Server(log, config) {
             delete platformNoTypeNoName.platform;
             delete platformNoTypeNoName.name;
             var platform = platformsJSON[id_platform];
-            platforms = platforms + "<tr>"
-             + "<td style='vertical-align:middle;'>" + platform.platform + "</td>"
-              + "<td style='vertical-align:middle;'>" + platform.name + "</td>"
-               + "<td style='vertical-align:middle;'>" + (JSON.stringify(platformNoTypeNoName, null, ' ')).replace(/,/g,',<br>') + "</td>"
-                + "<td style='vertical-align:middle;'><a href='/removePlatform" + id_platform + "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>" + symbolToPresent + ";</span></a>"
-                 + "</td></tr>";
+            platforms = platforms + "<tr>" +
+                "<td style='vertical-align:middle;'>" + platform.platform + "</td>" +
+                "<td style='vertical-align:middle;'>" + platform.name + "</td>" +
+                "<td style='vertical-align:middle;'>" + (JSON.stringify(platformNoTypeNoName, null, ' ')).replace(/,/g, ',<br>') + "</td>" +
+                "<td style='vertical-align:middle;'><a href='/removePlatform" + id_platform + "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>" + symbolToPresent + ";</span></a>" +
+                "</td></tr>";
         }
 
         for (var id_accessory in accessoriesJSON) {
@@ -134,27 +215,54 @@ function Server(log, config) {
             delete accessoryNoTypeNoName.accessory;
             delete accessoryNoTypeNoName.name;
             var accessory = accessoriesJSON[id_accessory];
-            accessories = accessories + "<tr>"
-             + "<td style='vertical-align:middle;'>" + accessory.accessory + "</td>"
-              + "<td style='vertical-align:middle;'>" + accessory.name + "</td>"
-               + "<td style='vertical-align:middle;'>" + (JSON.stringify(accessoryNoTypeNoName, null, ' ')).replace(/,/g,',<br>') + "</td>"
-                + "<td style='vertical-align:middle;'><a href='/removeAccessory" + id_accessory + "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>" + symbolToPresent + ";</span></a>"
-                 + "</td></tr>";
+            accessories = accessories + "<tr>" +
+                "<td style='vertical-align:middle;'>" + accessory.accessory + "</td>" +
+                "<td style='vertical-align:middle;'>" + accessory.name + "</td>" +
+                "<td style='vertical-align:middle;'>" + (JSON.stringify(accessoryNoTypeNoName, null, ' ')).replace(/,/g, ',<br>') + "</td>" +
+                "<td style='vertical-align:middle;'><a href='/removeAccessory" + id_accessory + "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>" + symbolToPresent + ";</span></a>" +
+                "</td></tr>";
         }
+    }
+
+    function printPluginPage(res, result) {
+        res.write(header + navBar);
+        res.write("<div class='container'>");
+        res.write("<h2>Plugins</h2>");
+        res.write("<form enctype='application/x-www-form-urlencoded' action='/listInstallablePlugins' method='post'>");
+        res.write("<div class='input-group'><input type='text' class='form-control' name='searchQuery' /><br>");
+        res.write("<span class='input-group-btn'><input type='submit' class='btn btn-default center-block' value='Filter' style='width:135px' /></span>");
+        res.write("</div></form>");
+
+        var plugins = "";
+        result.results.forEach(function(e) {
+            plugins += "<tr>" +
+                "<td style='vertical-align:middle;'><a href=" + e.package.links.npm + ">" + e.package.name + "</a></td>" +
+                "<td style='vertical-align:middle;'>" + e.package.publisher.username + "</td>" +
+                "<td style='vertical-align:middle;'>" + e.package.description + "</td>";
+            if (installedPlugins.indexOf(e.package.name) > -1) {
+                plugins += "<td style='vertical-align:middle;'><a href='/uninstallPlugin=" + e.package.name + "' class='btn btn-danger center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>" + "Uninstall</span></a>";
+            } else {
+                plugins += "<td style='vertical-align:middle;'><a href='/installPlugin=" + e.package.name + "' class='btn btn-success center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>" + "Install v" + e.package.version + "</span></a>";
+            }
+            plugins += "</td></tr>";
+        });
+        res.write(table1 + plugins + table2);
+        res.write("</div>");
+        res.end(footer);
     }
 
     function printAddPage(res, type, additionalInput) {
         res.write(header + navBar);
         res.write("<div class='container'>");
 
-        if(additionalInput != null) {
+        if (additionalInput != null) {
             res.write(additionalInput);
         }
 
         res.write("<h2>Add " + type + "</h2>");
 
         res.write("<form enctype='application/x-www-form-urlencoded' action='/save" + type + "Settings' method='post'>")
-        res.write("<textarea class='form-control' type='text' name='" + type + "ToAdd' rows='10' placeholder='{ \"" + type  + "\": \"test\" }' required></textarea>");
+        res.write("<textarea class='form-control' type='text' name='" + type + "ToAdd' rows='10' placeholder='{ \"" + type + "\": \"test\" }' required></textarea>");
         res.write("<br>");
         res.write("<div class='row'>");
         res.write("<div class='col-xs-offset-1 col-sm-offset-1 col-md-offset-2 col-xs-10 col-sm-9 col-md-8 text-center'>");
@@ -176,7 +284,7 @@ function Server(log, config) {
 
         //res.write("<h1>Homebridge</h1>");
         //res.write("<h2>Configuration</h2>");
-        
+
         res.write("<form enctype='application/x-www-form-urlencoded' action='/saveBridgeSettings' method='post'>")
         res.write(bridgeName + bridgeUsername + bridgePin);
         res.write("<input type='submit' class='btn btn-default center-block' style='width:135px' value='Save' />");
@@ -203,33 +311,33 @@ function Server(log, config) {
     }
 
     function reloadConfig(res) {
-        configJSON = require(process.argv[process.argv.indexOf('-U') + 1] + '/config.json');
+        configJSON = require(configPath + '/config.json');
         prepareConfig();
         printMainPage(res);
     }
 
     function saveConfig(res, backup) {
         var newConfig = JSON.stringify(configJSON)
-         .replace(/\[,/g, '[')
-         .replace(/,null/g, '')
-         .replace(/null,/g, '')
-         .replace(/null/g, '')
-         .replace(/,,/g, ',')
-         .replace(/,\]/g, ']');
+            .replace(/\[,/g, '[')
+            .replace(/,null/g, '')
+            .replace(/null,/g, '')
+            .replace(/null/g, '')
+            .replace(/,,/g, ',')
+            .replace(/,\]/g, ']');
         newConfig = JSON.stringify(JSON.parse(newConfig), null, 4);
-        if(backup != null) {
-            fs.writeFile(process.argv[process.argv.indexOf('-U') + 1] + '/config.json.bak', newConfig, "utf8", function (err, data) {
+        if (backup != null) {
+            fs.writeFile(configPath + '/config.json.bak', newConfig, "utf8", function(err, data) {
                 if (err) {
-                  return console.log(err);
+                    return self.log(err);
                 }
                 res.write(header + navBar);
                 res.write("<div class='alert alert-success alert-dismissible fade in out'><a href='/' class='close' data-dismiss='success'>&times;</a><strong>Succes!</strong> Configuration saved!</div>");
                 res.end(footer);
-            });    
+            });
         } else {
             res.write(header + navBar);
             res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/' class='close' data-dismiss='alert'>&times;</a><strong>Note!</strong> Please restart Homebridge to activate your changes.</div>");
-            fs.writeFile(process.argv[process.argv.indexOf('-U') + 1] + '/config.json', newConfig, "utf8", reloadConfig(res));
+            fs.writeFile(configPath + '/config.json', newConfig, "utf8", reloadConfig(res));
         }
     }
 
@@ -240,21 +348,38 @@ function Server(log, config) {
                 prepareConfig();
                 printMainPage(res);
                 break;
+            case '/listInstallablePlugins':
+                if (req.method == 'POST') {
+                    req.on('data', function(chunk) {
+                        var receivedData = stripEscapeCodes(chunk).replace('searchQuery=', '');
+                        try {
+                            getInstalledPlugins(res);
+                            getPluginsFromNPMS(res, receivedData);
+                        } catch (ex) {
+                            self.log(ex);
+                        }
+                    });
+                    req.on('end', function(chunk) {});
+                } else {
+                    getInstalledPlugins(res);
+                    getPluginsFromNPMS(res);
+                }
+                break;
             case '/saveBridgeSettings':
                 if (req.method == 'POST') {
                     req.on('data', function(chunk) {
                         var receivedData = chunk.toString();
-                        console.log("[Homebridge-Server] received body data: " + receivedData);
+                        self.log("received body data: " + receivedData);
                         var arr = receivedData.split("&");
-                        configJSON.bridge.name = stripEscapeCodes(arr[0].replace('bridgeName=',''));
-                        configJSON.bridge.username = arr[1].replace('bridgeUsername=','').replace(/\%3A/g,':');
-                        configJSON.bridge.pin = arr[2].replace('bridgePin=','');
+                        configJSON.bridge.name = stripEscapeCodes(arr[0].replace('bridgeName=', ''));
+                        configJSON.bridge.username = arr[1].replace('bridgeUsername=', '').replace(/\%3A/g, ':');
+                        configJSON.bridge.pin = arr[2].replace('bridgePin=', '');
                         saveConfig(res);
-                        console.log("[Homebridge-Server] Saved bridge settings.");
+                        self.log("Saved bridge settings.");
                     });
-                    req.on('end', function(chunk) { });
+                    req.on('end', function(chunk) {});
                 } else {
-                    console.log("[Homebridge-Server] [405] " + req.method + " to " + req.url);
+                    self.log("[405] " + req.method + " to " + req.url);
                 }
                 break;
             case '/addPlatform':
@@ -266,45 +391,45 @@ function Server(log, config) {
             case '/savePlatformSettings':
                 if (req.method == 'POST') {
                     req.on('data', function(chunk) {
-                        var receivedData = stripEscapeCodes(chunk).replace('PlatformToAdd=','');
-                            try {
-                                configJSON.platforms.push(JSON.parse(receivedData));
-                                if(configJSON.platforms.length == 1) {
-                                    configJSON.platforms = JSON.parse(JSON.stringify(configJSON.platforms).replace('[,','['));
-                                }
-                                saveConfig(res);
-                                console.log("[Homebridge-Server] Saved platform " + JSON.parse(receivedData).name + ".");
-                            } catch (ex) {
-                                res.write(header + navBar);
-                                res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/addPlatform' class='close' data-dismiss='alert'>&times;</a><strong>Error!</strong> Invalid JSON-entry detected. Please verify your input!</div>");
-                                printAddPage(res, "Platform", "<code>" + receivedData + "</code>");
+                        var receivedData = stripEscapeCodes(chunk).replace('PlatformToAdd=', '');
+                        try {
+                            configJSON.platforms.push(JSON.parse(receivedData));
+                            if (configJSON.platforms.length == 1) {
+                                configJSON.platforms = JSON.parse(JSON.stringify(configJSON.platforms).replace('[,', '['));
                             }
+                            saveConfig(res);
+                            self.log("Saved platform " + JSON.parse(receivedData).name + ".");
+                        } catch (ex) {
+                            res.write(header + navBar);
+                            res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/addPlatform' class='close' data-dismiss='alert'>&times;</a><strong>Error!</strong> Invalid JSON-entry detected. Please verify your input!</div>");
+                            printAddPage(res, "Platform", "<code>" + receivedData + "</code>");
+                        }
                     });
-                    req.on('end', function(chunk) { });
+                    req.on('end', function(chunk) {});
                 } else {
-                    console.log("[Homebridge-Server] [405] " + req.method + " to " + req.url);
+                    self.log("[405] " + req.method + " to " + req.url);
                 }
                 break;
             case '/saveAccessorySettings':
                 if (req.method == 'POST') {
                     req.on('data', function(chunk) {
-                        var receivedData = stripEscapeCodes(chunk).replace('AccessoryToAdd=','');
-                            try {
-                                configJSON.accessories.push(JSON.parse(receivedData));
-                                if(configJSON.accessories.length == 1) {
-                                    configJSON.accessories = JSON.parse(JSON.stringify(configJSON.accessories).replace('[,','['));
-                                }
-                                saveConfig(res);
-                                console.log("[Homebridge-Server] Saved accessory " + JSON.parse(receivedData).name + ".");
-                            } catch (ex) {
-                                res.write(header + navBar);
-                                res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/addAccessory' class='close' data-dismiss='alert'>&times;</a><strong>Error!</strong> Invalid JSON-entry detected. Please verify your input!</div>");
-                                printAddPage(res, "Accessory", "<code>" + receivedData + "</code>");
+                        var receivedData = stripEscapeCodes(chunk).replace('AccessoryToAdd=', '');
+                        try {
+                            configJSON.accessories.push(JSON.parse(receivedData));
+                            if (configJSON.accessories.length == 1) {
+                                configJSON.accessories = JSON.parse(JSON.stringify(configJSON.accessories).replace('[,', '['));
                             }
+                            saveConfig(res);
+                            self.log("Saved accessory " + JSON.parse(receivedData).name + ".");
+                        } catch (ex) {
+                            res.write(header + navBar);
+                            res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/addAccessory' class='close' data-dismiss='alert'>&times;</a><strong>Error!</strong> Invalid JSON-entry detected. Please verify your input!</div>");
+                            printAddPage(res, "Accessory", "<code>" + receivedData + "</code>");
+                        }
                     });
-                    req.on('end', function(chunk) { });
+                    req.on('end', function(chunk) {});
                 } else {
-                    console.log("[Homebridge-Server] [405] " + req.method + " to " + req.url);
+                    self.log("[405] " + req.method + " to " + req.url);
                 }
                 break;
             case '/createBackup':
@@ -312,9 +437,9 @@ function Server(log, config) {
                 break;
             case '/showLog':
                 logFile = require('fs');
-                logFile.readFile(self.config.log, 'utf8', function (err, log) {
+                logFile.readFile(self.config.log, 'utf8', function(err, log) {
                     if (err) {
-                      return console.log(err);
+                        return self.log(err);
                     }
                     res.write(header + navBar);
                     res.write("<div class='container'>");
@@ -325,12 +450,7 @@ function Server(log, config) {
                 });
                 break;
             case '/reboot':
-                var exec = require('child_process').exec;
-                var cmd = "sudo reboot";
-
-                exec(cmd, function(error, stdout, stderr) {
-                  // command output is in stdout
-                });
+                executeBash("sudo reboot");
                 break;
             default:
                 url = req.url;
@@ -339,13 +459,23 @@ function Server(log, config) {
                     if (object.indexOf('Platform') !== -1) {
                         platform = object.replace('Platform', '');
                         delete configJSON.platforms[platform];
-                        console.log("[Homebridge-Server] Removed platform " + platform + ".");
+                        self.log("Removed platform " + platform + ".");
                     } else if (object.indexOf('Accessory') !== -1) {
                         accessory = object.replace('Accessory', '');
                         delete configJSON.accessories[accessory];
-                        console.log("[Homebridge-Server] Removed accessory " + accessory + ".");
+                        self.log("Removed accessory " + accessory + ".");
                     }
                     saveConfig(res);
+                } else if (url.indexOf('/installPlugin=') !== -1) {
+                    executeBash("npm install -g " + url.replace('/installPlugin=', ''));
+                    getInstalledPlugins(res);
+                    getPluginsFromNPMS(res);
+                    break;
+                } else if (url.indexOf('/uninstallPlugin=') !== -1) {
+                    executeBash("npm uninstall -g " + url.replace('/uninstallPlugin=', ''));
+                    getInstalledPlugins(res);
+                    getPluginsFromNPMS(res);
+                    break;
                 }
         };
     }
@@ -355,7 +485,7 @@ function Server(log, config) {
 
     server.listen(self.config.port, function() {
         require('dns').lookup(require('os').hostname(), function(err, add, fam) {
-            console.log("[Homebridge-Server] is listening on: http://%s:%s", add, self.config.port);
+            self.log("is listening on: http://%s:%s", add, self.config.port);
         })
     });
 }
