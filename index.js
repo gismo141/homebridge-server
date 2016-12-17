@@ -436,33 +436,27 @@ function Server(log, config) {
                 saveConfig(res, true);
                 break;
             case '/showLog':
-                var logFile;
+                res.write(header + navBar);
+                res.write("<div class='container'>");
+                res.write("<h2>Log</h2>");
                 if (self.config.log == "systemd") {
                       var exec = require('child_process').exec;
-                      var cmd = "journalctl --no-pager -u homebridge";
+                      var cmd = "journalctl --no-pager -u homebridge --since yesterday";
                       exec(cmd, function(error, stdout, stderr) {
                           self.log("Executing: " + cmd);
-                          res.write(header + navBar);
-                          res.write("<div class='container'>");
-                          res.write("<h2>Log</h2>");
                           res.write("<code>" + stdout.replace(/(?:\r\n|\r|\n)/g, '<br />') + "</code>");
-                          res.write("</div>");
-                          res.end(footer);
                       });
                 } else {
-                  logFile = require('fs');
+                  var logFile = require('fs');
                   logFile.readFile(self.config.log, 'utf8', function(err, log) {
                       if (err) {
                           return self.log(err);
                       }
-                      res.write(header + navBar);
-                      res.write("<div class='container'>");
-                      res.write("<h2>Log</h2>");
                       res.write("<code>" + log.replace(/(?:\r\n|\r|\n)/g, '<br />') + "</code>");
-                      res.write("</div>");
-                      res.end(footer);
                   });
                 }
+                res.write("</div>");
+                res.end(footer);
                 break;
             case '/reboot':
                 executeBash("sudo reboot");
