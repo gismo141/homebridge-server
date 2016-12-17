@@ -448,7 +448,6 @@ function Server(log, config) {
                           res.write("</div>");
                           res.end(footer);
                       });
-                  });
                 } else {
                   logFile = require('fs');
                   logFile.readFile(self.config.log, 'utf8', function(err, log) {
