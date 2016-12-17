@@ -439,7 +439,8 @@ function Server(log, config) {
                 var logFile;
                 if (self.config.log == "systemd") {
                       var exec = require('child_process').exec;
-                      exec("sudo journalctl --no-pager -u homebridge", function(error, stdout, stderr) {
+                      var cmd = "sudo journalctl --no-pager -u homebridge";
+                      exec(cmd, function(error, stdout, stderr) {
                           self.log("Executing: " + cmd);
                           res.write(header + navBar);
                           res.write("<div class='container'>");
