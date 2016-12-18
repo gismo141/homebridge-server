@@ -1,6 +1,6 @@
 {
   "name": "homebridge-server",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Server plugin for homebridge: https://github.com/nfarina/homebridge",
   "license": "ISC",
   "keywords": [
