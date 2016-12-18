@@ -12,9 +12,12 @@ function Server(log, config) {
     self.log = log;
 
     var configPath = "";
+    var configPathParameter = "";
 
     if (process.argv.indexOf('-U') > -1) {
-      configPath = process.argv[process.argv.indexOf('-U') + 1].replace(/\/+$/, "");
+      configPathParameter = process.argv[process.argv.indexOf('-U') + 1];
+    } else if (process.argv.indexOf('--user-storage-path') > -1) {
+      configPathParameter = process.argv[process.argv.indexOf('--user-storage-path') + 1];
     } else {
       self.log("!!!");
       self.log("!!!");
@@ -26,6 +29,7 @@ function Server(log, config) {
     var http = require('http');
 
     // Get the config.json from parents process ...
+    configPath = configPathParameter.replace(/\/+$/, "");
     var configJSON = require(configPath + '/config.json');
     // ... extract the platforms JSON-object and instantiate string value ...
     var platformsJSON = {};
