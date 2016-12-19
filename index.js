@@ -18,6 +18,8 @@ function Server(log, config) {
       configPathParameter = process.argv[process.argv.indexOf('-U') + 1];
     } else if (process.argv.indexOf('--user-storage-path') > -1) {
       configPathParameter = process.argv[process.argv.indexOf('--user-storage-path') + 1];
+    } else if (self.config.config != undefined) {
+      configPathParameter = self.config.config;
     } else {
       self.log("!!!");
       self.log("!!!");
