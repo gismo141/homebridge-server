@@ -399,6 +399,9 @@ function Server(log, config) {
                     req.on('data', function(chunk) {
                         var receivedData = stripEscapeCodes(chunk).replace('PlatformToAdd=', '');
                         try {
+                            if(configJSON.platforms == undefined) {
+                              configJSON["platforms"] = [];
+                            }
                             configJSON.platforms.push(JSON.parse(receivedData));
                             if (configJSON.platforms.length == 1) {
                                 configJSON.platforms = JSON.parse(JSON.stringify(configJSON.platforms).replace('[,', '['));
@@ -421,6 +424,10 @@ function Server(log, config) {
                     req.on('data', function(chunk) {
                         var receivedData = stripEscapeCodes(chunk).replace('AccessoryToAdd=', '');
                         try {
+                            if(configJSON.accessories == undefined) {
+                              configJSON["accessories"] = [];
+                            }
+                            console.log(JSON.stringify(configJSON));
                             configJSON.accessories.push(JSON.parse(receivedData));
                             if (configJSON.accessories.length == 1) {
                                 configJSON.accessories = JSON.parse(JSON.stringify(configJSON.accessories).replace('[,', '['));
@@ -429,6 +436,7 @@ function Server(log, config) {
                             self.log("Saved accessory " + JSON.parse(receivedData).name + ".");
                         } catch (ex) {
                             res.write(header + navBar);
+                            res.write("<code>" + ex + "</code>");
                             res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/addAccessory' class='close' data-dismiss='alert'>&times;</a><strong>Error!</strong> Invalid JSON-entry detected. Please verify your input!</div>");
                             printAddPage(res, "Accessory", "<code>" + receivedData + "</code>");
                         }
