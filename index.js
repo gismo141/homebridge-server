@@ -512,9 +512,9 @@ function Server(log, config) {
     var server = http.createServer(handleRequest);
 
     server.listen(self.config.port, function() {
-        require('dns').lookup(require('os').hostname(), function(err, add, fam) {
-            self.log("is listening on: http://%s:%s", add, self.config.port);
-        })
+      var _ = require('underscore');
+      var ip = _.chain(require('os').networkInterfaces()).flatten().filter(function(val){ return (val.family == 'IPv4' && val.internal == false) }).pluck('address').first().value();
+      self.log("is listening on: http://%s:%s", ip, self.config.port);
     });
 }
 
