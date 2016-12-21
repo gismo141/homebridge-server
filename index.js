@@ -512,9 +512,17 @@ function Server(log, config) {
     var server = http.createServer(handleRequest);
 
     server.listen(self.config.port, function() {
-      var _ = require('underscore');
-      var ip = _.chain(require('os').networkInterfaces()).flatten().filter(function(val){ return (val.family == 'IPv4' && val.internal == false) }).pluck('address').first().value();
-      self.log("is listening on: http://%s:%s", ip, self.config.port);
+      var os = require('os');
+      var ifaces = os.networkInterfaces();
+
+      Object.keys(ifaces).forEach(function (ifname) {
+        ifaces[ifname].forEach(function (iface) {
+          if ('IPv4' !== iface.family || iface.internal !== false) {
+            return;
+          }
+          self.log("is listening on: http://%s:%s", iface.address, self.config.port);
+        });
+      });
     });
 }
 
