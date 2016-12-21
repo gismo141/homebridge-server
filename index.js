@@ -194,9 +194,9 @@ function Server(log, config) {
         bridgeUsername = "<div class='form-group'><label for='username'>Username:</label><input type='text' class='form-control' name='bridgeUsername' value='" + configJSON.bridge.username + "'></div>";
         bridgePin = "<div class='form-group'><label for='pin'>Pin:</label><input type='text' class='form-control' name='bridgePin' value='" + configJSON.bridge.pin + "'></div>";
 
-        platformsJSON = configJSON.platforms;
+        platformsJSON = configJSON.platforms != undefined ? configJSON.platforms : {};
         platforms = "";
-        accessoriesJSON = configJSON.accessories;
+        accessoriesJSON = configJSON.accessories != undefined ? configJSON.accessories : {};
         accessories = "";
 
         const wastebasket = "&#128465";
