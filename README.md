@@ -37,11 +37,17 @@ Add this snippet to your `config.json`:
 ```JSON
 {
     "platform": "Server",
-    "port": 8765,
-    "name": "Homebridge Server",
-    "log" : "<PATH_TO_YOUR_LOG_FILE>"
+    "port"    : 8765,
+    "name"    : "Homebridge Server",
+    "log"     : "<PATH_TO_YOUR_LOG_FILE>",
+    "restart" : "<COMMAND_TO_EXECUTE>"
 }
 ```
+
+The parameter `"log"` defines where the plugin can find your log.
+If you're using `systemd` to execute `homebridge` then `<PATH_TO_YOUR_LOG_FILE>` should be `"systemd"`.
+If you're executing `homebridge` from a script, then you should pipe its output to a file.
+In this case `<PATH_TO_YOUR_LOG_FILE>` should be the path to the piped output.
 
 and launch or restart your homebridge, e.g.:
 

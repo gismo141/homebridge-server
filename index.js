@@ -4,10 +4,10 @@ module.exports = function(homebridge) {
     Service = homebridge.hap.Service;
     Characteristic = homebridge.hap.Characteristic;
     HomebridgeAPI = homebridge;
-    homebridge.registerPlatform("homebridge-server", "Server", Server);
+    homebridge.registerPlatform("homebridge-server", "Server", ServerPlatform);
 }
 
-function Server(log, config) {
+function ServerPlatform(log, config) {
     var fs = require('fs');
     var http = require('http');
 
@@ -458,7 +458,7 @@ function Server(log, config) {
                 }
                 break;
             case '/reboot':
-                executeBash("sudo reboot");
+                executeBash(config.restart);
                 break;
             default:
                 url = req.url;
@@ -506,7 +506,7 @@ function Server(log, config) {
     });
 }
 
-Server.prototype.accessories = function(callback) {
+ServerPlatform.prototype.accessories = function(callback) {
     this.accessories = [];
     callback(this.accessories);
 }
