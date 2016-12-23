@@ -51,7 +51,7 @@ function ServerPlatform(log, config) {
       <li><a href="/createBackup">Backup</a></li>
       <li><a href="/showLog">Log</a></li>
       <li><a href="/listInstallablePlugins">Plugins</a></li>
-      <li><a href="/reboot">Reboot</a></li>
+      <li><a href="/restart">Restart</a></li>
       </ul>
       </div>
       </nav>
@@ -457,8 +457,8 @@ function ServerPlatform(log, config) {
                   });
                 }
                 break;
-            case '/reboot':
-                executeBash(config.restart);
+            case '/restart':
+                executeBash(config.restart != undefined ? config.restart : "echo 'No command specified!'");
                 break;
             default:
                 url = req.url;
