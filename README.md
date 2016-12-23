@@ -46,7 +46,7 @@ Add this snippet to your `config.json`:
 and launch or restart your homebridge, e.g.:
 
 ```Bash
-homebridge -D -U <HOMEBRIDGE_CONFIG_FOLDER>
+homebridge
 ```
 
 See the [Wiki](https://github.com/gismo141/homebridge-server/wiki) on how to configure, install and use the plugin for more complex scenarios.

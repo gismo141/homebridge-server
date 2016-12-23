@@ -1,38 +1,18 @@
-var Service, Characteristic, LastUpdate;
+var Service, Characteristic, LastUpdate, HomebridgeAPI;
 
 module.exports = function(homebridge) {
     Service = homebridge.hap.Service;
     Characteristic = homebridge.hap.Characteristic;
+    HomebridgeAPI = homebridge;
     homebridge.registerPlatform("homebridge-server", "Server", Server);
 }
 
 function Server(log, config) {
-    var self = this;
-    self.config = config;
-    self.log = log;
-
-    var configPath = "";
-    var configPathParameter = "";
-
-    if (process.argv.indexOf('-U') > -1) {
-      configPathParameter = process.argv[process.argv.indexOf('-U') + 1];
-    } else if (process.argv.indexOf('--user-storage-path') > -1) {
-      configPathParameter = process.argv[process.argv.indexOf('--user-storage-path') + 1];
-    } else if (self.config.config != undefined) {
-      configPathParameter = self.config.config;
-    } else {
-      self.log("!!!");
-      self.log("!!!");
-      self.log("ERROR: No 'config.json' found!");
-      self.log("Please specify the path of your 'config.json'! E.g.: '-U /home/pi/.homebridge'");
-      process.exit(1);
-    }
     var fs = require('fs');
     var http = require('http');
 
-    // Get the config.json from parents process ...
-    configPath = configPathParameter.replace(/\/+$/, "");
-    var configJSON = require(configPath + '/config.json');
+    // Get the config.json ...
+    var configJSON = require(HomebridgeAPI.user.configPath());
     // ... extract the platforms JSON-object and instantiate string value ...
     var platformsJSON = {};
     var platforms = "";
@@ -130,10 +110,10 @@ function Server(log, config) {
     function executeBash(cmd) {
         var exec = require('child_process').exec;
         exec(cmd, function(error, stdout, stderr) {
-            self.log("Executing: " + cmd);
-            fs.writeFile(configPath + '/exec.out', stdout, "utf8", function(err, result) {
+            log("Executing: " + cmd);
+            fs.writeFile(HomebridgeAPI.user.configPath().replace("config.json","exec.out"), stdout, "utf8", function(err, result) {
                 if (err) {
-                    return self.log(err);
+                    return log(err);
                 }
             });
         });
@@ -141,9 +121,9 @@ function Server(log, config) {
 
     function getInstalledPlugins(res) {
         executeBash("npm list -g | grep 'homebridge'");
-        fs.readFile(configPath + '/exec.out', "utf8", function(err, result) {
+        fs.readFile(HomebridgeAPI.user.configPath().replace("config.json","exec.out"), "utf8", function(err, result) {
             if (err) {
-                return self.log(err);
+                return log(err);
             } else {
                 installedPlugins = result;
             }
@@ -169,7 +149,7 @@ function Server(log, config) {
             });
         });
         req.on('error', function(err) {
-            self.log('error: ' + err.message);
+            log('error: ' + err.message);
         });
         req.end();
     };
@@ -317,7 +297,7 @@ function Server(log, config) {
     }
 
     function reloadConfig(res) {
-        configJSON = require(configPath + '/config.json');
+        configJSON = require(HomebridgeAPI.user.configPath());
         prepareConfig();
         printMainPage(res);
     }
@@ -334,7 +314,7 @@ function Server(log, config) {
         if (backup != null) {
             fs.writeFile(configPath + '/config.json.bak', newConfig, "utf8", function(err, data) {
                 if (err) {
-                    return self.log(err);
+                    return log(err);
                 }
                 res.write(header + navBar);
                 res.write("<div class='alert alert-success alert-dismissible fade in out'><a href='/' class='close' data-dismiss='success'>&times;</a><strong>Succes!</strong> Configuration saved!</div>");
@@ -343,7 +323,7 @@ function Server(log, config) {
         } else {
             res.write(header + navBar);
             res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/' class='close' data-dismiss='alert'>&times;</a><strong>Note!</strong> Please restart Homebridge to activate your changes.</div>");
-            fs.writeFile(configPath + '/config.json', newConfig, "utf8", reloadConfig(res));
+            fs.writeFile(HomebridgeAPI.user.configPath(), newConfig, "utf8", reloadConfig(res));
         }
     }
 
@@ -362,7 +342,7 @@ function Server(log, config) {
                             getInstalledPlugins(res);
                             getPluginsFromNPMS(res, receivedData);
                         } catch (ex) {
-                            self.log(ex);
+                            log(ex);
                         }
                     });
                     req.on('end', function(chunk) {});
@@ -375,17 +355,17 @@ function Server(log, config) {
                 if (req.method == 'POST') {
                     req.on('data', function(chunk) {
                         var receivedData = chunk.toString();
-                        self.log("received body data: " + receivedData);
+                        log("received body data: " + receivedData);
                         var arr = receivedData.split("&");
                         configJSON.bridge.name = stripEscapeCodes(arr[0].replace('bridgeName=', ''));
                         configJSON.bridge.username = arr[1].replace('bridgeUsername=', '').replace(/\%3A/g, ':');
                         configJSON.bridge.pin = arr[2].replace('bridgePin=', '');
                         saveConfig(res);
-                        self.log("Saved bridge settings.");
+                        log("Saved bridge settings.");
                     });
                     req.on('end', function(chunk) {});
                 } else {
-                    self.log("[405] " + req.method + " to " + req.url);
+                    log("[405] " + req.method + " to " + req.url);
                 }
                 break;
             case '/addPlatform':
@@ -407,7 +387,7 @@ function Server(log, config) {
                                 configJSON.platforms = JSON.parse(JSON.stringify(configJSON.platforms).replace('[,', '['));
                             }
                             saveConfig(res);
-                            self.log("Saved platform " + JSON.parse(receivedData).name + ".");
+                            log("Saved platform " + JSON.parse(receivedData).name + ".");
                         } catch (ex) {
                             res.write(header + navBar);
                             res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/addPlatform' class='close' data-dismiss='alert'>&times;</a><strong>Error!</strong> Invalid JSON-entry detected. Please verify your input!</div>");
@@ -416,7 +396,7 @@ function Server(log, config) {
                     });
                     req.on('end', function(chunk) {});
                 } else {
-                    self.log("[405] " + req.method + " to " + req.url);
+                    log("[405] " + req.method + " to " + req.url);
                 }
                 break;
             case '/saveAccessorySettings':
@@ -433,7 +413,7 @@ function Server(log, config) {
                                 configJSON.accessories = JSON.parse(JSON.stringify(configJSON.accessories).replace('[,', '['));
                             }
                             saveConfig(res);
-                            self.log("Saved accessory " + JSON.parse(receivedData).name + ".");
+                            log("Saved accessory " + JSON.parse(receivedData).name + ".");
                         } catch (ex) {
                             res.write(header + navBar);
                             res.write("<code>" + ex + "</code>");
@@ -443,18 +423,18 @@ function Server(log, config) {
                     });
                     req.on('end', function(chunk) {});
                 } else {
-                    self.log("[405] " + req.method + " to " + req.url);
+                    log("[405] " + req.method + " to " + req.url);
                 }
                 break;
             case '/createBackup':
                 saveConfig(res, true);
                 break;
             case '/showLog':
-                if (self.config.log == "systemd") {
+                if (config.log == "systemd") {
                       var exec = require('child_process').exec;
                       var cmd = "journalctl --no-pager -u homebridge --since yesterday";
                       exec(cmd, function(error, stdout, stderr) {
-                          self.log("Executing: " + cmd);
+                          log("Executing: " + cmd);
                           res.write(header + navBar);
                           res.write("<div class='container'>");
                           res.write("<h2>Log</h2>");
@@ -464,9 +444,9 @@ function Server(log, config) {
                       });
                 } else {
                   var logFile = require('fs');
-                  logFile.readFile(self.config.log, 'utf8', function(err, log) {
+                  logFile.readFile(config.log, 'utf8', function(err, log) {
                       if (err) {
-                          return self.log(err);
+                          return log(err);
                       }
                       res.write(header + navBar);
                       res.write("<div class='container'>");
@@ -487,11 +467,11 @@ function Server(log, config) {
                     if (object.indexOf('Platform') !== -1) {
                         platform = object.replace('Platform', '');
                         delete configJSON.platforms[platform];
-                        self.log("Removed platform " + platform + ".");
+                        log("Removed platform " + platform + ".");
                     } else if (object.indexOf('Accessory') !== -1) {
                         accessory = object.replace('Accessory', '');
                         delete configJSON.accessories[accessory];
-                        self.log("Removed accessory " + accessory + ".");
+                        log("Removed accessory " + accessory + ".");
                     }
                     saveConfig(res);
                 } else if (url.indexOf('/installPlugin=') !== -1) {
@@ -511,7 +491,7 @@ function Server(log, config) {
     // Launches the webserver and transmits the website by concatenating the precreated markup
     var server = http.createServer(handleRequest);
 
-    server.listen(self.config.port, function() {
+    server.listen(config.port, function() {
       var os = require('os');
       var ifaces = os.networkInterfaces();
 
@@ -520,14 +500,13 @@ function Server(log, config) {
           if ('IPv4' !== iface.family || iface.internal !== false) {
             return;
           }
-          self.log("is listening on: http://%s:%s", iface.address, self.config.port);
+          log("is listening on: http://%s:%s", iface.address, config.port);
         });
       });
     });
 }
 
 Server.prototype.accessories = function(callback) {
-    var self = this;
-    self.accessories = [];
-    callback(self.accessories);
+    this.accessories = [];
+    callback(this.accessories);
 }
