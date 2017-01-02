@@ -312,7 +312,7 @@ function ServerPlatform(log, config) {
             .replace(/,\]/g, ']');
         newConfig = JSON.stringify(JSON.parse(newConfig), null, 4);
         if (backup != null) {
-            fs.writeFile(configPath + '/config.json.bak', newConfig, "utf8", function(err, data) {
+            fs.writeFile(HomebridgeAPI.user.configPath() + '.bak', newConfig, "utf8", function(err, data) {
                 if (err) {
                     return log(err);
                 }
