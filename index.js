@@ -37,8 +37,9 @@ function ServerPlatform(log, config) {
         //+ "<script src='//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js'></script>"
         //+ "<script> $(document).ready(function() { $.fn.editable.defaults.mode = 'popup';  $('#username').editable(); }); </script>"
         //+ "<script defer='defer' src='//code.jquery.com/jquery-ui-latest.min.js'></script>"
-        + "<script defer='defer' src='//code.jquery.com/jquery-latest.min.js'></script>"
-        + "<script defer='defer' src='//maxcdn.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js'></script>" +
+        + "<script defer='defer' src='//raw.githubusercontent.com/jdorn/json-editor/master/dist/jsoneditor.js' type='text/javascript'></script>"
+        + "<script defer='defer' src='//code.jquery.com/jquery-latest.min.js' type='text/javascript'></script>"
+        + "<script defer='defer' src='//maxcdn.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js' type='text/javascript'></script>" +
         "</html>";
     var navBar = (function() {/*
       <nav class="navbar navbar-default navbar-fixed-top">
@@ -92,6 +93,8 @@ function ServerPlatform(log, config) {
 
     function stripEscapeCodes(chunk) {
         var receivedData = chunk.toString()
+            .replace(/\%7E/g, '~')
+            .replace(/\%26/g, '&')
             .replace(/\%40/g, '@')
             .replace(/\%23/g, '#')
             .replace(/\%7B/g, '{')
@@ -274,10 +277,6 @@ function ServerPlatform(log, config) {
     function printMainPage(res) {
         res.write(header + navBar);
         res.write("<div class='container'>");
-
-        //res.write("<h1>Homebridge</h1>");
-        //res.write("<h2>Configuration</h2>");
-
         res.write("<form enctype='application/x-www-form-urlencoded' action='/saveBridgeSettings' method='post'>")
         res.write(bridgeName + bridgeUsername + bridgePin);
         res.write("<input type='submit' class='btn btn-default center-block' style='width:135px' value='Save' />");
