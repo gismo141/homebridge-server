@@ -37,22 +37,29 @@ function ServerPlatform(log, config) {
         //+ "<script src='//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js'></script>"
         //+ "<script> $(document).ready(function() { $.fn.editable.defaults.mode = 'popup';  $('#username').editable(); }); </script>"
         //+ "<script defer='defer' src='//code.jquery.com/jquery-ui-latest.min.js'></script>"
-        //+ "<script defer='defer' src='//code.jquery.com/jquery-latest.min.js'></script>"
-        +
-        "<script defer='defer' src='//maxcdn.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js'></script>" +
+        + "<script defer='defer' src='//code.jquery.com/jquery-latest.min.js'></script>"
+        + "<script defer='defer' src='//maxcdn.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js'></script>" +
         "</html>";
     var navBar = (function() {/*
       <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
       <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      </button>
       <a class="navbar-brand" href="/">Homebridge - Configuration</a>
       </div>
-      <div class="container-fluid">
+      <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-right">
       <li><a href="/createBackup">Backup</a></li>
       <li><a href="/showLog">Log</a></li>
       <li><a href="/listInstallablePlugins">Plugins</a></li>
       <li><a href="/restart">Restart</a></li>
       </ul>
+      </div>
       </div>
       </nav>
       */}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
@@ -253,8 +260,8 @@ function ServerPlatform(log, config) {
         res.write("<div class='row'>");
         res.write("<div class='col-xs-offset-1 col-sm-offset-1 col-md-offset-2 col-xs-10 col-sm-9 col-md-8 text-center'>");
         res.write("<div class='btn-group' data-toggle='buttons'>");
-        res.write("<input type='submit' class='btn btn-default center-block' value='Save' style='width:135px' />");
-        res.write("<a href='/' class='btn btn-default center-block' style='width:135px'>Cancel</a>");
+        res.write("<input type='submit' class='btn btn-default center-block' value='Save' onClick='submit()' style='width:135px' />");
+        res.write("<input type='submit' class='btn btn-default center-block' value='Cancel' onClick=\"location.href='/'\" style='width:135px' />");
         res.write("</div>");
         res.write("</div>");
         res.write("</form>");
@@ -390,7 +397,7 @@ function ServerPlatform(log, config) {
                             log("Saved platform " + JSON.parse(receivedData).name + ".");
                         } catch (ex) {
                             res.write(header + navBar);
-                            res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/addPlatform' class='close' data-dismiss='alert'>&times;</a><strong>Error!</strong> Invalid JSON-entry detected. Please verify your input!</div>");
+                            res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/addPlatform' class='close' data-dismiss='alert'>&times;</a><strong>" + ex + "</strong></div>");
                             printAddPage(res, "Platform", "<code>" + receivedData + "</code>");
                         }
                     });
@@ -416,8 +423,7 @@ function ServerPlatform(log, config) {
                             log("Saved accessory " + JSON.parse(receivedData).name + ".");
                         } catch (ex) {
                             res.write(header + navBar);
-                            res.write("<code>" + ex + "</code>");
-                            res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/addAccessory' class='close' data-dismiss='alert'>&times;</a><strong>Error!</strong> Invalid JSON-entry detected. Please verify your input!</div>");
+                            res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/addAccessory' class='close' data-dismiss='alert'>&times;</a><strong>" + ex + "</strong></div>");
                             printAddPage(res, "Accessory", "<code>" + receivedData + "</code>");
                         }
                     });
