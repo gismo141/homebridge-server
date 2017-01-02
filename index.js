@@ -37,7 +37,7 @@ function ServerPlatform(log, config) {
         //+ "<script src='//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js'></script>"
         //+ "<script> $(document).ready(function() { $.fn.editable.defaults.mode = 'popup';  $('#username').editable(); }); </script>"
         //+ "<script defer='defer' src='//code.jquery.com/jquery-ui-latest.min.js'></script>"
-        //+ "<script defer='defer' src='//code.jquery.com/jquery-latest.min.js'></script>"
+        + "<script defer='defer' src='//code.jquery.com/jquery-latest.min.js'></script>"
         +
         "<script defer='defer' src='//maxcdn.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js'></script>" +
         "</html>";
