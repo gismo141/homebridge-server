@@ -39,6 +39,7 @@ function ServerPlatform(log, config) {
         //+ "<script defer='defer' src='//code.jquery.com/jquery-ui-latest.min.js'></script>"
         //+ "<script defer='defer' src='//code.jquery.com/jquery-latest.min.js'></script>"
         +
+        "<script defer='defer' src='//code.jquery.com/jquery-1.12.4.min.js'></script>" +
         "<script defer='defer' src='//maxcdn.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js'></script>" +
         "</html>";
     var navBar = (function() {/*
