@@ -201,7 +201,7 @@ function ServerPlatform(log, config) {
                 "<td style='vertical-align:middle;'>" + platform.platform + "</td>" +
                 "<td style='vertical-align:middle;'>" + platform.name + "</td>" +
                 "<td style='vertical-align:middle;'><pre>" + (JSON.stringify(platformNoTypeNoName, null, ' ')) + "</pre></td>" +
-                "<td style='vertical-align:middle;'><a href='/removePlatform" + id_platform + "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>" + symbolToPresent + ";</span></a>" +
+                "<td style='vertical-align:middle;'><a href='/removePlatform" + id_platform + "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;'>" + symbolToPresent + ";</span></a>" +
                 "</td></tr>";
         }
 
@@ -214,7 +214,7 @@ function ServerPlatform(log, config) {
                 "<td style='vertical-align:middle;'>" + accessory.accessory + "</td>" +
                 "<td style='vertical-align:middle;'>" + accessory.name + "</td>" +
                 "<td style='vertical-align:middle;'><pre>" + (JSON.stringify(accessoryNoTypeNoName, null, ' ')) + "</pre></td>" +
-                "<td style='vertical-align:middle;'><a href='/removeAccessory" + id_accessory + "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>" + symbolToPresent + ";</span></a>" +
+                "<td style='vertical-align:middle;'><a href='/removeAccessory" + id_accessory + "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;'>" + symbolToPresent + ";</span></a>" +
                 "</td></tr>";
         }
     }
@@ -235,9 +235,9 @@ function ServerPlatform(log, config) {
                 "<td style='vertical-align:middle;'>" + e.package.publisher.username + "</td>" +
                 "<td style='vertical-align:middle;'>" + e.package.description + "</td>";
             if (installedPlugins.indexOf(e.package.name) > -1) {
-                plugins += "<td style='vertical-align:middle;'><a href='/uninstallPlugin=" + e.package.name + "' class='btn btn-danger center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>" + "Uninstall</span></a>";
+                plugins += "<td style='vertical-align:middle;'><a href='/uninstallPlugin=" + e.package.name + "' class='btn btn-danger center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;'>" + "Uninstall</span></a>";
             } else {
-                plugins += "<td style='vertical-align:middle;'><a href='/installPlugin=" + e.package.name + "' class='btn btn-success center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>" + "Install v" + e.package.version + "</span></a>";
+                plugins += "<td style='vertical-align:middle;'><a href='/installPlugin=" + e.package.name + "' class='btn btn-success center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;'>" + "Install v" + e.package.version + "</span></a>";
             }
             plugins += "</td></tr>";
         });
