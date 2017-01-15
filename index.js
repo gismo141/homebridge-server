@@ -31,8 +31,28 @@ function ServerPlatform(log, config) {
         //+ "<link href='//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css' rel='stylesheet'/>"
     ;
     var font = "<link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>";
+    var tablestyle = "<style>" +
+      ".table td, .table th { display: inline-flex; vertical-align: top !important; }" +
+      ".table th:nth-child(1), .table td:nth-child(1) { width: 15%; }" +
+      ".table th:nth-child(2), .table td:nth-child(2) { width: 15%; }" +
+      ".table th:nth-child(3), .table td:nth-child(3) { width: 60%; }" +
+      ".table th:nth-child(4), .table td:nth-child(4) { width: 10%; }" +
+      ".table thead tr { display: flex; width: 100%; }" +
+      "table.table, .table tbody, .table thead, .table tr { display: block; width: 100%; }" +
+      ".table pre { width: 100%; overflow: auto }" +
+      "@media screen and (max-width: 719px) {" +
+      ".table thead { display: none }" +
+      ".table td:nth-child(1) { width: 100%; border-top: none; }" +
+      ".table td:nth-child(2) { width: 100%; border-top: none; }" +
+      ".table td:nth-child(3) { width: 100%; border-top: none; }" +
+      ".table td:nth-child(4) { width: 100%; border-top: none; border-bottom: 1px solid #ddd; padding-top: 0; }" +
+      ".table td:nth-child(1):before { content: 'Type: '; display: inline-block; min-width: 15%; margin-right: 1em; font-weight: bold; }" +
+      ".table td:nth-child(2):before { content: 'Name: '; display: inline-block; min-width: 15%; margin-right: 1em; font-weight: bold; }" +
+      ".table td:nth-child(3):before { content: 'Info: '; display: inline-block; min-width: 15%; margin-right: 1em; font-weight: bold; }" +
+      "}" +
+      "</style>";
     var style = "<style>h1, h2, h3, h4, h5, h6 {font-family: 'Open Sans', sans-serif;}p, div {font-family: 'Open Sans', sans-serif;} input[type='radio'], input[type='checkbox'] {line-height: normal; margin: 0;}</style>"
-    var header = "<html><meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'><head><title>Homebridge - Configuration</title>" + bootstrap + font + style + "</head><body style='padding-top: 70px;'>";
+    var header = "<html><meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'><head><title>Homebridge - Configuration</title>" + bootstrap + font + style + tablestyle + "</head><body style='padding-top: 70px;'>";
     var footer = "</body>"
         //+ "<script src='//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js'></script>"
         //+ "<script> $(document).ready(function() { $.fn.editable.defaults.mode = 'popup';  $('#username').editable(); }); </script>"
