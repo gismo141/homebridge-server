@@ -32,7 +32,7 @@ function ServerPlatform(log, config) {
     ;
     var font = "<link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>";
     var tablestyle = "<style>" +
-      ".responsive-wrapper .row { display: flex; width: 100%; justify-content: space-between; padding: 1em 0.1em; }" +
+      ".responsive-wrapper .row { display: flex; width: 100%; justify-content: space-between; padding: 1em 0.1em; margin: 0; }" +
       ".responsive-wrapper .row div { flex: none; overflow: scroll; }" +
       ".responsive-wrapper .row div:nth-child(1) { width: 10%; }" +
       ".responsive-wrapper .row div:nth-child(2) { width: 10%; }" +
@@ -43,9 +43,11 @@ function ServerPlatform(log, config) {
       ".row.header div { font-weight: bold; font-size: 16px; }" +
       ".responsive-wrapper { margin-bottom: 15px; }" +
       "@media screen and (max-width: 720px) {" +
-      ".responsive-wrapper .row.header { border-bottom-width: 1px; " +
-      "}" +
-      ".responsive-wrapper .row.header div { display: none; }" +
+      "h2 { margin-top: 50px; }" +
+      ".responsive-wrapper .row { display: block; padding: 30px 20px; margin-bottom: 10px; }" +
+      ".responsive-wrapper .row.content { border-top: 1px solid hsla(0, 0%, 90%, 1); }" +
+      ".responsive-wrapper .row.header { border-bottom-width: 1px; }" +
+      ".responsive-wrapper .row.header { display: none; }" +
       ".responsive-wrapper .row div:nth-child(1) { margin-right: 1em; width: 100%; }" +
       ".responsive-wrapper .row div:nth-child(1):before { content: 'Type: '; display: inline-block; min-width: 10%; }" +
       ".responsive-wrapper .row div:nth-child(2) { margin-right: 1em; width: 100%; }" +
@@ -53,7 +55,6 @@ function ServerPlatform(log, config) {
       ".responsive-wrapper .row div:nth-child(3) { margin-right: 1em; width: 100%; }" +
       ".responsive-wrapper .row div:nth-child(3):before { content: 'Info: '; display: inline-block; min-width: 10%; }" +
       ".responsive-wrapper .row div:nth-child(4) { margin-right: 1em; width: 100%; }" +
-      ".responsive-wrapper .row { display: block; padding: 30px 20px; }" +
       "}" +
       "</style>";
     var style = "<style>h1, h2, h3, h4, h5, h6 {font-family: 'Open Sans', sans-serif;}p, div {font-family: 'Open Sans', sans-serif;} input[type='radio'], input[type='checkbox'] {line-height: normal; margin: 0;}</style>"
