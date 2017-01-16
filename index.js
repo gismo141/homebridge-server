@@ -48,7 +48,7 @@ function ServerPlatform(log, config) {
       ".responsive-wrapper .row { display: block; padding: 30px 20px; margin-bottom: 10px; }" +
       ".responsive-wrapper .row.content { border-top: 1px solid hsla(0, 0%, 90%, 1); }" +
       ".responsive-wrapper .row.header { display: none; }" +
-      ".responsive-wrapper .row div { margin-bottom: 0.25em; }" +
+      ".responsive-wrapper .row div:before { margin-bottom: 0.25em; }" +
       ".responsive-wrapper .row div:nth-child(1) { margin-right: 1em; width: 100%; }" +
       ".responsive-wrapper .row div:nth-child(1):before { content: 'Type: '; display: inline-block; min-width: 15%; margin-right: 10px; font-weight: 600; }" +
       ".responsive-wrapper .row div:nth-child(2) { margin-right: 1em; width: 100%; }" +
@@ -223,7 +223,7 @@ function ServerPlatform(log, config) {
                 "<div>" + platform.platform + "</div>" +
                 "<div>" + platform.name + "</div>" +
                 "<div><pre>" + (JSON.stringify(platformNoTypeNoName, null, ' ')) + "</pre></div>" +
-                "<div><a href='/removePlatform" + id_platform + "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;'>" + symbolToPresent + ";</span></a></div>" +
+                "<div><a href='/removePlatform" + id_platform + "' class='btn btn-default center-block' style='outline:none !important;'><span style='font-size:25px;'>" + symbolToPresent + ";</span></a></div>" +
                 "</div>";
         }
 
@@ -237,7 +237,7 @@ function ServerPlatform(log, config) {
                 "<div>" + accessory.accessory + "</div>" +
                 "<div>" + accessory.name + "</div>" +
                 "<div><pre>" + (JSON.stringify(accessoryNoTypeNoName, null, ' ')) + "</pre></div>" +
-                "<div><a href='/removeAccessory" + id_accessory + "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;'>" + symbolToPresent + ";</span></a></div>" +
+                "<div><a href='/removeAccessory" + id_accessory + "' class='btn btn-default center-block' style='outline:none !important;'><span style='font-size:25px;'>" + symbolToPresent + ";</span></a></div>" +
                 "</div>";
         }
     }
