@@ -38,10 +38,10 @@ function ServerPlatform(log, config) {
       ".row.header { border-bottom: 2px solid #ddd; }" +
       ".row.header div { font-weight: 600; font-size: 16px; }" +
       ".row.content { border: 1px solid hsla(0, 0%, 90%, 1); border-top: none; -webkit-transition: all 0.1s cubic-bezier(1, 0, 0.5, 1); transition: all 0.1s cubic-bezier(1, 0, 0.5, 1); }" +
-      ".responsive-wrapper .row div { flex: none; overflow: scroll; }" +
+      ".responsive-wrapper .row div { flex: none; overflow: none; }" +
       ".responsive-wrapper .row div:nth-child(1) { width: 10%; }" +
       ".responsive-wrapper .row div:nth-child(2) { width: 10%; }" +
-      ".responsive-wrapper .row div:nth-child(3) { width: 60%; }" +
+      ".responsive-wrapper .row div:nth-child(3) { width: 60%; overflow: auto; }" +
       ".responsive-wrapper .row div:nth-child(4) { width: 10%; }" +
       "@media screen and (max-width: 720px) {" +
       "h2 { margin-top: 50px; }" +
