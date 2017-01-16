@@ -43,6 +43,12 @@ function ServerPlatform(log, config) {
       ".responsive-wrapper .row div:nth-child(2) { width: 10%; }" +
       ".responsive-wrapper .row div:nth-child(3) { width: 60%; overflow: auto; }" +
       ".responsive-wrapper .row div:nth-child(4) { width: 10%; }" +
+      ".responsive-wrapper .row.plugins { padding: 1em; }" +
+      ".responsive-wrapper .row.plugins div:nth-child(1) { width: 15%; }" +
+      ".responsive-wrapper .row.plugins div:nth-child(2) { width: 15%; }" +
+      ".responsive-wrapper .row.plugins div:nth-child(3) { width: 50%; overflow: auto; }" +
+      ".responsive-wrapper .row.plugins div:nth-child(4) { width: 20%; }" +
+      ".responsive-wrapper .row div.action a.btn { font-weight: 600; font-size: 18px; margin: 0 5px; letter-spacing: 0.05em; -webkit-font-smoothing: antialiased; line-height: 1.1em !important; }" +
       "@media screen and (max-width: 720px) {" +
       "h2 { margin-top: 50px; }" +
       ".responsive-wrapper .row { display: block; padding: 30px 20px; margin-bottom: 10px; }" +
@@ -254,14 +260,14 @@ function ServerPlatform(log, config) {
         var plugins = "";
         result.results.forEach(function(e) {
             plugins = plugins +
-                "<div class='row content'>" +
+                "<div class='row content plugins'>" +
                 "<div>" + "<a href='" + e.package.links.npm + "'>" + e.package.name + "</a></div>" +
                 "<div>" + e.package.publisher.username + "</div>" +
                 "<div>" + e.package.description + "</div>";
             if (installedPlugins.indexOf(e.package.name) > -1) {
-                plugins += "<div><a href='/uninstallPlugin=" + e.package.name + "' class='btn btn-danger center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;'>" + "Uninstall</span></a></div>";
+                plugins += "<div class='action'><a href='/uninstallPlugin=" + e.package.name + "' class='btn btn-danger center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'>" + "Uninstall</a></div>";
             } else {
-                plugins += "<div><a href='/installPlugin=" + e.package.name + "' class='btn btn-success center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;'>" + "Install v" + e.package.version + "</span></a></div>";
+                plugins += "<div class='action'><a href='/installPlugin=" + e.package.name + "' class='btn btn-success center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'>" + "Install v" + e.package.version + "</a></div>";
             }
             plugins += "</div>";
         });
