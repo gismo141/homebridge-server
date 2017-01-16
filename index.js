@@ -31,8 +31,33 @@ function ServerPlatform(log, config) {
         //+ "<link href='//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css' rel='stylesheet'/>"
     ;
     var font = "<link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>";
+    var tablestyle = "<style>" +
+      ".responsive-wrapper .row { display: flex; width: 100%; justify-content: space-between; padding: 1em 0.1em; }" +
+      ".responsive-wrapper .row div { flex: none; overflow: scroll; }" +
+      ".responsive-wrapper .row div:nth-child(1) { width: 10%; }" +
+      ".responsive-wrapper .row div:nth-child(2) { width: 10%; }" +
+      ".responsive-wrapper .row div:nth-child(3) { width: 60%; }" +
+      ".responsive-wrapper .row div:nth-child(4) { width: 10%; }" +
+      ".row.header { border-bottom: 2px solid #ddd; }" +
+      ".row.content { border: 1px solid hsla(0, 0%, 90%, 1); border-top: none; }" +
+      ".row.header div { font-weight: bold; font-size: 16px; }" +
+      ".responsive-wrapper { margin-bottom: 15px; }" +
+      "@media screen and (max-width: 720px) {" +
+      ".responsive-wrapper .row.header { border-bottom-width: 1px; " +
+      "}" +
+      ".responsive-wrapper .row.header div { display: none; }" +
+      ".responsive-wrapper .row div:nth-child(1) { margin-right: 1em; width: 100%; }" +
+      ".responsive-wrapper .row div:nth-child(1):before { content: 'Type: '; display: inline-block; min-width: 10%; }" +
+      ".responsive-wrapper .row div:nth-child(2) { margin-right: 1em; width: 100%; }" +
+      ".responsive-wrapper .row div:nth-child(2):before { content: 'Name: '; display: inline-block; min-width: 10%; }" +
+      ".responsive-wrapper .row div:nth-child(3) { margin-right: 1em; width: 100%; }" +
+      ".responsive-wrapper .row div:nth-child(3):before { content: 'Info: '; display: inline-block; min-width: 10%; }" +
+      ".responsive-wrapper .row div:nth-child(4) { margin-right: 1em; width: 100%; }" +
+      ".responsive-wrapper .row { display: block; padding: 30px 20px; }" +
+      "}" +
+      "</style>";
     var style = "<style>h1, h2, h3, h4, h5, h6 {font-family: 'Open Sans', sans-serif;}p, div {font-family: 'Open Sans', sans-serif;} input[type='radio'], input[type='checkbox'] {line-height: normal; margin: 0;}</style>"
-    var header = "<html><meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'><head><title>Homebridge - Configuration</title>" + bootstrap + font + style + "</head><body style='padding-top: 70px;'>";
+    var header = "<html><meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'><head><title>Homebridge - Configuration</title>" + bootstrap + font + style + tablestyle + "</head><body style='padding-top: 70px;'>";
     var footer = "</body>"
         //+ "<script src='//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js'></script>"
         //+ "<script> $(document).ready(function() { $.fn.editable.defaults.mode = 'popup';  $('#username').editable(); }); </script>"
@@ -65,23 +90,17 @@ function ServerPlatform(log, config) {
       */}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
 
     var table1 = (function() {/*
-      <div class="table-responsive">
-      <table class="table table-hover">
-      <thead>
-      <tr>
-      <th width='15%'>Type</th>
-      <th width='35%'>Name</th>
-      <th width='40%'>Info</th>
-      <th width='10%'></th>
-      </tr>
-      </thead>
-      <tbody>
+      <div class="responsive-wrapper">
+      <div class="row header">
+      <div>Type</div>
+      <div>Name</div>
+      <div>Info</div>
+      <div></div>
+      </div>
       */}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
 
     // This closes the html-markup as string for the presented tables
     var table2 = (function() {/*
-      </tbody>
-      </table>
       </div>
       */}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
 
@@ -197,12 +216,13 @@ function ServerPlatform(log, config) {
             delete platformNoTypeNoName.platform;
             delete platformNoTypeNoName.name;
             var platform = platformsJSON[id_platform];
-            platforms = platforms + "<tr>" +
-                "<td style='vertical-align:middle;'>" + platform.platform + "</td>" +
-                "<td style='vertical-align:middle;'>" + platform.name + "</td>" +
-                "<td style='vertical-align:middle;'><pre>" + (JSON.stringify(platformNoTypeNoName, null, ' ')) + "</pre></td>" +
-                "<td style='vertical-align:middle;'><a href='/removePlatform" + id_platform + "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;'>" + symbolToPresent + ";</span></a>" +
-                "</td></tr>";
+            platforms = platforms +
+                "<div class='row content'>" +
+                "<div>" + platform.platform + "</div>" +
+                "<div>" + platform.name + "</div>" +
+                "<div><pre>" + (JSON.stringify(platformNoTypeNoName, null, ' ')) + "</pre></div>" +
+                "<div><a href='/removePlatform" + id_platform + "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;'>" + symbolToPresent + ";</span></a></div>" +
+                "</div>";
         }
 
         for (var id_accessory in accessoriesJSON) {
@@ -210,12 +230,13 @@ function ServerPlatform(log, config) {
             delete accessoryNoTypeNoName.accessory;
             delete accessoryNoTypeNoName.name;
             var accessory = accessoriesJSON[id_accessory];
-            accessories = accessories + "<tr>" +
-                "<td style='vertical-align:middle;'>" + accessory.accessory + "</td>" +
-                "<td style='vertical-align:middle;'>" + accessory.name + "</td>" +
-                "<td style='vertical-align:middle;'><pre>" + (JSON.stringify(accessoryNoTypeNoName, null, ' ')) + "</pre></td>" +
-                "<td style='vertical-align:middle;'><a href='/removeAccessory" + id_accessory + "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;'>" + symbolToPresent + ";</span></a>" +
-                "</td></tr>";
+            accessories = accessories +
+                "<div class='row content'>" +
+                "<div>" + accessory.accessory + "</div>" +
+                "<div>" + accessory.name + "</div>" +
+                "<div><pre>" + (JSON.stringify(accessoryNoTypeNoName, null, ' ')) + "</pre></div>" +
+                "<div><a href='/removeAccessory" + id_accessory + "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;'>" + symbolToPresent + ";</span></a></div>" +
+                "</div>";
         }
     }
 
