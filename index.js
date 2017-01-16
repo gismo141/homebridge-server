@@ -253,16 +253,17 @@ function ServerPlatform(log, config) {
 
         var plugins = "";
         result.results.forEach(function(e) {
-            plugins += "<tr>" +
-                "<td style='vertical-align:middle;'><a href=" + e.package.links.npm + ">" + e.package.name + "</a></td>" +
-                "<td style='vertical-align:middle;'>" + e.package.publisher.username + "</td>" +
-                "<td style='vertical-align:middle;'>" + e.package.description + "</td>";
+            plugins = plugins +
+                "<div class='row content'>" +
+                "<div>" + "<a href='" + e.package.links.npm + "'>" + e.package.name + "</a></div>" +
+                "<div>" + e.package.publisher.username + "</div>" +
+                "<div>" + e.package.description + "</div>";
             if (installedPlugins.indexOf(e.package.name) > -1) {
-                plugins += "<td style='vertical-align:middle;'><a href='/uninstallPlugin=" + e.package.name + "' class='btn btn-danger center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;'>" + "Uninstall</span></a>";
+                plugins += "<div><a href='/uninstallPlugin=" + e.package.name + "' class='btn btn-danger center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;'>" + "Uninstall</span></a></div>";
             } else {
-                plugins += "<td style='vertical-align:middle;'><a href='/installPlugin=" + e.package.name + "' class='btn btn-success center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;'>" + "Install v" + e.package.version + "</span></a>";
+                plugins += "<div><a href='/installPlugin=" + e.package.name + "' class='btn btn-success center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;'>" + "Install v" + e.package.version + "</span></a></div>";
             }
-            plugins += "</td></tr>";
+            plugins += "</div>";
         });
         res.write(table1 + plugins + table2);
         res.write("</div>");
