@@ -43,6 +43,12 @@ function ServerPlatform(log, config) {
       ".responsive-wrapper .row div:nth-child(2) { width: 10%; }" +
       ".responsive-wrapper .row div:nth-child(3) { width: 60%; overflow: auto; }" +
       ".responsive-wrapper .row div:nth-child(4) { width: 10%; }" +
+      ".responsive-wrapper .row.plugins { padding: 1em; }" +
+      ".responsive-wrapper .row.plugins div:nth-child(1) { width: 15%; }" +
+      ".responsive-wrapper .row.plugins div:nth-child(2) { width: 15%; }" +
+      ".responsive-wrapper .row.plugins div:nth-child(3) { width: 50%; overflow: auto; }" +
+      ".responsive-wrapper .row.plugins div:nth-child(4) { width: 20%; }" +
+      ".responsive-wrapper .row div.action a.btn { font-weight: 600; font-size: 18px; margin: 0 5px; letter-spacing: 0.05em; -webkit-font-smoothing: antialiased; line-height: 1.1em !important; }" +
       "@media screen and (max-width: 720px) {" +
       "h2 { margin-top: 50px; }" +
       ".responsive-wrapper .row { display: block; padding: 30px 20px; margin-bottom: 10px; }" +
@@ -56,6 +62,10 @@ function ServerPlatform(log, config) {
       ".responsive-wrapper .row div:nth-child(3) { margin-right: 1em; width: 100%; }" +
       ".responsive-wrapper .row div:nth-child(3):before { content: 'Info: '; display: inline-block; min-width: 15%; margin-right: 10px; font-weight: 600; }" +
       ".responsive-wrapper .row div:nth-child(4) { margin-right: 1em; width: 100%; }" +
+      ".responsive-wrapper .row.plugins div:nth-child(1) { width: 100%; }" +
+      ".responsive-wrapper .row.plugins div:nth-child(2) { width: 100%; }" +
+      ".responsive-wrapper .row.plugins div:nth-child(3) { width: 100%; overflow: auto; }" +
+      ".responsive-wrapper .row.plugins div:nth-child(4) { width: 100%; margin: 20px auto; }" +
       "}" +
       "</style>";
     var style = "<style>h1, h2, h3, h4, h5, h6 {font-family: 'Open Sans', sans-serif;}p, div {font-family: 'Open Sans', sans-serif;} input[type='radio'], input[type='checkbox'] {line-height: normal; margin: 0;}</style>"
@@ -247,21 +257,21 @@ function ServerPlatform(log, config) {
         res.write("<div class='container'>");
         res.write("<h2>Plugins</h2>");
         res.write("<form enctype='application/x-www-form-urlencoded' action='/listInstallablePlugins' method='post'>");
-        res.write("<div class='input-group'><input type='text' class='form-control' name='searchQuery' /><br>");
+        res.write("<div class='input-group'><input type='text' class='form-control' name='searchQuery' placeholder='search' /><br>");
         res.write("<span class='input-group-btn'><input type='submit' class='btn btn-default center-block' value='Filter' style='width:135px' /></span>");
         res.write("</div></form>");
 
         var plugins = "";
         result.results.forEach(function(e) {
             plugins = plugins +
-                "<div class='row content'>" +
+                "<div class='row content plugins'>" +
                 "<div>" + "<a href='" + e.package.links.npm + "'>" + e.package.name + "</a></div>" +
                 "<div>" + e.package.publisher.username + "</div>" +
                 "<div>" + e.package.description + "</div>";
             if (installedPlugins.indexOf(e.package.name) > -1) {
-                plugins += "<div><a href='/uninstallPlugin=" + e.package.name + "' class='btn btn-danger center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;'>" + "Uninstall</span></a></div>";
+                plugins += "<div class='action'><a href='/uninstallPlugin=" + e.package.name + "' class='btn btn-danger center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'>" + "Uninstall</a></div>";
             } else {
-                plugins += "<div><a href='/installPlugin=" + e.package.name + "' class='btn btn-success center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;'>" + "Install v" + e.package.version + "</span></a></div>";
+                plugins += "<div class='action'><a href='/installPlugin=" + e.package.name + "' class='btn btn-success center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'>" + "Install v" + e.package.version + "</a></div>";
             }
             plugins += "</div>";
         });
