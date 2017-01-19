@@ -1,0 +1,20 @@
+## 1.0.24
+- Refactoring
+- Config option for path of node_modules; if not set, '/usr/local/lib/node_modules/' is assumed.
+- Extended JSON-API
+- Main view
+    - Show info about homebridge instance:
+        - version (installed and last release)
+        - uptime
+        - memory usage
+        - host OS
+    - Indicate if platform is active (or just configured)
+- Plugins view
+    - Installed plugins
+        - Show version info
+        - Show if plugin is currently used by any platform or accessory
+        - Update plugins
+    - Search plugins
+        - Live search
+        - Indicate compatibility
+        - Mark plugins that are already installed

@@ -1,0 +1,99 @@
+<div class='container'>
+    <h2>Installed Plugins</h2>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th width='25%'>Name</th>
+                    <th width='15%'>Author</th>
+                    <th width='35%'>Description</th>
+                    <th width='20%'>Info</th>
+                    <th width='5%'></th>
+                </tr>
+            </thead>
+            <tbody id="installedPluginsTable"></tbody>
+            <script>
+                $.getJSON("/api/installedPlugins", function(installedPlugins) {
+                    $("#installedPluginsTable").empty();
+                    $.each( installedPlugins, function( id_plugin, plugin ) {
+                        var activeInfo = "Currently active.";
+                        var usageInfo = "platforms: " + plugin.platformUsage + "<br\>accessories: " + plugin.accessoryUsage;
+                        var versionInfo = "Version: " + plugin.version;
+                        var action = "";
+                        if (plugin.isLatestVersion === "0") {
+                            action += "<a href='/updatePlugin=" + plugin.name + "' class='btn btn-success center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>" + "Update to " + plugin.latestVersion + "</span></a>";
+                        }
+                        action += "<a href='/uninstallPlugin=" + plugin.name + "' class='btn btn-danger center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>" + "Uninstall</span></a>";
+                        var row =  "<tr> \
+                                        <td style='vertical-align:middle;'><a href='" + plugin.homepage + "' target=_blank>" + plugin.name + "</a></td> \
+                                        <td style='vertical-align:middle;'>" + plugin.author + "</td> \
+                                        <td style='vertical-align:middle;'>" + plugin.description + "</td> \
+                                        <td style='vertical-align:middle;'>" + versionInfo + "<br\>" + activeInfo + "<br\>" + usageInfo + "</td> \
+                                        <td style='vertical-align:middle;'>" + action + "</td> \
+                                   </tr>";
+                        $("#installedPluginsTable").append(row);
+                    });
+                });
+            </script>
+        </table>
+    </div>
+
+    <h2>Search for plugins</h2>
+    <div class='input-group' style='width:100%;'>
+        <input type='search' class='form-control' name='searchQuery' id='queryInput' placeholder="Enter search term..."/><br>
+        <script>
+            $("#queryInput").keyup(function(event) {
+                $("#searchedPluginsTableHeader").hide();
+                $("#searchedPluginsTable").empty();
+                var query = $("#queryInput").val();
+                if (query.length > 2) {
+                    $.getJSON( "/api/searchPlugins?" + query, function( data ) {
+                        if (data.length === 0) {
+                            $("#searchedPluginsTable").text("No plugins found.");
+                        } else {
+                            $("#searchedPluginsTableHeader").show();
+                            $("#searchedPluginsTable").empty();
+                            $.each( data, function( id_plugin, plugin ) {
+                                var versionInfo = plugin.package.version + "<br\>" + moment(plugin.package.date).fromNow();
+                                var info = plugin.package.version
+                                var action = "<a href='/installPlugin=" + plugin.package.name + "' class='btn btn-success center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>Install</span></a>";
+                                if (plugin.hb_IsInstalled === 1) {
+                                    action = "<a href='/uninstallPlugin=" + plugin.package.name + "' class='btn btn-danger center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>" + "Uninstall</span></a>";
+                                }
+                                // if (homebridgeVersion < homebridgeMinVersion) {
+                                //     action = "This plugin needs at least version " + homebridgeMinVersion;
+                                // }
+                                var row =  "<tr> \
+                                                <td style='vertical-align:middle;'><a href='" + plugin.package.links.homepage + "' target=_blank>" + plugin.package.name + "</a></td> \
+                                                <td style='vertical-align:middle;'>" + plugin.package.publisher.username + "</td> \
+                                                <td style='vertical-align:middle;'>" + plugin.package.description + "</td> \
+                                                <td style='vertical-align:middle;'>" + versionInfo + "</td> \
+                                                <td style='vertical-align:middle;'>" + action + "</td> \
+                                           </tr>";
+                                $("#searchedPluginsTable").append(row);
+                            });
+                        }
+                    });
+                }
+            });
+        </script>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead id="searchedPluginsTableHeader">
+                <tr>
+                    <th width='25%'>Name</th>
+                    <th width='15%'>Author</th>
+                    <th width='35%'>Description</th>
+                    <th width='20%'>Version</th>
+                    <th width='5%'></th>
+                </tr>
+            </thead>
+            <tbody id="searchedPluginsTable"></tbody>
+        </table>
+        <script>
+            $("#searchedPluginsTableHeader").hide();
+        </script>
+    </div>
+
+</div>
