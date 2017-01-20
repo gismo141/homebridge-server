@@ -22,9 +22,11 @@ module.exports = {
 var _plugins = {};
 
 var hbsPath = "";
+var hbLog = function() {};
 
-function PluginManager(libPath) {
+function PluginManager(libPath, log) {
     hbsPath = libPath;
+    hbLog = log;
     getInstalledPlugins();
 }
 

@@ -165,7 +165,7 @@ function ServerPlatform(log, config) {
 
 
     var apiLib = require(hbsPath + 'api/api.js')
-    var serverAPI = new apiLib.API(HomebridgeAPI, hbsPath);
+    var serverAPI = new apiLib.API(HomebridgeAPI, hbsPath, log);
 
     /**
      * [handleAPIRequest description]

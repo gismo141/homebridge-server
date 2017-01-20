@@ -7,6 +7,7 @@ module.exports = {
 // Internals
 var hbsPath = "";
 var homebridgeAPI;
+var hbLog = function() {};
 
 //
 var _config = {};
@@ -31,9 +32,10 @@ var _accessoriesJSON = [];
  * [ConfigManager description]
  * @param {[type]} hbAPI [description]
  */
-function ConfigManager(hbAPI, libPath) {
+function ConfigManager(hbAPI, libPath, log) {
     hbsPath = libPath;
     homebridgeAPI = hbAPI;
+    hbLog = log;
     loadConfig(hbAPI);
 }
 
