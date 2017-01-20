@@ -140,16 +140,37 @@ function enrichMetadata() {
 
     for (var pluginID in _plugins) {
         fetchPluginMetaData(_plugins[pluginID].name, pluginID, function(metadata, cpluginID) {
-            _plugins[cpluginID]["description"] = metadata["collected"]["metadata"]["description"];
-            _plugins[cpluginID]["author"] = metadata["collected"]["metadata"]["publisher"]["username"];
-            _plugins[cpluginID]["homepage"] = metadata["collected"]["metadata"]["links"]["homepage"];
-            _plugins[cpluginID]["homebridgeMinVersion"] = metadata["collected"]["metadata"]["dependencies"]["homebridge"];
-            var latestVersion = metadata["collected"]["metadata"]["version"];
-            _plugins[cpluginID]["latestVersion"] = latestVersion;
-            if (semver.lt(_plugins[cpluginID]["version"], latestVersion)) {
-                _plugins[cpluginID]["isLatestVersion"] = "0";
-            } else {
-                _plugins[cpluginID]["isLatestVersion"] = "1";
+            _plugins[cpluginID]["description"] = "n/a";
+            _plugins[cpluginID]["author"] = "n/a";
+            _plugins[cpluginID]["homepage"] = "n/a";
+            _plugins[cpluginID]["homebridgeMinVersion"] = "n/a";
+            _plugins[cpluginID]["latestVersion"] = "n/a";
+            _plugins[cpluginID]["isLatestVersion"] = "n/a";
+            if  (metadata["collected"].hasOwnProperty("metadata")) {
+                _plugins[cpluginID]["description"] = metadata["collected"]["metadata"].hasOwnProperty("description") ? metadata["collected"]["metadata"]["description"] : "n/a";
+
+                _plugins[cpluginID]["author"] = "n/a";
+                if (metadata["collected"]["metadata"].hasOwnProperty("publisher")) {
+                    _plugins[cpluginID]["author"] = metadata["collected"]["metadata"]["publisher"].hasOwnProperty("username") ? metadata["collected"]["metadata"]["publisher"]["username"] : "n/a";
+                }
+
+                _plugins[cpluginID]["homepage"] = "n/a";
+                if (metadata["collected"]["metadata"].hasOwnProperty("links")) {
+                    _plugins[cpluginID]["homepage"] = metadata["collected"]["metadata"]["links"].hasOwnProperty("homepage") ? metadata["collected"]["metadata"]["links"]["homepage"] : "n/a";
+                }
+
+                _plugins[cpluginID]["homebridgeMinVersion"] = "n/a";
+                if (metadata["collected"]["metadata"].hasOwnProperty("dependencies")) {
+                    _plugins[cpluginID]["homebridgeMinVersion"] = metadata["collected"]["metadata"]["dependencies"].hasOwnProperty("homebridge") ? metadata["collected"]["metadata"]["dependencies"]["homebridge"] : "n/a";
+                }
+
+                var latestVersion = metadata["collected"]["metadata"].hasOwnProperty("version") ? metadata["collected"]["metadata"]["version"] : "n/a";
+                _plugins[cpluginID]["latestVersion"] = latestVersion;
+                if (semver.lt(_plugins[cpluginID]["version"], latestVersion)) {
+                    _plugins[cpluginID]["isLatestVersion"] = "0";
+                } else {
+                    _plugins[cpluginID]["isLatestVersion"] = "1";
+                }
             }
         });
     }
