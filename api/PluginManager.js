@@ -67,6 +67,58 @@ PluginManager.prototype.search = function(query, callback) {
     });
 }
 
+function npmOperation(options, callback) {
+    var spawn = require('child_process').spawn;
+    var npmProcess = spawn('npm', options);
+
+    npmProcess.stdout.on('data', function (data) {
+        callback(false, data, false);
+    });
+
+    npmProcess.stderr.on('data', function (data) {
+        callback(false, data, false);
+    });
+
+    npmProcess.on('close', function (code) {
+        callback(true, code, true);
+    });
+}
+
+PluginManager.prototype.installPlugin = function(pluginName, callback) {
+    checkAccessRights(pluginName, function(result, msg) {
+        if (result === false) {
+            callback(false, msg, true);
+            return;
+        }
+        // npmOperation(['install', '-g', pluginName, '--dry-run'], callback);
+        npmOperation(['install', '-g', pluginName], callback);
+    });
+}
+
+
+PluginManager.prototype.updatePlugin = function(pluginName, callback) {
+    checkAccessRights(pluginName, function(result, msg) {
+        if (result === false) {
+            callback(false, msg, true);
+            return;
+        }
+        // We use 'npm install' instead of 'npm update' since 'update' ignores the version tag.
+        // npmOperation(['install', '-g', pluginName, '--dry-run'], callback);
+        npmOperation(['install', '-g', pluginName], callback);
+    });
+}
+
+
+PluginManager.prototype.removePlugin = function(pluginName, callback) {
+    checkAccessRights(pluginName, function(result, msg) {
+        if (result === false) {
+            callback(false, msg, true);
+            return;
+        }
+        // npmOperation(['uninstall', '-g', pluginName, '--dry-run'], callback);
+        npmOperation(['uninstall', '-g', pluginName], callback);
+    });
+}
 
 /**
  * Scans the node-modules directory for homebridge plugins.
@@ -202,6 +254,45 @@ function fetchPluginMetaData(pluginName, pluginID, callback) {
     utils.getJSON(options, function(statusCode, result) {
         if (statusCode === 200) {
             callback(result, pluginID);
+        }
+    });
+}
+
+
+function checkAccessRights(pluginName, callback) {
+    var fs = require('fs');
+    var modulePath = "/usr/local/lib/node_modules/";
+
+    var pluginNameClean = pluginName;
+
+    // Remove version tag if provided
+    var tagIndex = pluginName.indexOf("@");
+    if (tagIndex !== -1) {
+        pluginNameClean = pluginName.substr(0, tagIndex);
+    }
+
+    // first, check if global node_modules directory is read/writeable
+    fs.access(modulePath, fs.R_OK | fs.W_OK, function(err) {
+        if (err) {
+            callback(false, "EACCES: No rights to write in " + modulePath);
+            return;
+        }
+
+        // second, check the plugin directory...
+        modulePath = "/usr/local/lib/node_modules/" + pluginNameClean;
+        // ... if it already exists...
+        if (fs.existsSync(modulePath) === true) {
+            // ... it must be writeable
+            fs.access(modulePath, fs.R_OK | fs.W_OK, function(err) {
+                if (err) {
+                    callback(false, "EACCES: No rights to write in " + modulePath);
+                    return;
+                }
+                callback(true, "ok");
+                return;
+            });
+        } else {
+            callback(true, "ok");
         }
     });
 }

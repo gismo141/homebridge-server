@@ -234,6 +234,45 @@ function ServerPlatform(log, config) {
                     res.end();
                 });
                 break;
+            case '/api/installPlugin':
+                var pluginName = require('url').parse(req.url).query;
+                res.setHeader("Content-Type", "text/text");
+                serverAPI.installPlugin(pluginName, function (success, msg, closed) {
+                    if (closed) {
+                        res.write("\n");
+                        res.write(JSON.stringify({'hbsAPIResult': {'success': success, 'msg': msg}}));
+                        res.end();
+                    } else {
+                        res.write(msg);
+                    }
+                });
+                break;
+            case '/api/updatePlugin':
+                var pluginName = require('url').parse(req.url).query;
+                res.setHeader("Content-Type", "text/text");
+                serverAPI.updatePlugin(pluginName, function (success, msg, closed) {
+                    if (closed) {
+                        res.write("\n");
+                        res.write(JSON.stringify({'hbsAPIResult': {'success': success, 'msg': msg}}));
+                        res.end();
+                    } else {
+                        res.write(msg);
+                    }
+                });
+                break;
+            case '/api/removePlugin':
+                var pluginName = require('url').parse(req.url).query;
+                res.setHeader("Content-Type", "text/text");
+                serverAPI.removePlugin(pluginName, function (success, msg, closed) {
+                    if (closed) {
+                        res.write("\n");
+                        res.write(JSON.stringify({'hbsAPIResult': {'success': success, 'msg': msg}}));
+                        res.end();
+                    } else {
+                        res.write(msg);
+                    }
+                });
+                break;
             default:
                 log("unhandled API request: " + req);
                 res.end();

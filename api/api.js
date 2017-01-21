@@ -112,6 +112,31 @@ API.prototype.getInstalledPlatforms = function(callback) {
     callback(confMgr.platformsJSON());
 }
 
+
+API.prototype.installPlugin = function(pluginName, callback) {
+    pluginMgr.installPlugin(pluginName, function(success, msg, closed) {
+        callback(success, msg, closed);
+        return;
+    })
+}
+
+
+API.prototype.updatePlugin = function(pluginName, callback) {
+    pluginMgr.updatePlugin(pluginName, function(success, msg, closed) {
+        callback(success, msg, closed);
+        return;
+    })
+}
+
+
+API.prototype.removePlugin = function(pluginName, callback) {
+    pluginMgr.removePlugin(pluginName, function(success, msg, closed) {
+        callback(success, msg, closed);
+        return;
+    })
+}
+
+
 /**
  * [getInstalledAccessories description]
  * @param  {Function} callback [description]
