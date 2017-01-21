@@ -5,7 +5,6 @@ module.exports = {
 }
 
 // Internals
-var hbsPath = "";
 var homebridgeAPI;
 var hbLog = function() {};
 
@@ -32,8 +31,7 @@ var _accessoriesJSON = [];
  * [ConfigManager description]
  * @param {[type]} hbAPI [description]
  */
-function ConfigManager(hbAPI, libPath, log) {
-    hbsPath = libPath;
+function ConfigManager(hbAPI, log) {
     homebridgeAPI = hbAPI;
     hbLog = log;
     loadConfig(hbAPI);
@@ -135,11 +133,9 @@ function loadConfig() {
         platformPluginMap[platform] = pluginName;
     }
     for (var pf_ID in _platformsJSON) {
-        console.log("_platformsJSON[pf_ID]: " + JSON.stringify(_platformsJSON[pf_ID]));
         var pf = _platformsJSON[pf_ID];
 
         _platformsJSON[pf_ID]["hbServer_pluginName"] = platformPluginMap[pf.platform];
-        console.log("_platformsJSON[pf_ID]['hbServer_pluginName']: " + _platformsJSON[pf_ID]['hbServer_pluginName']);
         if (activePlatforms.indexOf(pf.platform) === -1) {
             _platformsJSON[pf_ID]["hbServer_active_flag"] = 0;
         } else {

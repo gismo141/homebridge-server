@@ -14,13 +14,12 @@ var hbLog = function() {};
  * @param {[type]} homebridge [description]
  */
 function API(homebridge, libPath, log) {
-    console.log("API init");
     this.HomebridgeAPI = homebridge;
     hbsPath = libPath;
     hbLog = log;
 
     var ConfigManagerLib = require(hbsPath + 'api/ConfigManager.js');
-    confMgr = new ConfigManagerLib.ConfigManager(this.HomebridgeAPI, hbsPath, hbLog);
+    confMgr = new ConfigManagerLib.ConfigManager(this.HomebridgeAPI, hbLog);
 
     var PluginManagerLib = require(hbsPath + 'api/PluginManager.js');
     pluginMgr = new PluginManagerLib.PluginManager(hbsPath, hbLog);

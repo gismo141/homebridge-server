@@ -22,9 +22,6 @@
   },
   "scripts": {
     "test": "homebridge -U ~/.homebridge -P . > /dev/null 2>&1 & sleep 10; ( curl -Is http://127.0.0.1:8765/remove | head -1 ); kill $!",
-    "test": "./node_modules/jshint/bin/jshint **/*.js --exclude-path .gitignore"
-  },
-  "devDependencies": {
-    "jshint": "^2.9.4"
+    "test": "eslint --ignore-path .gitignore *.js **/*.js"
   }
 }

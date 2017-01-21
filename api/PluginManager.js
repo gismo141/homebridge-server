@@ -135,9 +135,7 @@ function getInstalledPlugins() {
         var moduleName = modules[moduleID];
         if (moduleName.startsWith('homebridge-')) {
             var packagePath = modulePath + moduleName + "/package.json";
-            console.log("packagePath: " + packagePath);
             var packageJSON = require(packagePath);
-            console.log(packageJSON.version);
             var plugin = {
                 "name": moduleName,
                 "version": packageJSON.version,
@@ -173,7 +171,6 @@ function enrichUsageInfo() {
         }
     };
     utils.getJSON(options, function(statusCode, platforms) {
-        console.log("enrichUsageInfo: " + JSON.stringify(platforms));
         for (var pluginID in _plugins) {
             for (var pf_id in platforms) {
                 if (platforms[pf_id]['hbServer_pluginName'] === _plugins[pluginID]["name"]) {

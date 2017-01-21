@@ -20,7 +20,6 @@ function ServerPlatform(log, config) {
     var installedPlugins = "";
 
     function loadHTML(name, callback) {
-        var html = "";
         var path = hbsPath + "content/" + name;
         fs.readFile(path, 'utf8', function(err, data) {
             if (err) {
@@ -64,9 +63,6 @@ function ServerPlatform(log, config) {
             .replace(/\%5D/g, ']');
         return receivedData;
     }
-
-    var http = require("http");
-    var https = require("https");
 
     function executeBash(cmd) {
         var exec = require('child_process').exec;
@@ -419,18 +415,8 @@ function ServerPlatform(log, config) {
                         log("Removed accessory " + accessory + ".");
                     }
                     saveConfig(res);
-                } else if (url.indexOf('/installPlugin=') !== -1) {
-                    executeBash("npm install -g " + url.replace('/installPlugin=', ''));
-                    getInstalledPlugins(res);
-                    getPluginsFromNPMS(res);
-                    break;
-                } else if (url.indexOf('/uninstallPlugin=') !== -1) {
-                    executeBash("npm uninstall -g " + url.replace('/uninstallPlugin=', ''));
-                    getInstalledPlugins(res);
-                    getPluginsFromNPMS(res);
-                    break;
                 }
-        };
+        }
     }
 
     // Launches the webserver and transmits the website by concatenating the precreated markup
