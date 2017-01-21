@@ -356,9 +356,6 @@ function ServerPlatform(log, config) {
                     log("[405] " + req.method + " to " + req.url);
                 }
                 break;
-            case '/createBackup':
-                saveConfig(res, true);
-                break;
             case '/showLog':
                 if (config.log == "systemd") {
                       var exec = require('child_process').exec;

@@ -127,7 +127,7 @@ PluginManager.prototype.removePlugin = function(pluginName, callback) {
  */
 function getInstalledPlugins() {
     var fs = require('fs');
-    // TODO: derive this from config.modulePath
+
     var modulePath = "/usr/local/lib/node_modules/";
     var modules = fs.readdirSync(modulePath);
     var plugins = [];
@@ -154,6 +154,7 @@ function getInstalledPlugins() {
     enrichMetadata();
 }
 
+
 /**
  * Set information if a plugin is used by this homebridge site.
  * Updates _plugins with this information.
@@ -175,7 +176,6 @@ function enrichUsageInfo() {
         console.log("enrichUsageInfo: " + JSON.stringify(platforms));
         for (var pluginID in _plugins) {
             for (var pf_id in platforms) {
-                console.log("_plugins[pluginID]['name']: " + _plugins[pluginID]['name']);
                 if (platforms[pf_id]['hbServer_pluginName'] === _plugins[pluginID]["name"]) {
                     _plugins[pluginID]['platformUsage']++;
                 }
