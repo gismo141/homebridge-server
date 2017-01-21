@@ -155,11 +155,6 @@ function ServerPlatform(log, config) {
             return;
         }
 
-        if (req.url.indexOf('/cmd/') !== -1) {
-            handleCommandRequest(req, res);
-            return;
-        }
-
         handleContentRequest(req, res);
     }
 
@@ -273,27 +268,15 @@ function ServerPlatform(log, config) {
                     }
                 });
                 break;
+            case '/api/restartHomebridge':
+                serverAPI.restartHomebridge(config, function (json) {
+                    res.write(JSON.stringify(json));
+                    res.end();
+                });
+                break;
             default:
                 log("unhandled API request: " + req);
                 res.end();
-        }
-    }
-
-
-    function handleCommandRequest(req, res) {
-        log("handleCommandRequest: " + req.url);
-        switch (req.url) {
-            case '/cmd/restart':
-                if (config.restart) {
-                    executeBash(config.restart != undefined ? config.restart : "echo 'No command specified!'");
-                    // TODO: return proper status
-                    res.write(JSON.stringify({'success': true, 'msg': 'Maybe successful...'}));
-                    res.end();
-                    break;
-                }
-                res.write(JSON.stringify({'success': false, 'msg': 'No restart command specified...'}));
-                res.end();
-                break;
         }
     }
 

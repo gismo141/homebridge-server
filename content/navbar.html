@@ -14,14 +14,15 @@
                 <li><a href="#" onclick="callAPI('/api/createConfigBackup');">Backup</a></li>
                 <li><a href="/showLog">Log</a></li>
                 <li><a href="/listInstallablePlugins">Plugins</a></li>
-                <li><a href="#" onclick="callAPI('/cmd/restart');">Restart</a></li>
+                <li><a href="#" onclick="callAPI('/api/restartHomebridge');">Restart</a></li>
             </ul>
         </div>
     </div>
     <script>
         function callAPI(call) {
             $.getJSON( call, function( result ) {
-                alert(result.msg);
+                var message = result.success ? "OK. " : "Error: ";
+                alert(message + result.msg);
             });
         }
     </script>
