@@ -2,6 +2,11 @@
     "extends": "eslint:recommended",
 
     "env": {
-        "node": 1
+        "node": 1,
+        "browser": 1
         },
+
+    "globals": {
+        "$": 1
+    }
 }

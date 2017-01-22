@@ -380,9 +380,9 @@ function ServerPlatform(log, config) {
                   });
                 }
                 break;
-            case '/lib.js':
-                log("serving lib.js");
-                fs.readFile(hbsPath + 'api/lib.js', 'utf8', function(err, libJS) {
+            case '/content/lib.js':
+                log("serving /content/lib.js");
+                fs.readFile(hbsPath + 'content/lib.js', 'utf8', function(err, libJS) {
                     if (err) {
                         return log(err);
                     }
