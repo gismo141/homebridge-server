@@ -40,7 +40,7 @@
                                 var info = plugin.package.version
                                 var action = "<a href='#' class='btn btn-success center-block' " + buttonStyle + " onclick='callPluginOperation(\"" + plugin.package.name + "@" + plugin.package.version + "\", \"install\");'><span style='font-size:25px;''>Install</span></a>";
                                 if (plugin.hb_IsInstalled === 1) {
-                                    action = "<a href='#' class='btn btn-danger center-block' " + buttonStyle + " onclick='callPluginOperation(\"" + plugin.package.name + "\", \"remove\");'><span style='font-size:25px;''>Uninstall</span></a>";
+                                    action = "<span style='font-size:20px; align: center;''>Already installed</span>";
                                 }
                                 // if (homebridgeVersion < homebridgeMinVersion) {
                                 //     action = "This plugin needs at least version " + homebridgeMinVersion;
