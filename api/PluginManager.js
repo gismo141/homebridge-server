@@ -54,9 +54,9 @@ PluginManager.prototype.search = function(query, callback) {
         // Check for each result if already installed
         // TODO: this is inefficient for sites with a lot of plugins...
         for (var result_id in results) {
+            results[result_id].hb_IsInstalled = 0;
             for (var pluginID in _plugins) {
                 var plugin = _plugins[pluginID];
-                results[result_id].hb_IsInstalled = 0;
                 if (plugin.name.toLowerCase().replace(/ /g, '-') === results[result_id].package.name) {
                     results[result_id].hb_IsInstalled = 1;
                     // results[pf_ID].hb_installedVersion = pf.version;
