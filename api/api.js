@@ -204,3 +204,24 @@ API.prototype.addPlatformConfig = function(newConfig, callback) {
         callback({success: success, msg: msg});
     });
 }
+
+
+/**
+ * [addAccessoryConfig description]
+ * @param  {object}   newConfig Object with two properties: 'plugin' and 'accessoryConfig'
+ * @param  {Function} callback  Will be called upon completion with an result object as parameter (success: Bool, msg: String)
+ */
+API.prototype.addAccessoryConfig = function(newConfig, callback) {
+    var newConfigPartClean = newConfig.accessoryConfig.replace(/\\/g, "").replace(/\'/g, "\"");
+    var newConfigJSON = {};
+    try {
+        newConfigJSON = JSON.parse(newConfigPartClean);
+    } catch (e) {
+        callback({success: false, msg: 'Invalid JSON.'});
+        return;
+    }
+    newConfigJSON.accessory = newConfig.plugin;
+    confMgr.addAccessoryConfig(newConfigJSON, function(success, msg) {
+        callback({success: success, msg: msg});
+    });
+}

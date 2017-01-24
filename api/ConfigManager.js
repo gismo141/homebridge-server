@@ -63,15 +63,19 @@ ConfigManager.prototype.accessoriesJSON = function() {
 
 ConfigManager.prototype.addPlatformConfig = function(platformConfig, callback) {
     _platformsJSON.push(platformConfig);
-    save(callback);
+    this.save(callback);
 }
 
+ConfigManager.prototype.addAccessoryConfig = function(accessoryConfig, callback) {
+    _accessoriesJSON.push(accessoryConfig);
+    this.save(callback);
+}
 
 ConfigManager.prototype.updateBridgeConfig = function(changes, callback) {
     for (var key in changes) {
         _config.bridge[key] = changes[key];
     }
-    save(callback);
+    this.save(callback);
 }
 
 

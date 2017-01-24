@@ -98,6 +98,9 @@ function addPlatformConfig() {
 }
 
 // addAccessory.html
-function saveAccesory() {
-    console.log("savePlatform()");
+function addAccessoryConfig() {
+    var payload = $("#submitAccessoryConfig").serialize();
+    $.post( "/api/addAccessoryConfig", payload, function(result) {
+        alert(result.success + "\n" + result.msg);
+    });
 }
