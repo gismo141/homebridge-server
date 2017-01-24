@@ -18,8 +18,8 @@ function listInstalledPlugins() {
     $.getJSON("/api/installedPlugins", function(installedPlugins) {
         $("#installedPluginsTable").empty();
         $.each( installedPlugins, function( id_plugin, plugin ) {
-            var activeInfo = "Currently active.";
-            var usageInfo = "platforms: " + plugin.platformUsage + "<br\>accessories: " + plugin.accessoryUsage;
+            var activeInfo = "<span class='activityActive'></span>";
+            var usageInfo = "Platforms: " + plugin.platformUsage + "<br\>Accessories: " + plugin.accessoryUsage;
             var versionInfo = "Version: " + plugin.version;
             var action = "";
             var buttonStyle = "style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'";
@@ -28,10 +28,11 @@ function listInstalledPlugins() {
             }
             action += "<a href='#' class='btn btn-danger center-block' " + buttonStyle + " onclick='callPluginOperation(\"" + plugin.name + "\", \"remove\");'><span style='font-size:25px;''>Uninstall</span></a>";
             var row =  "<tr> \
+                            <td style='vertical-align:middle;'>" + activeInfo  + "</td>\
                             <td style='vertical-align:middle;'><a href='" + plugin.homepage + "' target=_blank>" + plugin.name + "</a></td> \
                             <td style='vertical-align:middle;'>" + plugin.author + "</td> \
                             <td style='vertical-align:middle;'>" + plugin.description + "</td> \
-                            <td style='vertical-align:middle;'>" + versionInfo + "<br\>" + activeInfo + "<br\>" + usageInfo + "</td> \
+                            <td style='vertical-align:middle;'>" + versionInfo + "<br\>" + usageInfo + "</td> \
                             <td style='vertical-align:middle;'>" + action + "</td> \
                        </tr>";
             $("#installedPluginsTable").append(row);

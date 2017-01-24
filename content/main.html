@@ -44,10 +44,10 @@
     <h2>Platforms</h2>
     <div class="responsive-wrapper">
         <div class="row header" id="platformsTableHeader">
+            <div></div>
             <div>Type</div>
             <div>Name</div>
             <div>Config</div>
-            <div>Status</div>
             <div></div>
         </div>
         <div id="platformsTable">
@@ -61,12 +61,12 @@
                         $("#platformsTable").empty();
                         $.each(data, function(id_platform, platform) {
                             var conf = configFromData(platform);
-                            var activeIndicator = platform.hbServer_active_flag === 1 ? "active" : "inactive";
+                            var activeIndicator = platform.hbServer_active_flag === 1 ? "   <span class='activityActive'></span>" : "<span class='activityInactive'></span>";
                             var row = "<div class='row content'> \
+                                        <div>" + activeIndicator + "</div>\
                                         <div>" + platform.platform + "<br\>(" + platform.hbServer_pluginName + ")</div>\
                                         <div>" + platform.name + "</div>\
                                         <div><pre>" + conf + "</pre></div>\
-                                        <div>" + activeIndicator + "</div>\
                                         <div><a href='/removePlatform?id=" + id_platform + "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>&#128465;</span></a></div>\
                                        </div>";
                             $("#platformsTable").append(row);
