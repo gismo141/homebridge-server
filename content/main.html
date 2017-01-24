@@ -44,15 +44,12 @@
     <h2>Platforms</h2>
     <div class="responsive-wrapper">
         <div class="row header">
-            <!-- <thead id="platformsTableHeader"> -->
             <div>Type</div>
             <div>Name</div>
             <div>Config</div>
             <div>Status</div>
             <div></div>
-            <!-- </thead> -->
         </div>
-            <!-- <tbody id="platformsTable"> -->
             <div id="platformsTable">
                 <script>
                     $.getJSON("/api/installedPlatforms", function(data) {
@@ -77,9 +74,8 @@
                         }
                     });
                 </script>
-            <!-- </tbody> -->
+            </div>
         </div>
-        <!-- </table> -->
         <a href='/addPlatform' name='AddPlatform' class='btn btn-default center-block' style='width:135px'>Add</a><br>
     </div>
 
@@ -141,6 +137,5 @@
         $( "#bridgeMemoryUsed" ).text(numeral(data.bridgeMemoryUsed).format('0b'));
         $( "#bridgeUptime" ).text(numeral(data.bridgeUptime).format('00:00:00'));
         $( "#bridgeHostOS" ).text(data.bridgeHostOS);
-
     });
 </script>
