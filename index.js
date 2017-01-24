@@ -286,6 +286,7 @@ function ServerPlatform(log, config) {
     function handleContentRequest(req, res) {
         log("handleContentRequest: " + req.url);
         reloadHTML();   // uncomment when debugging to force reload without restarting the server.
+        res.setHeader("Content-Type", "text/html");
         switch (req.url) {
             case '/':
                 res.write(header + navBar + mainHTML + footer);
@@ -382,6 +383,7 @@ function ServerPlatform(log, config) {
                 break;
             case '/content/lib.js':
                 log("serving /content/lib.js");
+                res.setHeader("Content-Type", "application/javascript");
                 fs.readFile(hbsPath + 'content/lib.js', 'utf8', function(err, libJS) {
                     if (err) {
                         return log(err);
@@ -392,6 +394,7 @@ function ServerPlatform(log, config) {
                 break;
             case '/style.css':
                 log("serving style.css");
+                res.setHeader("Content-Type", "text/css");
                 fs.readFile(hbsPath + 'content/style.css', 'utf8', function(err, css) {
                     if (err) {
                         return log(err);
