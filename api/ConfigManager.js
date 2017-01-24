@@ -61,11 +61,21 @@ ConfigManager.prototype.accessoriesJSON = function() {
     return _accessoriesJSON;
 }
 
-ConfigManager.prototype.save = function(changes, callback) {
+ConfigManager.prototype.addPlatformConfig = function(platformConfig, callback) {
+    _platformsJSON.push(platformConfig);
+    save(callback);
+}
+
+
+ConfigManager.prototype.updateBridgeConfig = function(changes, callback) {
     for (var key in changes) {
         _config.bridge[key] = changes[key];
     }
+    save(callback);
+}
 
+
+ConfigManager.prototype.save = function(callback) {
     var fs = require('fs');
     // check if config file can be written
     fs.access(homebridgeAPI.user.configPath(), fs.R_OK | fs.W_OK, function(err) {

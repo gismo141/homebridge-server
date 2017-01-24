@@ -87,7 +87,7 @@ API.prototype.saveBridgeConfig = function(configChanges, callback) {
         return;
     }
 
-    confMgr.save(changes, function(success, msg) {
+    confMgr.updateBridgeConfig(changes, function(success, msg) {
         callback(success, msg);
         return;
     });
@@ -181,5 +181,26 @@ API.prototype.restartHomebridge = function(hbsConfig, callback) {
             return;
         }
         callback({'success': true, 'msg': 'Restart command executed.\nPlease wait a while and reload this page.'});
+    });
+}
+
+
+/**
+ * [addPlatformConfig description]
+ * @param  {object}   newConfig Object with two properties: 'plugin' and 'platformConfig'
+ * @param  {Function} callback  Will be called upon completion with an result object as parameter (success: Bool, msg: String)
+ */
+API.prototype.addPlatformConfig = function(newConfig, callback) {
+    var newConfigPartClean = newConfig.platformConfig.replace(/\\/g, "").replace(/\'/g, "\"");
+    var newConfigJSON = {};
+    try {
+        newConfigJSON = JSON.parse(newConfigPartClean);
+    } catch (e) {
+        callback({success: false, msg: 'Invalid JSON.'});
+        return;
+    }
+    newConfigJSON.platform = newConfig.plugin;
+    confMgr.addPlatformConfig(newConfigJSON, function(success, msg) {
+        callback({success: success, msg: msg});
     });
 }

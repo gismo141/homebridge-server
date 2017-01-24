@@ -90,11 +90,9 @@ function listPlugins() {
 
 }
 
-function savePlatform() {
-    console.log("savePlatform()");
+function addPlatformConfig() {
     var payload = $("#submitPlatformConfig").serialize();
-    // $.post( "/api/savePlatformConfig", $("#platformConfig").val(), function(result) {
-    $.post( "/api/savePlatformConfig", payload, function(result) {
+    $.post( "/api/addPlatformConfig", payload, function(result) {
         alert(result.success + "\n" + result.msg);
     });
 }

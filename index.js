@@ -30,7 +30,7 @@ function ServerPlatform(log, config) {
         });
     }
 
-    var header, navBar, footer, mainHTML, pluginsHTML;
+    var header, navBar, footer, mainHTML, pluginsHTML, addPlatformHTML, addAccessoryHTML;
 
     function reloadHTML() {
         loadHTML("header.html", function(data) { header = data; });
@@ -38,6 +38,8 @@ function ServerPlatform(log, config) {
         loadHTML("footer.html", function(data) { footer = data; });
         loadHTML("main.html", function(data) { mainHTML = data; });
         loadHTML("plugins.html", function(data) { pluginsHTML = data; });
+        loadHTML("addPlatform.html", function(data) { addPlatformHTML = data; });
+        loadHTML("addAccessory.html", function(data) { addAccessoryHTML = data; });
     }
     reloadHTML();
 
@@ -85,32 +87,6 @@ function ServerPlatform(log, config) {
                 installedPlugins = result;
             }
         });
-    }
-
-    function printAddPage(res, type, additionalInput) {
-        res.write(header + navBar);
-
-        if (additionalInput != null) {
-            res.write(additionalInput);
-        }
-
-        res.write("<h2>Add " + type + "</h2>");
-
-        res.write("<form enctype='application/x-www-form-urlencoded' action='/save" + type + "Settings' method='post'>")
-        res.write("<textarea class='form-control' type='text' name='" + type + "ToAdd' rows='10' placeholder='{ \"" + type + "\": \"test\" }' required></textarea>");
-        res.write("<br>");
-        res.write("<div class='row'>");
-        res.write("<div class='col-xs-offset-1 col-sm-offset-1 col-md-offset-2 col-xs-10 col-sm-9 col-md-8 text-center'>");
-        res.write("<div class='btn-group' data-toggle='buttons'>");
-        res.write("<input type='submit' class='btn btn-default center-block' value='Save' onClick='submit()' style='width:135px' />");
-        res.write("<input type='submit' class='btn btn-default center-block' value='Cancel' onClick=\"location.href='/'\" style='width:135px' />");
-        res.write("</div>");
-        res.write("</div>");
-        res.write("</form>");
-
-        res.write("<br>");
-        // res.write("</div>");
-        res.end(footer);
     }
 
     function reloadConfig(res) {
@@ -270,6 +246,23 @@ function ServerPlatform(log, config) {
                     res.end();
                 });
                 break;
+            case '/api/addPlatformConfig':
+                var body = '';
+                req.on('data', function (data) {
+                    body += data;
+                    if (body.length > 1e6) {
+                        req.connection.destroy();
+                    }
+                });
+                req.on('end', function () {
+                    var qs = require('querystring');
+                    var parts = qs.parse(body);
+                    serverAPI.addPlatformConfig(parts, function (json) {
+                        res.write(JSON.stringify(json));
+                        res.end();
+                    });
+                });
+                break;
             default:
                 log("unhandled API request: " + req);
                 res.end();
@@ -297,10 +290,12 @@ function ServerPlatform(log, config) {
                 res.end();
                 break;
             case '/addPlatform':
-                printAddPage(res, "Platform");
+                res.write(header + navBar + addPlatformHTML + footer);
+                res.end();
                 break;
             case '/addAccessory':
-                printAddPage(res, "Accessory");
+                res.write(header + navBar + addAccessoryHTML + footer);
+                res.end();
                 break;
             case '/savePlatformSettings':
                 if (req.method == 'POST') {
@@ -319,7 +314,7 @@ function ServerPlatform(log, config) {
                         } catch (ex) {
                             res.write(header + navBar);
                             res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/addPlatform' class='close' data-dismiss='alert'>&times;</a><strong>" + ex + "</strong></div>");
-                            printAddPage(res, "Platform", "<code>" + receivedData + "</code>");
+                            // printAddPage(res, "Platform", "<code>" + receivedData + "</code>");
                         }
                     });
                     req.on('end', function(chunk) {});
@@ -345,7 +340,7 @@ function ServerPlatform(log, config) {
                         } catch (ex) {
                             res.write(header + navBar);
                             res.write("<div class='alert alert-danger alert-dismissible fade in out'><a href='/addAccessory' class='close' data-dismiss='alert'>&times;</a><strong>" + ex + "</strong></div>");
-                            printAddPage(res, "Accessory", "<code>" + receivedData + "</code>");
+                            // printAddPage(res, "Accessory", "<code>" + receivedData + "</code>");
                         }
                     });
                     req.on('end', function(chunk) {});
