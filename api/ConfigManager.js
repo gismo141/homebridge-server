@@ -62,6 +62,8 @@ ConfigManager.prototype.accessoriesJSON = function() {
 }
 
 ConfigManager.prototype.addPlatformConfig = function(platformConfig, callback) {
+    platformConfig["hbServer_active_flag"] = 0;
+    platformConfig["hbServer_pluginName"] = platformConfig.platform;
     _platformsJSON.push(platformConfig);
     this.save(callback);
 }

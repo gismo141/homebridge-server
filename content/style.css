@@ -49,7 +49,7 @@ input[type='radio'],input[type='checkbox'] {
     font-size: 12px;
 }
 
-.activityInctive::after {
+.activityInactive::after {
     content: '\26aa';
     font-size: 12px;
 }
