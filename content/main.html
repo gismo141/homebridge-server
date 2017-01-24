@@ -43,56 +43,53 @@
     <hr>
     <h2>Platforms</h2>
     <div class="responsive-wrapper">
-        <div class="row header">
+        <div class="row header" id="platformsTableHeader">
             <div>Type</div>
             <div>Name</div>
             <div>Config</div>
             <div>Status</div>
             <div></div>
         </div>
-            <div id="platformsTable">
-                <script>
-                    $.getJSON("/api/installedPlatforms", function(data) {
-                        if (data.length === 0) {
-                            $("#platformsTableHeader").hide();
-                            $("#platformsTable").text("No platforms installed or configured!");
-                        } else {
-                            $("#platformsTableHeader").show();
-                            $("#platformsTable").empty();
-                            $.each(data, function(id_platform, platform) {
-                                var conf = configFromData(platform);
-                                var activeIndicator = platform.hbServer_active_flag === 1 ? "active" : "inactive";
-                                var row = "<div class='row content'> \
-                                            <div>" + platform.platform + "<br\>(" + platform.hbServer_pluginName + ")</div>\
-                                            <div>" + platform.name + "</div>\
-                                            <div><pre>" + conf + "</pre></div>\
-                                            <div>" + activeIndicator + "</div>\
-                                            <div><a href='/removePlatform?id=" + id_platform + "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>&#128465;</span></a></div>\
-                                           </div>";
-                                $("#platformsTable").append(row);
-                            });
-                        }
-                    });
-                </script>
-            </div>
+        <div id="platformsTable">
+            <script>
+                $.getJSON("/api/installedPlatforms", function(data) {
+                    if (data.length === 0) {
+                        $("#platformsTableHeader").hide();
+                        $("#platformsTable").text("No platforms installed or configured!");
+                    } else {
+                        $("#platformsTableHeader").show();
+                        $("#platformsTable").empty();
+                        $.each(data, function(id_platform, platform) {
+                            var conf = configFromData(platform);
+                            var activeIndicator = platform.hbServer_active_flag === 1 ? "active" : "inactive";
+                            var row = "<div class='row content'> \
+                                        <div>" + platform.platform + "<br\>(" + platform.hbServer_pluginName + ")</div>\
+                                        <div>" + platform.name + "</div>\
+                                        <div><pre>" + conf + "</pre></div>\
+                                        <div>" + activeIndicator + "</div>\
+                                        <div><a href='/removePlatform?id=" + id_platform + "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>&#128465;</span></a></div>\
+                                       </div>";
+                            $("#platformsTable").append(row);
+                        });
+                    }
+                });
+            </script>
         </div>
-        <a href='/addPlatform' name='AddPlatform' class='btn btn-default center-block' style='width:135px'>Add</a><br>
     </div>
+    <a href='/addPlatform' name='AddPlatform' class='btn btn-default center-block' style='width:135px'>Add</a><br>
 
     <hr>
     <h2>Accessories</h2>
-    <div class="table-responsive">
-        <table class="table table-hover">
-            <thead id="accessoriesTableHeader">
-                <tr>
-                    <th width='15%'>Type</th>
-                    <th width='35%'>Name</th>
-                    <th width='40%'>Config</th>
-                    <th width='10%'></th>
-                </tr>
-            </thead>
-            <tbody id="accessoriesTable">
-                <script>
+    <div class="responsive-wrapper">
+        <div class="row header" id="accessoriesTableHeader">
+            <div>Type</div>
+            <div>Name</div>
+            <div>Config</div>
+            <div>Status</div>
+            <div></div>
+        </div>
+        <div id="accessoriesTable">
+            <script>
                 $.getJSON("/api/accessories", function(data) {
                     if (data.length === 0) {
                         $("#accessoriesTableHeader").hide();
@@ -102,24 +99,22 @@
                         $("#accessoriesTable").empty();
                         $.each(data, function(id_accessory, accessory) {
                             var conf = configFromData(accessory);
-                            var row = "<tr> \
-                                        <td style='vertical-align:middle;'>" + accessory.accessory + "</td> \
-                                        <td style='vertical-align:middle;'>" + accessory.name + "</td> \
-                                        <td style='vertical-align:middle;'>" + conf + "</td> \
-                                        <td style='vertical-align:middle;'> \
-                                            <a href='/removePlatform?id=" + id_accessory +
-                                            "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>&#128465;</span></a> \
-                                        </td>\
-                                      </tr>";
+                            var activeIndicator = accessory.hbServer_active_flag === 1 ? "active" : "inactive";
+                            var row = "<div class='row content'> \
+                                        <div>" + accessory.accessory + "<br\>(" + accessory.hbServer_pluginName + ")</div>\
+                                        <div>" + accessory.name + "</div> \
+                                        <div><pre>" + conf + "</pre></div>\
+                                        <div>" + activeIndicator + "</div>\
+                                        <div><a href='/removeAccessory?id=" + id_accessory + "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>&#128465;</span></a></div>\
+                                      </div>";
                             $("#accessoriesTable").append(row);
                         });
                     }
                 });
-                </script>
-            </tbody>
-        </table>
-        <a href='/addAccessory' name='AddAccessory' class='btn btn-default center-block' style='width:135px'>Add</a><br>
+            </script>
+        </div>
     </div>
+    <a href='/addAccessory' name='AddAccessory' class='btn btn-default center-block' style='width:135px'>Add</a><br>
 </div>
 
 <script>
