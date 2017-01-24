@@ -55,7 +55,7 @@
             <!-- <tbody id="platformsTable"> -->
             <div id="platformsTable">
                 <script>
-                    $.getJSON("/api/installedPlatforms.json", function(data) {
+                    $.getJSON("/api/installedPlatforms", function(data) {
                         if (data.length === 0) {
                             $("#platformsTableHeader").hide();
                             $("#platformsTable").text("No platforms installed or configured!");
@@ -97,7 +97,7 @@
             </thead>
             <tbody id="accessoriesTable">
                 <script>
-                $.getJSON("/api/accessories.json", function(data) {
+                $.getJSON("/api/accessories", function(data) {
                     if (data.length === 0) {
                         $("#accessoriesTableHeader").hide();
                         $("#accessoriesTable").text("No accessories installed or configured!");
@@ -127,7 +127,7 @@
 </div>
 
 <script>
-    $.getJSON( "/api/bridgeInfo.json", function( data ) {
+    $.getJSON( "/api/bridgeInfo", function( data ) {
         $( "input[name='bridgeName']" ).val(data.bridgeName);
         $( "input[name='bridgeUsername']" ).val(data.bridgeUsername);
         $( "input[name='bridgePin']" ).val(data.bridgePin);

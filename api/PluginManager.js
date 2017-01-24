@@ -164,7 +164,7 @@ function enrichUsageInfo() {
     var options = {
         // host: 'api.npms.io',
         port: 8765,
-        path: '/api/installedPlatforms.json',
+        path: '/api/installedPlatforms',
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'

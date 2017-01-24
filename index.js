@@ -145,19 +145,19 @@ function ServerPlatform(log, config) {
         res.setHeader("Content-Type", "application/json");
         var path = require('url').parse(req.url).pathname;
         switch (path) {
-            case '/api/bridgeInfo.json':
+            case '/api/bridgeInfo':
                 serverAPI.getBridgeInfo(function (json) {
                     res.write(JSON.stringify(json));
                     res.end();
                 });
                 break;
-            case '/api/installedPlatforms.json':
+            case '/api/installedPlatforms':
                 serverAPI.getInstalledPlatforms(function (json) {
                     res.write(JSON.stringify(json));
                     res.end();
                 });
                 break;
-            case '/api/accessories.json':
+            case '/api/accessories':
                 serverAPI.getInstalledAccessories(function (json) {
                     res.write(JSON.stringify(json));
                     res.end();
