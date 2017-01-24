@@ -3,8 +3,9 @@
 
     "env": {
         "node": 1,
-        "browser": 1
-        },
+        "browser": 1,
+        "mocha": 1
+    },
 
     "globals": {
         "$": 1
