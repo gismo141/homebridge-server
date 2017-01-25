@@ -1,3 +1,10 @@
+$( document ).tooltip({
+  classes: {
+    "ui-tooltip": "highlight"
+  },
+  show: false
+});
+
 // main.html
 function configFromData(configData) {
     // TODO: use internalPropertiesReplacer approach like in ConfigManager
@@ -9,7 +16,7 @@ function configFromData(configData) {
     delete config.hbServer_latestVersion;
     delete config.hbServer_installedVersion;
     delete config.hbServer_pluginName;
-    return (JSON.stringify(config, null, ' ')).replace(/,/g, ',<br>');
+    return (JSON.stringify(config, null, ' '));
 }
 
 // plugins.html
@@ -19,22 +26,21 @@ function listInstalledPlugins() {
         $("#installedPluginsTable").empty();
         $.each( installedPlugins, function( id_plugin, plugin ) {
             var activeInfo = "<span class='activityActive'></span>";
-            var usageInfo = "Platforms: " + plugin.platformUsage + "<br\>Accessories: " + plugin.accessoryUsage;
+            var usageInfo = "Platforms: " + plugin.platformUsage + ", Accessories: " + plugin.accessoryUsage;
             var versionInfo = "Version: " + plugin.version;
             var action = "";
             var buttonStyle = "style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'";
             if (plugin.isLatestVersion === "0") {
-                action += "<a href='#' class='btn btn-success center-block' " + buttonStyle + " onclick='callPluginOperation(\"" + plugin.name + "@" + plugin.latestVersion + "\", \"update\");'><span style='font-size:25px;''>Update to " + plugin.latestVersion + "</span></a>";
+                action += "<a href='#' class='btn btn-success center-block' " + buttonStyle + " onclick='callPluginOperation(\"" + plugin.name + "@" + plugin.latestVersion + "\", \"update\");'><span style='font-size:25px;' title='Available Version: " + plugin.latestVersion + "'>Update</span></a>";
             }
-            action += "<a href='#' class='btn btn-danger center-block' " + buttonStyle + " onclick='callPluginOperation(\"" + plugin.name + "\", \"remove\");'><span style='font-size:25px;''>Uninstall</span></a>";
-            var row =  "<tr> \
-                            <td style='vertical-align:middle;'>" + activeInfo  + "</td>\
-                            <td style='vertical-align:middle;'><a href='" + plugin.homepage + "' target=_blank>" + plugin.name + "</a></td> \
-                            <td style='vertical-align:middle;'>" + plugin.author + "</td> \
-                            <td style='vertical-align:middle;'>" + plugin.description + "</td> \
-                            <td style='vertical-align:middle;'>" + versionInfo + "<br\>" + usageInfo + "</td> \
-                            <td style='vertical-align:middle;'>" + action + "</td> \
-                       </tr>";
+            action += "<a href='#' class='btn btn-danger center-block' " + buttonStyle + " onclick='callPluginOperation(\"" + plugin.name + "\", \"remove\");'><span style='font-size:25px;'>Uninstall</span></a>";
+            var row =  "<div class='row content' title='" + versionInfo + ", " + usageInfo + "'> \
+                            <div>" + activeInfo + "</div>\
+                            <div><a href='" + plugin.homepage + "' target=_blank>" + plugin.name + "</a></div>\
+                            <div>" + plugin.author + "</div>\
+                            <div>" + plugin.description + "</div>\
+                            <div>" + action + "</div>\
+                       </div>";
             $("#installedPluginsTable").append(row);
         });
     });
