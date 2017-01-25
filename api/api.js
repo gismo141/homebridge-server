@@ -72,14 +72,23 @@ API.prototype.saveBridgeConfig = function(configChanges, callback) {
     }
 
     if (configChanges.bridgeUsername) {
-        changes["username"] = configChanges.bridgeUsername;
-        hasChanges = true;
+        var regex = /^([0-9A-F]{2}[:]){5}([0-9A-F]{2})$/;
+        if(regex.test(configChanges.bridgeUsername)) {
+            changes["username"] = configChanges.bridgeUsername;
+            hasChanges = true;
+        } else {
+          callback(false, "Invalid username! (Style: XX:XX:XX:XX)");
+        }
     }
 
     if (configChanges.bridgePin) {
-        // TODO: check new pin for valid pattern (031-45-154)
-        changes["pin"] = configChanges.bridgePin;
-        hasChanges = true;
+      var regex = /^(([0-9]{3})[-]([0-9]{2})[-]([0-9]{3}))$/;
+      if(regex.test(configChanges.bridgePin)) {
+          changes["pin"] = configChanges.bridgePin;
+          hasChanges = true;
+      } else {
+        callback(false, "Invalid pin! (Style: XXX-XX-XXX)");
+      }
     }
 
     if (!hasChanges) {
