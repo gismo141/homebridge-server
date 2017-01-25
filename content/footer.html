@@ -1,3 +1,29 @@
 </body>
 <!-- file: footer.html -->
+<footer class="navbar navbar-default navbar-fixed-bottom navbar-light">
+    <div class="container">
+        <div style="width:50%; float:right;">
+            <div><b>Bridge uptime:</b> <span id="bridgeUptime"></span></div>
+            <div><b>Host OS:</b> <span id="bridgeHostOS"></span></div>
+        </div>
+        <div style="width:50%">
+            <div><b>Version:</b> <span id='bridgeVersion'></span></div>
+            <div><b>Memory used by bridge:</b> <span id="bridgeMemoryUsed"></span></div>
+        </div>
+    </div>
+
+    <script>
+    $.getJSON( "/api/bridgeInfo", function( data ) {
+        var versionInfo = "up to date";
+        if (data.bridgeVersion !== data.latestVersion) {
+            versionInfo = "latest is " + data.latestVersion;
+        }
+        $( "#bridgeVersion" ).text(data.bridgeVersion + " (" + versionInfo + ")");
+
+        $( "#bridgeMemoryUsed" ).text(numeral(data.bridgeMemoryUsed).format('0b'));
+        $( "#bridgeUptime" ).text(numeral(data.bridgeUptime).format('00:00:00'));
+        $( "#bridgeHostOS" ).text(data.bridgeHostOS);
+    });
+    </script>
+</footer>
 </html>

@@ -1,18 +1,6 @@
 <div class='container'>
-    <h2>Homebridge info</h2>
-    <div style="width:40%; float:right;">
-        <div><b>Bridge uptime:</b> <span id="bridgeUptime"></span></div>
-        <div><b>Host OS:</b> <span id="bridgeHostOS"></span></div>
-    </div>
-    <div style="width:40%">
-        <div><b>Version:</b> <span id='bridgeVersion'></span></div>
-        <div><b>Memory used by bridge:</b> <span id="bridgeMemoryUsed"></span></div>
-    </div>
-
-    <hr>
-    <h2>Homebridge configuration</h2>
+    <h2>Configuration</h2>
     <form id='submitBridgeConfig'>
-
         <div class='form-group' style="width:40%; float:right;">
             <label for='bridgeUsername'>Username:</label>
             <input type='text' class='form-control' name='bridgeUsername' value='configJSON.bridge.username' />
@@ -44,11 +32,11 @@
     <h2>Platforms</h2>
     <div class="responsive-wrapper">
         <div class="row header" id="platformsTableHeader">
-            <div></div>
+            <div><span style='font-size: larger;'>&#x2139;</span></div>
             <div>Type</div>
             <div>Name</div>
             <div>Config</div>
-            <div></div>
+            <div>Usage</div>
         </div>
         <div id="platformsTable">
             <script>
@@ -82,10 +70,10 @@
     <h2>Accessories</h2>
     <div class="responsive-wrapper">
         <div class="row header" id="accessoriesTableHeader">
+            <div>Status</div>
             <div>Type</div>
             <div>Name</div>
             <div>Config</div>
-            <div>Status</div>
             <div></div>
         </div>
         <div id="accessoriesTable">
@@ -101,10 +89,10 @@
                             var conf = configFromData(accessory);
                             var activeIndicator = accessory.hbServer_active_flag === 1 ? "active" : "inactive";
                             var row = "<div class='row content'> \
+                                        <div>" + activeIndicator + "</div>\
                                         <div>" + accessory.accessory + "<br\>(" + accessory.hbServer_pluginName + ")</div>\
                                         <div>" + accessory.name + "</div> \
                                         <div><pre>" + conf + "</pre></div>\
-                                        <div>" + activeIndicator + "</div>\
                                         <div><a href='/removeAccessory?id=" + id_accessory + "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>&#128465;</span></a></div>\
                                       </div>";
                             $("#accessoriesTable").append(row);
@@ -122,15 +110,5 @@
         $( "input[name='bridgeName']" ).val(data.bridgeName);
         $( "input[name='bridgeUsername']" ).val(data.bridgeUsername);
         $( "input[name='bridgePin']" ).val(data.bridgePin);
-
-        var versionInfo = "up to date";
-        if (data.bridgeVersion !== data.latestVersion) {
-          versionInfo = "latest version is " + data.latestVersion;
-        }
-        $( "#bridgeVersion" ).text(data.bridgeVersion + " (" + versionInfo + ")");
-
-        $( "#bridgeMemoryUsed" ).text(numeral(data.bridgeMemoryUsed).format('0b'));
-        $( "#bridgeUptime" ).text(numeral(data.bridgeUptime).format('00:00:00'));
-        $( "#bridgeHostOS" ).text(data.bridgeHostOS);
     });
 </script>
