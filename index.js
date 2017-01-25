@@ -146,139 +146,43 @@ function ServerPlatform(log, config) {
         var path = require('url').parse(req.url).pathname;
         switch (path) {
             case '/api/bridgeInfo':
-                serverAPI.getBridgeInfo(function (json) {
-                    res.write(JSON.stringify(json));
-                    res.end();
-                });
+                api_bridgeInfo(res);
                 break;
             case '/api/installedPlatforms':
-                serverAPI.getInstalledPlatforms(function (json) {
-                    res.write(JSON.stringify(json));
-                    res.end();
-                });
+                api_installedPlatforms(res);
                 break;
             case '/api/accessories':
-                serverAPI.getInstalledAccessories(function (json) {
-                    res.write(JSON.stringify(json));
-                    res.end();
-                });
+                api_accessories(res);
                 break;
             case '/api/searchPlugins':
-                var query = require('url').parse(req.url).query;
-                serverAPI.getPluginsFromNPMS(query, function (json) {
-                    res.write(JSON.stringify(json));
-                    res.end();
-                });
+                api_searchPlugins(req, res);
                 break;
             case '/api/installedPlugins':
-                serverAPI.getInstalledPlugins(function (json) {
-                    res.write(JSON.stringify(json));
-                    res.end();
-                })
+                api_installedPlugins(res);
                 break;
             case '/api/saveBridgeConfig':
-                var body = '';
-                req.on('data', function (data) {
-                    body += data;
-                    // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
-                    if (body.length > 1e6) {
-                        // FLOOD ATTACK OR FAULTY CLIENT, NUKE REQUEST
-                        req.connection.destroy();
-                    }
-                });
-                req.on('end', function () {
-                    var qs = require('querystring');
-                    var bodyJSON = qs.parse(body);
-                    serverAPI.saveBridgeConfig(bodyJSON, function (result, error) {
-                        res.write(JSON.stringify({'success': result, 'msg': error}));
-                        res.end();
-                    });
-                });
+                api_saveBridgeConfig(req, res);
                 break;
             case '/api/createConfigBackup':
-                serverAPI.createConfigBackup(function (result, error) {
-                    res.write(JSON.stringify({'success': result, 'msg': error}));
-                    res.end();
-                });
+                api_createConfigBackup(res);
                 break;
             case '/api/installPlugin':
-                var pluginName = require('url').parse(req.url).query;
-                res.setHeader("Content-Type", "text/text");
-                serverAPI.installPlugin(pluginName, function (success, msg, closed) {
-                    if (closed) {
-                        res.write("\n");
-                        res.write(JSON.stringify({'hbsAPIResult': {'success': success, 'msg': msg}}));
-                        res.end();
-                    } else {
-                        res.write(msg);
-                    }
-                });
+                api_installPlugin(req, res);
                 break;
             case '/api/updatePlugin':
-                var pluginName = require('url').parse(req.url).query;
-                res.setHeader("Content-Type", "text/text");
-                serverAPI.updatePlugin(pluginName, function (success, msg, closed) {
-                    if (closed) {
-                        res.write("\n");
-                        res.write(JSON.stringify({'hbsAPIResult': {'success': success, 'msg': msg}}));
-                        res.end();
-                    } else {
-                        res.write(msg);
-                    }
-                });
+                api_updatePlugin(req, res);
                 break;
             case '/api/removePlugin':
-                var pluginName = require('url').parse(req.url).query;
-                res.setHeader("Content-Type", "text/text");
-                serverAPI.removePlugin(pluginName, function (success, msg, closed) {
-                    if (closed) {
-                        res.write("\n");
-                        res.write(JSON.stringify({'hbsAPIResult': {'success': success, 'msg': msg}}));
-                        res.end();
-                    } else {
-                        res.write(msg);
-                    }
-                });
+                api_removePlugin(req, res);
                 break;
             case '/api/restartHomebridge':
-                serverAPI.restartHomebridge(config, function (json) {
-                    res.write(JSON.stringify(json));
-                    res.end();
-                });
+                api_restartHomebridge(res);
                 break;
             case '/api/addPlatformConfig':
-                var body = '';
-                req.on('data', function (data) {
-                    body += data;
-                    if (body.length > 1e6) {
-                        req.connection.destroy();
-                    }
-                });
-                req.on('end', function () {
-                    var qs = require('querystring');
-                    var parts = qs.parse(body);
-                    serverAPI.addPlatformConfig(parts, function (json) {
-                        res.write(JSON.stringify(json));
-                        res.end();
-                    });
-                });
+                api_addPlatformConfig(req, res);
                 break;
             case '/api/addAccessoryConfig':
-                var body = '';
-                req.on('data', function (data) {
-                    body += data;
-                    if (body.length > 1e6) {
-                        req.connection.destroy();
-                    }
-                });
-                req.on('end', function () {
-                    var qs = require('querystring');
-                    var parts = qs.parse(body);
-                    serverAPI.addAccessoryConfig(parts, function (json) {
-                        res.write(JSON.stringify(json));
-                        res.end();
-                    });
-                });
+                api_addAccessoryConfig(req, res);
                 break;
             default:
                 log("unhandled API request: " + req);
@@ -401,6 +305,156 @@ function ServerPlatform(log, config) {
         });
       });
     });
+
+
+
+    function api_bridgeInfo(res) {
+        serverAPI.getBridgeInfo(function (json) {
+            res.write(JSON.stringify(json));
+            res.end();
+        });
+    }
+
+    function api_installedPlatforms(res) {
+        serverAPI.getInstalledPlatforms(function (json) {
+            res.write(JSON.stringify(json));
+            res.end();
+        });
+    }
+
+    function api_accessories(res) {
+        serverAPI.getInstalledAccessories(function (json) {
+            res.write(JSON.stringify(json));
+            res.end();
+        });
+    }
+
+    function api_searchPlugins(req, res) {
+        var query = require('url').parse(req.url).query;
+        serverAPI.getPluginsFromNPMS(query, function (json) {
+            res.write(JSON.stringify(json));
+            res.end();
+        });
+    }
+
+    function api_installedPlugins(res) {
+        serverAPI.getInstalledPlugins(function (json) {
+            res.write(JSON.stringify(json));
+            res.end();
+        })
+    }
+
+    function api_saveBridgeConfig(req, res) {
+        var body = '';
+        req.on('data', function (data) {
+            body += data;
+            // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
+            if (body.length > 1e6) {
+                // FLOOD ATTACK OR FAULTY CLIENT, NUKE REQUEST
+                req.connection.destroy();
+            }
+        });
+        req.on('end', function () {
+            var qs = require('querystring');
+            var bodyJSON = qs.parse(body);
+            serverAPI.saveBridgeConfig(bodyJSON, function (result, error) {
+                res.write(JSON.stringify({'success': result, 'msg': error}));
+                res.end();
+            });
+        });
+    }
+
+    function api_createConfigBackup(res) {
+        serverAPI.createConfigBackup(function (result, error) {
+            res.write(JSON.stringify({'success': result, 'msg': error}));
+            res.end();
+        });
+    }
+
+    function api_installPlugin(req, res) {
+        var pluginName = require('url').parse(req.url).query;
+        res.setHeader("Content-Type", "text/text");
+        serverAPI.installPlugin(pluginName, function (success, msg, closed) {
+            if (closed) {
+                res.write("\n");
+                res.write(JSON.stringify({'hbsAPIResult': {'success': success, 'msg': msg}}));
+                res.end();
+            } else {
+                res.write(msg);
+            }
+        });
+    }
+
+    function api_updatePlugin(req, res) {
+        var pluginName = require('url').parse(req.url).query;
+        res.setHeader("Content-Type", "text/text");
+        serverAPI.updatePlugin(pluginName, function (success, msg, closed) {
+            if (closed) {
+                res.write("\n");
+                res.write(JSON.stringify({'hbsAPIResult': {'success': success, 'msg': msg}}));
+                res.end();
+            } else {
+                res.write(msg);
+            }
+        });
+    }
+
+    function api_removePlugin(req, res) {
+        var pluginName = require('url').parse(req.url).query;
+        res.setHeader("Content-Type", "text/text");
+        serverAPI.removePlugin(pluginName, function (success, msg, closed) {
+            if (closed) {
+                res.write("\n");
+                res.write(JSON.stringify({'hbsAPIResult': {'success': success, 'msg': msg}}));
+                res.end();
+            } else {
+                res.write(msg);
+            }
+        });
+    }
+
+    function api_restartHomebridge(res) {
+        serverAPI.restartHomebridge(config, function (json) {
+            res.write(JSON.stringify(json));
+            res.end();
+        });
+    }
+
+    function api_addPlatformConfig(req, res) {
+        var body = '';
+        req.on('data', function (data) {
+            body += data;
+            if (body.length > 1e6) {
+                req.connection.destroy();
+            }
+        });
+        req.on('end', function () {
+            var qs = require('querystring');
+            var parts = qs.parse(body);
+            serverAPI.addPlatformConfig(parts, function (json) {
+                res.write(JSON.stringify(json));
+                res.end();
+            });
+        });
+    }
+
+    function api_addAccessoryConfig(req, res) {
+        var body = '';
+        req.on('data', function (data) {
+            body += data;
+            if (body.length > 1e6) {
+                req.connection.destroy();
+            }
+        });
+        req.on('end', function () {
+            var qs = require('querystring');
+            var parts = qs.parse(body);
+            serverAPI.addAccessoryConfig(parts, function (json) {
+                res.write(JSON.stringify(json));
+                res.end();
+            });
+        });
+    }
 }
 
 ServerPlatform.prototype.accessories = function(callback) {
