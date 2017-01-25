@@ -1,0 +1,55 @@
+h1,h2,h3,h4,h5,h6 {
+    font-family: 'Open Sans', sans-serif;
+}
+p,div {
+    font-family: 'Open Sans', sans-serif;
+}
+
+input[type='radio'],input[type='checkbox'] {
+    line-height: normal;
+    margin: 0;
+}
+
+.responsive-wrapper { margin-bottom: 15px; }
+.responsive-wrapper .row { display: flex; width: 100%; justify-content: space-between; padding: 1em 0.1em; margin: 0; }
+.responsive-wrapper .row.content:hover { background-color: #e6e6e6; }
+.row.header { border-bottom: 2px solid #ddd; }
+.row.header div { font-weight: 600; font-size: 16px; }
+.row.content { border: 1px solid hsla(0, 0%, 90%, 1); border-top: none; -webkit-transition: all 0.1s cubic-bezier(1, 0, 0.5, 1); transition: all 0.1s cubic-bezier(1, 0, 0.5, 1); }
+.responsive-wrapper .row div { flex: none; overflow: none; }
+.responsive-wrapper .row div:nth-child(1) { width: 15px; }
+.responsive-wrapper .row div:nth-child(2) { width: 15%; }
+.responsive-wrapper .row div:nth-child(3) { width: 15%; }
+.responsive-wrapper .row div:nth-child(4) { width: 50%; overflow: auto; }
+.responsive-wrapper .row div:nth-child(5) { width: 10%; }
+@media screen and (max-width: 720px) {
+    h2 { margin-top: 50px; }
+    .responsive-wrapper .row { display: block; padding: 30px 20px; margin-bottom: 10px; }
+    .responsive-wrapper .row.content { border-top: 1px solid hsla(0, 0%, 90%, 1); }
+    .responsive-wrapper .row.header { display: none; }
+    .responsive-wrapper .row div:before { margin-bottom: 0.25em; }
+    .responsive-wrapper .row div:nth-child(1) { margin-right: 1em; width: 100%; }
+    .responsive-wrapper .row div:nth-child(1):before { content: 'Type: '; display: inline-block; min-width: 15%; margin-right: 10px; font-weight: 600; }
+    .responsive-wrapper .row div:nth-child(2) { margin-right: 1em; width: 100%; }
+    .responsive-wrapper .row div:nth-child(2):before { content: 'Name: '; display: inline-block; min-width: 15%; margin-right: 10px; font-weight: 600; }
+    .responsive-wrapper .row div:nth-child(3) { margin-right: 1em; width: 100%; }
+    .responsive-wrapper .row div:nth-child(3):before { content: 'Info: '; display: inline-block; min-width: 15%; margin-right: 10px; font-weight: 600; }
+    .responsive-wrapper .row div:nth-child(4) { margin-right: 1em; width: 100%; }
+}
+
+
+.activityWarning::after {
+    color: orange;
+    content: '\26a0';
+    font-size: 16px;
+}
+
+.activityActive::after {
+    content: '\26ab';
+    font-size: 12px;
+}
+
+.activityInactive::after {
+    content: '\26aa';
+    font-size: 12px;
+}

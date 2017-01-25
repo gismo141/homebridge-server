@@ -1,0 +1,33 @@
+<div class="container">
+
+    <h2>Add platform</h2>
+    <form id='submitPlatformConfig'>
+        1) Choose a plugin for this platform:
+        <select name="plugin" id="plugins"></select>
+        <script>
+            $.getJSON('/api/installedPlugins', function(plugs) {
+                $.each(plugs, function(plugID, plug) {
+                     $('#plugins')
+                         .append($("<option></option>")
+                         .attr("value", plug.name)
+                         .text(plug.name));
+                })
+            });
+        </script>
+
+        <div>2) Enter the configuration for the selected platform:</div>
+        <div>
+            <textarea class='form-control' type='text' id='platformConfig' name='platformConfig' rows='10' placeholder='{"name": "test"}' required></textarea>
+        </div>
+        <div>The 'platform' property will be filled in automatically; depending on the chosen plugin.</div>
+        <div class='row'>
+            <div class='col-xs-offset-1 col-sm-offset-1 col-md-offset-2 col-xs-10 col-sm-9 col-md-8 text-center'>
+                <div class='btn-group' data-toggle='buttons'>
+                    <input type='submit' class='btn btn-default center-block' value='Save' onClick='addPlatformConfig()' style='width:135px' />
+                    <input type='submit' class='btn btn-default center-block' value='Cancel' onClick="location.href='/'" style='width:135px' />
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>

@@ -22,6 +22,8 @@ before_install:
     ], \n
     \"accessories\": [] \n
     }' > ~/.homebridge/config.json"
+before_script:
+  - npm install -g eslint
 addons:
   apt:
     sources:
