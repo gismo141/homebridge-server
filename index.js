@@ -1,3 +1,4 @@
+/* eslint-env node */
 var Service, Characteristic, LastUpdate, HomebridgeAPI;
 
 module.exports = function(homebridge) {

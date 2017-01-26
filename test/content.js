@@ -69,7 +69,7 @@ describe('Testing the content requests', function() {
                 if (err) {
                     return done(err);
                 }
-                res.text.should.have.length.of.at.least(sizeOfHeaderNavbarFooter + 700);
+                res.text.should.have.length.of.at.least(sizeOfHeaderNavbarFooter + 800);
                 res.text.should.contain("<!-- file: header.html -->")
                 res.text.should.contain("<!-- file: navbar.html -->")
                 res.text.should.contain("<!-- file: footer.html -->")
