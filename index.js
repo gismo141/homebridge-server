@@ -272,21 +272,21 @@ function ServerPlatform(log, config) {
                 });
                 break;
             default:
-                url = req.url;
-                log("unhandled request: " + url);
-                if (url.indexOf('/remove') !== -1) {
-                    object = url.replace('/remove', '');
-                    if (object.indexOf('Platform') !== -1) {
-                        platform = object.replace('Platform', '');
-                        delete configJSON.platforms[platform];
-                        log("Removed platform " + platform + ".");
-                    } else if (object.indexOf('Accessory') !== -1) {
-                        accessory = object.replace('Accessory', '');
-                        delete configJSON.accessories[accessory];
-                        log("Removed accessory " + accessory + ".");
-                    }
-                    saveConfig(res);
-                }
+                log("unhandled request: " + req.url);
+                // var url = req.url;
+                // if (url.indexOf('/remove') !== -1) {
+                //     object = url.replace('/remove', '');
+                //     if (object.indexOf('Platform') !== -1) {
+                //         platform = object.replace('Platform', '');
+                //         delete configJSON.platforms[platform];
+                //         log("Removed platform " + platform + ".");
+                //     } else if (object.indexOf('Accessory') !== -1) {
+                //         accessory = object.replace('Accessory', '');
+                //         delete configJSON.accessories[accessory];
+                //         log("Removed accessory " + accessory + ".");
+                //     }
+                //     saveConfig(res);
+                // }
         }
     }
 
