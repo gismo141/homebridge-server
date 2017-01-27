@@ -1,5 +1,5 @@
 /* eslint-env node */
-var Service, Characteristic, LastUpdate, HomebridgeAPI;
+var Service, Characteristic, LastUpdate, HomebridgeAPI;       // eslint-disable-line
 
 module.exports = function(homebridge) {
     Service = homebridge.hap.Service;
@@ -18,7 +18,7 @@ function ServerPlatform(log, config) {
     }
 
     // ... contains a list of installed plugins.
-    var installedPlugins = "";
+    // var installedPlugins = "";
 
     function loadHTML(name, callback) {
         var path = hbsPath + "content/" + name;
@@ -44,59 +44,59 @@ function ServerPlatform(log, config) {
     }
     reloadHTML();
 
-    function stripEscapeCodes(chunk) {
-        var receivedData = chunk.toString()
-            .replace(/\%7E/g, '~')
-            .replace(/\%26/g, '&')
-            .replace(/\%40/g, '@')
-            .replace(/\%23/g, '#')
-            .replace(/\%7B/g, '{')
-            .replace(/\%0D/g, '')
-            .replace(/\%0A/g, '')
-            .replace(/\%2C/g, ',')
-            .replace(/\%7D/g, '}')
-            .replace(/\%3A/g, ':')
-            .replace(/\%22/g, '"')
-            .replace(/\+/g, ' ')
-            .replace(/\+\+/g, '')
-            .replace(/\%2F/g, '/')
-            .replace(/\%3C/g, '<')
-            .replace(/\%3E/g, '>')
-            .replace(/\%5B/g, '[')
-            .replace(/\%5D/g, ']');
-        return receivedData;
-    }
+    // function stripEscapeCodes(chunk) {
+    //     var receivedData = chunk.toString()
+    //         .replace(/\%7E/g, '~')
+    //         .replace(/\%26/g, '&')
+    //         .replace(/\%40/g, '@')
+    //         .replace(/\%23/g, '#')
+    //         .replace(/\%7B/g, '{')
+    //         .replace(/\%0D/g, '')
+    //         .replace(/\%0A/g, '')
+    //         .replace(/\%2C/g, ',')
+    //         .replace(/\%7D/g, '}')
+    //         .replace(/\%3A/g, ':')
+    //         .replace(/\%22/g, '"')
+    //         .replace(/\+/g, ' ')
+    //         .replace(/\+\+/g, '')
+    //         .replace(/\%2F/g, '/')
+    //         .replace(/\%3C/g, '<')
+    //         .replace(/\%3E/g, '>')
+    //         .replace(/\%5B/g, '[')
+    //         .replace(/\%5D/g, ']');
+    //     return receivedData;
+    // }
 
-    function executeBash(cmd) {
-        var exec = require('child_process').exec;
-        exec(cmd, function(error, stdout, stderr) {
-            log("Executing: " + cmd);
-            fs.writeFile(HomebridgeAPI.user.configPath().replace("config.json","exec.out"), stdout, "utf8", function(err, result) {
-                if (err) {
-                    return log(err);
-                }
-            });
-        });
-    }
+    // function executeBash(cmd) {
+    //     var exec = require('child_process').exec;
+    //     exec(cmd, function(error, stdout, stderr) {       // eslint-disable-line
+    //         log("Executing: " + cmd);
+    //         fs.writeFile(HomebridgeAPI.user.configPath().replace("config.json","exec.out"), stdout, "utf8", function(err, result) {       // eslint-disable-line
+    //             if (err) {
+    //                 return log(err);
+    //             }
+    //         });
+    //     });
+    // }
 
-    function getInstalledPlugins(res) {
-        executeBash("npm list -g | grep 'homebridge'");
-        fs.readFile(HomebridgeAPI.user.configPath().replace("config.json","exec.out"), "utf8", function(err, result) {
-            if (err) {
-                return log(err);
-            } else {
-                installedPlugins = result;
-            }
-        });
-    }
+    // function getInstalledPlugins(res) {
+    //     executeBash("npm list -g | grep 'homebridge'");
+    //     fs.readFile(HomebridgeAPI.user.configPath().replace("config.json","exec.out"), "utf8", function(err, result) {
+    //         if (err) {
+    //             return log(err);
+    //         } else {
+    //             installedPlugins = result;
+    //         }
+    //     });
+    // }
 
     function reloadConfig(res) {
-        loadConfig();
-        printMainPage(res);
+        loadConfig();       // eslint-disable-line
+        printMainPage(res);       // eslint-disable-line
     }
 
-    function saveConfig(res, backup) {
-        var newConfig = JSON.stringify(configJSON)
+    function saveConfig(res, backup) {       // eslint-disable-line
+        var newConfig = JSON.stringify(configJSON)       // eslint-disable-line
             .replace(/\[,/g, '[')
             .replace(/,null/g, '')
             .replace(/null,/g, '')
@@ -105,7 +105,7 @@ function ServerPlatform(log, config) {
             .replace(/,\]/g, ']');
         newConfig = JSON.stringify(JSON.parse(newConfig), null, 4);
         if (backup != null) {
-            fs.writeFile(HomebridgeAPI.user.configPath() + '.bak', newConfig, "utf8", function(err, data) {
+            fs.writeFile(HomebridgeAPI.user.configPath() + '.bak', newConfig, "utf8", function(err, data) {       // eslint-disable-line
                 if (err) {
                     return log(err);
                 }
@@ -225,7 +225,7 @@ function ServerPlatform(log, config) {
                 if (config.log == "systemd") {
                       var exec = require('child_process').exec;
                       var cmd = "journalctl --no-pager -u homebridge --since yesterday";
-                      exec(cmd, function(error, stdout, stderr) {
+                      exec(cmd, function(error, stdout, stderr) {       // eslint-disable-line
                           log("Executing: " + cmd);
                           res.write(header + navBar);
                           res.write("<div class='container'>");

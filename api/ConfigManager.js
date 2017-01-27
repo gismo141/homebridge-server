@@ -8,7 +8,7 @@ module.exports = {
 
 // Internals
 var homebridgeAPI;
-var hbLog = function() {};
+var hbLog = function() {};       // eslint-disable-line
 
 //
 var _config = {};

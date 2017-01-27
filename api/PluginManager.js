@@ -24,7 +24,7 @@ module.exports = {
 var _plugins = {};
 
 var hbsPath = "";
-var hbLog = function() {};
+var hbLog = function() {};       // eslint-disable-line
 
 function PluginManager(libPath, log) {
     hbsPath = libPath;
