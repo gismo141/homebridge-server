@@ -35,7 +35,7 @@ function ServerPlatform(log, config) {
 
     function reloadHTML() {
         loadHTML("header.html", function(data) { header = data; });
-        loadHTML("navBar.html", function(data) { navBar = data; });
+        loadHTML("navbar.html", function(data) { navBar = data; });
         loadHTML("footer.html", function(data) { footer = data; });
         loadHTML("main.html", function(data) { mainHTML = data; });
         loadHTML("plugins.html", function(data) { pluginsHTML = data; });

@@ -33,12 +33,21 @@ fi
 TEST_CONFIG_DIR="/tmp/homebridge-server-test"
 
 # Create config directory if not exists
-if ! [ -x "$TEST_CONFIG_DIR/" ]; then
+if ! [ -d "$TEST_CONFIG_DIR/" ]; then
     mkdir "$TEST_CONFIG_DIR/"
+    echo "created test config dir: $TEST_CONFIG_DIR/"
 fi
 
 # Copy the config.json fixture
 cp scripts/$HOMEBRIDGE_CONFIG "$TEST_CONFIG_DIR/config.json"
+
+if [ "$TRAVIS_BUILD_DIR" != "" ]; then
+    echo "We're running on travis-ci!"
+    if ! [ -e "~/.homebridge/config.json" ]; then
+        cp ~/.homebridge/config.json "$TEST_CONFIG_DIR/config.json"
+        echo "replaced travis-special config"
+    fi
+fi
 
 # Start homebridge
 $HOMEBRIDGE_BINARY -U $TEST_CONFIG_DIR -P $HOMEBRIDGE_SERVER_DIR >/dev/null 2>&1 &
