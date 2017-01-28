@@ -1,3 +1,5 @@
+/* eslint-env node */
+
 'use strict';
 
 module.exports = {
@@ -6,7 +8,7 @@ module.exports = {
 
 // Internals
 var homebridgeAPI;
-var hbLog = function() {};
+var hbLog = function() {};       // eslint-disable-line
 
 //
 var _config = {};
@@ -74,9 +76,24 @@ ConfigManager.prototype.addAccessoryConfig = function(accessoryConfig, callback)
 }
 
 ConfigManager.prototype.updateBridgeConfig = function(changes, callback) {
+
+    // Apply the changes to a copy of _config
+    var newConfig = _config;
     for (var key in changes) {
-        _config.bridge[key] = changes[key];
+        newConfig.bridge[key] = changes[key];
     }
+
+    // Validate all bridge config fields
+    if(/^([0-9A-F]{2}[:]){5}([0-9A-F]{2})$/.test(newConfig.username) === false) {
+        callback(false, "Invalid username! (Style: XX:XX:XX:XX)");
+        return;
+    }
+    if(/^(([0-9]{3})[-]([0-9]{2})[-]([0-9]{3}))$/.test(newConfig.pin) === false) {
+        callback(false, "Invalid pin! (Style: XXX-XX-XXX)");
+        return;
+    }
+
+    _config = newConfig;
     this.save(callback);
 }
 

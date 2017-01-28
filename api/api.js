@@ -1,3 +1,5 @@
+/* eslint-env node */
+
 'use strict';
 
 module.exports = {
@@ -72,23 +74,13 @@ API.prototype.saveBridgeConfig = function(configChanges, callback) {
     }
 
     if (configChanges.bridgeUsername) {
-        var regex = /^([0-9A-F]{2}[:]){5}([0-9A-F]{2})$/;
-        if(regex.test(configChanges.bridgeUsername)) {
-            changes["username"] = configChanges.bridgeUsername;
-            hasChanges = true;
-        } else {
-          callback(false, "Invalid username! (Style: XX:XX:XX:XX)");
-        }
+        changes["username"] = configChanges.bridgeUsername;
+        hasChanges = true;
     }
 
     if (configChanges.bridgePin) {
-      var regex = /^(([0-9]{3})[-]([0-9]{2})[-]([0-9]{3}))$/;
-      if(regex.test(configChanges.bridgePin)) {
-          changes["pin"] = configChanges.bridgePin;
-          hasChanges = true;
-      } else {
-        callback(false, "Invalid pin! (Style: XXX-XX-XXX)");
-      }
+        changes["pin"] = configChanges.bridgePin;
+        hasChanges = true;
     }
 
     if (!hasChanges) {

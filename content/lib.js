@@ -1,3 +1,4 @@
+/* eslint-env browser, jquery */
 $( document ).tooltip({
   classes: {
     "ui-tooltip": "highlight"
@@ -6,6 +7,7 @@ $( document ).tooltip({
 });
 
 // main.html
+/* exported configFromData */
 function configFromData(configData) {
     // TODO: use internalPropertiesReplacer approach like in ConfigManager
     var config = JSON.parse(JSON.stringify(configData));
@@ -19,9 +21,10 @@ function configFromData(configData) {
     return (JSON.stringify(config, null, ' '));
 }
 
+
 // plugins.html
+/* exported listInstalledPlugins */
 function listInstalledPlugins() {
-    console.log("listInstalledPlugins()");
     $.getJSON("/api/installedPlugins", function(installedPlugins) {
         $("#installedPluginsTable").empty();
         $.each( installedPlugins, function( id_plugin, plugin ) {
@@ -46,6 +49,7 @@ function listInstalledPlugins() {
     });
 }
 
+/* exported callPluginOperation */
 function callPluginOperation(pluginName, operation) {
     $('#progressModal').modal('show');
 
@@ -90,13 +94,7 @@ function callPluginOperation(pluginName, operation) {
     });
 }
 
-
-
-// addPlatform.html
-function listPlugins() {
-
-}
-
+/* exported addPlatformConfig */
 function addPlatformConfig() {
     var payload = $("#submitPlatformConfig").serialize();
     $.post( "/api/addPlatformConfig", payload, function(result) {
@@ -104,7 +102,9 @@ function addPlatformConfig() {
     });
 }
 
+
 // addAccessory.html
+/* exported addAccessoryConfig */
 function addAccessoryConfig() {
     var payload = $("#submitAccessoryConfig").serialize();
     $.post( "/api/addAccessoryConfig", payload, function(result) {

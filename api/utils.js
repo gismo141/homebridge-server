@@ -1,3 +1,5 @@
+/* eslint-env node */
+
 'use strict';
 
 module.exports = {
@@ -30,7 +32,7 @@ Utils.prototype.getJSON = function (options, onResult) {
         });
     });
     req.on('error', function(err) {
-        console.log('error: ' + err.message);
+        console.log('error: ' + err.message);       // eslint-disable-line
     });
     req.end();
 };
