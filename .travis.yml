@@ -6,23 +6,6 @@ env:
 before_install:
   - "sudo apt-get install libavahi-compat-libdnssd-dev"
   - "mkdir ~/.homebridge"
-  - "echo '{ \n
-    \"bridge\": { \n
-      \"name\": \"Test-Bridge\", \n
-      \"username\": \"CC:22:3D:E3:CE:31\", \n
-      \"port\": 51826, \n
-      \"pin\": \"130-61-401\" \n
-    }, \n
-    \"platforms\": [ \n
-      { \n
-      \"platform\": \"Server\", \n
-      \"port\": 8765, \n
-      \"name\": \"Homebridge Server\", \n
-      \"modulePath\": \"/home/travis/build/maplesteve/homebridge-server/\" \n
-      } \n
-    ], \n
-    \"accessories\": [] \n
-    }' > ~/.homebridge/config.json"
 before_script:
   - npm install -g eslint
 addons:
