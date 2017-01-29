@@ -131,7 +131,7 @@ function getInstalledPlugins() {
     var fs = require('fs');
     var plugins = [];
 
-    var globalModulePath = "/usr/local/lib/node_modules/";
+    var globalModulePath = require('global-modules') + "/";
     var possiblePaths = [globalModulePath, hbsPath+"../"];
     possiblePaths.forEach(function(modulePath) {
         if (! fs.existsSync(modulePath)) {
@@ -266,7 +266,8 @@ function fetchPluginMetaData(pluginName, pluginID, callback) {
 
 function checkAccessRights(pluginName, callback) {
     var fs = require('fs');
-    var modulePath = "/usr/local/lib/node_modules/";
+    var globalModulePath = require('global-modules') + "/";
+    var modulePath = globalModulePath;
 
     var pluginNameClean = pluginName;
 
@@ -284,7 +285,7 @@ function checkAccessRights(pluginName, callback) {
         }
 
         // second, check the plugin directory...
-        modulePath = "/usr/local/lib/node_modules/" + pluginNameClean;
+        modulePath = globalModulePath + pluginNameClean;
         // ... if it already exists...
         if (fs.existsSync(modulePath) === true) {
             // ... it must be writeable
