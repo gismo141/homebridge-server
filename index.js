@@ -17,9 +17,6 @@ function ServerPlatform(log, config) {
     if (config.modulePath) {
         hbsPath = config.modulePath;
     }
-    
-    var AssetManagerLib = require(hbsPath + 'api/AssetManager.js');
-    var Assets = new AssetManagerLib.AssetManager(hbsPath, log);
 
     function reloadConfig(res) {
         loadConfig();       // eslint-disable-line
@@ -62,8 +59,8 @@ function ServerPlatform(log, config) {
     }
 
 
-    var apiLib = require(hbsPath + 'api/api.js')
-    var serverAPI = new apiLib.API(HomebridgeAPI, hbsPath, log);
+    var httpAPILib = require(hbsPath + 'api/HttpAPI.js')
+    var httpAPI = new httpAPILib.HttpAPI(HomebridgeAPI, hbsPath, log);
 
     /**
      * [handleAPIRequest description]
@@ -77,43 +74,43 @@ function ServerPlatform(log, config) {
         var path = require('url').parse(req.url).pathname;
         switch (path) {
             case '/api/bridgeInfo':
-                api_bridgeInfo(res);
+                httpAPI.bridgeInfo(res);
                 break;
             case '/api/installedPlatforms':
-                api_installedPlatforms(res);
+                httpAPI.installedPlatforms(res);
                 break;
             case '/api/accessories':
-                api_accessories(res);
+                httpAPI.accessories(res);
                 break;
             case '/api/searchPlugins':
-                api_searchPlugins(req, res);
+                httpAPI.searchPlugins(req, res);
                 break;
             case '/api/installedPlugins':
-                api_installedPlugins(res);
+                httpAPI.installedPlugins(res);
                 break;
             case '/api/saveBridgeConfig':
-                api_saveBridgeConfig(req, res);
+                httpAPI.saveBridgeConfig(req, res);
                 break;
             case '/api/createConfigBackup':
-                api_createConfigBackup(res);
+                httpAPI.createConfigBackup(res);
                 break;
             case '/api/installPlugin':
-                api_installPlugin(req, res);
+                httpAPI.installPlugin(req, res);
                 break;
             case '/api/updatePlugin':
-                api_updatePlugin(req, res);
+                httpAPI.updatePlugin(req, res);
                 break;
             case '/api/removePlugin':
-                api_removePlugin(req, res);
+                httpAPI.removePlugin(req, res);
                 break;
             case '/api/restartHomebridge':
-                api_restartHomebridge(res);
+                httpAPI.restartHomebridge(res, config);
                 break;
             case '/api/addPlatformConfig':
-                api_addPlatformConfig(req, res);
+                httpAPI.addPlatformConfig(req, res);
                 break;
             case '/api/addAccessoryConfig':
-                api_addAccessoryConfig(req, res);
+                httpAPI.addAccessoryConfig(req, res);
                 break;
             default:
                 log("unhandled API request: " + req);
@@ -123,6 +120,10 @@ function ServerPlatform(log, config) {
         }
     }
 
+
+
+    var AssetManagerLib = require(hbsPath + 'api/AssetManager.js');
+    var Assets = new AssetManagerLib.AssetManager(hbsPath, log);
 
     /**
      * [handleContentRequest description]
@@ -226,156 +227,6 @@ function ServerPlatform(log, config) {
         });
       });
     });
-
-
-
-    function api_bridgeInfo(res) {
-        serverAPI.getBridgeInfo(function (json) {
-            res.write(JSON.stringify(json));
-            res.end();
-        });
-    }
-
-    function api_installedPlatforms(res) {
-        serverAPI.getInstalledPlatforms(function (json) {
-            res.write(JSON.stringify(json));
-            res.end();
-        });
-    }
-
-    function api_accessories(res) {
-        serverAPI.getInstalledAccessories(function (json) {
-            res.write(JSON.stringify(json));
-            res.end();
-        });
-    }
-
-    function api_searchPlugins(req, res) {
-        var query = require('url').parse(req.url).query;
-        serverAPI.getPluginsFromNPMS(query, function (json) {
-            res.write(JSON.stringify(json));
-            res.end();
-        });
-    }
-
-    function api_installedPlugins(res) {
-        serverAPI.getInstalledPlugins(function (json) {
-            res.write(JSON.stringify(json));
-            res.end();
-        })
-    }
-
-    function api_saveBridgeConfig(req, res) {
-        var body = '';
-        req.on('data', function (data) {
-            body += data;
-            // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
-            if (body.length > 1e6) {
-                // FLOOD ATTACK OR FAULTY CLIENT, NUKE REQUEST
-                req.connection.destroy();
-            }
-        });
-        req.on('end', function () {
-            var qs = require('querystring');
-            var bodyJSON = qs.parse(body);
-            serverAPI.saveBridgeConfig(bodyJSON, function (result, error) {
-                res.write(JSON.stringify({'success': result, 'msg': error}));
-                res.end();
-            });
-        });
-    }
-
-    function api_createConfigBackup(res) {
-        serverAPI.createConfigBackup(function (result, error) {
-            res.write(JSON.stringify({'success': result, 'msg': error}));
-            res.end();
-        });
-    }
-
-    function api_installPlugin(req, res) {
-        var pluginName = require('url').parse(req.url).query;
-        res.setHeader("Content-Type", "text/text");
-        serverAPI.installPlugin(pluginName, function (success, msg, closed) {
-            if (closed) {
-                res.write("\n");
-                res.write(JSON.stringify({'hbsAPIResult': {'success': success, 'msg': msg}}));
-                res.end();
-            } else {
-                res.write(msg);
-            }
-        });
-    }
-
-    function api_updatePlugin(req, res) {
-        var pluginName = require('url').parse(req.url).query;
-        res.setHeader("Content-Type", "text/text");
-        serverAPI.updatePlugin(pluginName, function (success, msg, closed) {
-            if (closed) {
-                res.write("\n");
-                res.write(JSON.stringify({'hbsAPIResult': {'success': success, 'msg': msg}}));
-                res.end();
-            } else {
-                res.write(msg);
-            }
-        });
-    }
-
-    function api_removePlugin(req, res) {
-        var pluginName = require('url').parse(req.url).query;
-        res.setHeader("Content-Type", "text/text");
-        serverAPI.removePlugin(pluginName, function (success, msg, closed) {
-            if (closed) {
-                res.write("\n");
-                res.write(JSON.stringify({'hbsAPIResult': {'success': success, 'msg': msg}}));
-                res.end();
-            } else {
-                res.write(msg);
-            }
-        });
-    }
-
-    function api_restartHomebridge(res) {
-        serverAPI.restartHomebridge(config, function (json) {
-            res.write(JSON.stringify(json));
-            res.end();
-        });
-    }
-
-    function api_addPlatformConfig(req, res) {
-        var body = '';
-        req.on('data', function (data) {
-            body += data;
-            if (body.length > 1e6) {
-                req.connection.destroy();
-            }
-        });
-        req.on('end', function () {
-            var qs = require('querystring');
-            var parts = qs.parse(body);
-            serverAPI.addPlatformConfig(parts, function (json) {
-                res.write(JSON.stringify(json));
-                res.end();
-            });
-        });
-    }
-
-    function api_addAccessoryConfig(req, res) {
-        var body = '';
-        req.on('data', function (data) {
-            body += data;
-            if (body.length > 1e6) {
-                req.connection.destroy();
-            }
-        });
-        req.on('end', function () {
-            var qs = require('querystring');
-            var parts = qs.parse(body);
-            serverAPI.addAccessoryConfig(parts, function (json) {
-                res.write(JSON.stringify(json));
-                res.end();
-            });
-        });
-    }
 }
 
 ServerPlatform.prototype.accessories = function(callback) {
