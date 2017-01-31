@@ -1,4 +1,4 @@
-## 1.0.24
+## 2.0.0
 - Refactoring
 - Config option for path of node_modules; if not set, '/usr/local/lib/node_modules/' is assumed.
 - Extended JSON-API
@@ -24,19 +24,19 @@
 
 
 ## TODO:
-- Main view
-    - Provide link to plugin homepage in platforms and accessories list
-    - Use icons for platform/accessory status (running, warning, stopped)
-    - Add 'description' to bridgeInfo
-    - Plugins can provide an example config in their package; use it for a ConfigWizard
-- Plugins
-    - Installed plugins
-        - Show release date info for installed plugins with update
-        - Show link if plugin is not configured
-    - Operation
-        - Highlight if error occured.
-- API
-    - Convert backend error codes to helpful text (e.g. 'EACCES')
-    - restartHomebridge: rework GUI; current approach doesn't work since the server is terminated...
-- PluginManager
-    - getInstalledPlugins: derive modulePath from config.modulePath
+### Main view
+    - [x] Provide link to plugin homepage in platforms and accessories list
+    - [ ] Use icons for platform/accessory status (running, warning, stopped)
+    - [ ] Add 'description' to bridgeInfo
+    - [ ] Plugins can provide an example config in their package; use it for a ConfigWizard
+### Plugins
+    - [ ] Installed plugins
+        - [x] Show release date info for installed plugins with update
+        - [ ] Show link if plugin is not configured
+    - [ ] Operation
+        - [ ] Highlight if error occured.
+### API
+    - [ ] Convert backend error codes to helpful text (e.g. 'EACCES')
+    - [ ] restartHomebridge: rework GUI; current approach doesn't work since the server is terminated...
+### PluginManager
+    - [x] getInstalledPlugins: derive modulePath from config.modulePath
