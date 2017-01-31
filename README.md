@@ -8,7 +8,7 @@
 The purpose of this plugin is to change your homebridge configuration via the webbrowser.
 The plugin handles the JSON-part and you - as a user - can add your devices to the bridge.
 
-![Overview](overview.png)
+![Overview](resources/overview.png)
 
 See my blog post [Configure your Homebridge with Homebridge-Server](https://gismo141.github.io/configure-your-homebridge-2/) on how I implemented this plugin.
 
@@ -63,20 +63,20 @@ If you want to backup your configuration, hit the Backup-button in the menubar o
 The plugin saves the configuration at the same location of your original configuration but appends an `.bak`-extension.
 Whenever you crash your config you should have a valid backup!
 
-![Backup](backup.png)
+![Backup](resources/backup.png)
 
 ## Log-File
 
 You can directly see what's happening on your Homebridge - hit the button in the menubar and the webserver shows you the log in your browser!
 
-![Log File](log_file.png)
+![Log File](resources/log_file.png)
 
 ## Manage your Homebridge-plugins
 
 From this version you are now able to browser, remove, and install all Homebridge-plugins that are available on [https://npmjs.com](https://npmjs.com)!
 Thanks to the great API of [https://npms.io](https://npms.io) you can filter the plugins by name and description.
 
-![Plugins](plugins.png)
+![Plugins](resources/plugins.png)
 
 **At the moment you can receive a 250 results. I'll fix it as soon as I can! ;)**
 
