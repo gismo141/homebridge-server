@@ -11,11 +11,12 @@ module.exports = function(homebridge) {
 function ServerPlatform(log, config) {
     var fs = require('fs');
     var http = require('http');
+    var path = require('path');
 
     var globalNPMDir = require('global-modules');
-    var hbsPath = globalNPMDir + "/homebridge-server/";
+    var hbsPath = path.resolve(globalNPMDir, "homebridge-server");
     if (config.modulePath) {
-        hbsPath = config.modulePath;
+        hbsPath = path.normalize(config.modulePath);
     }
 
     function reloadConfig(res) {
@@ -59,7 +60,7 @@ function ServerPlatform(log, config) {
     }
 
 
-    var httpAPILib = require(hbsPath + 'api/HttpAPI.js')
+    var httpAPILib = require(path.resolve(hbsPath, 'api', 'HttpAPI.js'));
     var httpAPI = new httpAPILib.HttpAPI(HomebridgeAPI, hbsPath, log);
 
     /**
@@ -122,7 +123,7 @@ function ServerPlatform(log, config) {
 
 
 
-    var AssetManagerLib = require(hbsPath + 'api/AssetManager.js');
+    var AssetManagerLib = require(path.resolve(hbsPath, 'api', 'AssetManager.js'));
     var Assets = new AssetManagerLib.AssetManager(hbsPath, log);
 
     /**
@@ -167,7 +168,7 @@ function ServerPlatform(log, config) {
                       });
                 } else {
                   var logFile = require('fs');
-                  logFile.readFile(config.log, 'utf8', function(err, log) {
+                  logFile.readFile(path.normalize(config.log), 'utf8', function(err, log) {
                       if (err) {
                           return log(err);
                       }

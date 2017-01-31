@@ -38,7 +38,7 @@ PluginManager.prototype.plugins = function() {
 
 
 PluginManager.prototype.search = function(query, callback) {
-    var utilsLib = require(hbsPath + "api/utils.js");
+    var utilsLib = require(path.resolve(hbsPath, 'api', 'utils.js'));
     var utils = new utilsLib.Utils();
 
     var options = {
@@ -129,29 +129,35 @@ PluginManager.prototype.removePlugin = function(pluginName, callback) {
  */
 function getInstalledPlugins() {
     var fs = require('fs');
+    var path = require('path');
     var plugins = [];
 
     var globalModulePath = require('global-modules') + "/";
-    var possiblePaths = [globalModulePath, hbsPath+"../"];
+    var possiblePaths = [globalModulePath, hbsPath + "../"];
     possiblePaths.forEach(function(modulePath) {
-        if (! fs.existsSync(modulePath)) {
+        if (! fs.existsSync(path.normalize(modulePath))) {
             return;
         }
-        var modules = fs.readdirSync(modulePath);
+        var modules = fs.readdirSync(path.normalize(modulePath));
         for (var moduleID in modules) {
             var moduleName = modules[moduleID];
             if (moduleName.startsWith('homebridge-')) {
                 var packagePath = modulePath + moduleName + "/package.json";
-                var packageJSON = require(packagePath);
-                var plugin = {
-                    "name": moduleName,
-                    "version": packageJSON.version,
-                    "latestVersion": "n/a",
-                    "isLatestVersion": "n/a",
-                    "platformUsage": 0,
-                    "accessoryUsage": 0
+                var packageJSON = "";
+                try {
+                  packageJSON = require(packagePath);
+                  var plugin = {
+                      "name": moduleName,
+                      "version": packageJSON.version,
+                      "latestVersion": "n/a",
+                      "isLatestVersion": "n/a",
+                      "platformUsage": 0,
+                      "accessoryUsage": 0
+                  }
+                  plugins.push(plugin);
+                } catch (e) {
+                  hbLog("-> PluginManager:getInstalledPlugins(): " + moduleName + " will be ignored because it is not a valid homebridge plugin.");
                 }
-                plugins.push(plugin);
             }
         }
     });
