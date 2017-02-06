@@ -7,23 +7,38 @@
             <div><b>Host OS:</b> <span id="bridgeHostOS"></span></div>
         </div>
         <div style="width:50%">
-            <div><b>Version:</b> <span id='bridgeVersion'></span></div>
+            <div><b>Version:</b> <span id='bridgeVersion'></span> <span id='bridgeUpdate'></span></div>
             <div><b>Memory used by bridge:</b> <span id="bridgeMemoryUsed"></span></div>
         </div>
     </div>
 
     <script>
-    $.getJSON( "/api/bridgeInfo", function( data ) {
-        var versionInfo = "up to date";
-        if (data.bridgeVersion !== data.latestVersion) {
-            versionInfo = "latest is " + data.latestVersion;
-        }
-        $( "#bridgeVersion" ).text(data.bridgeVersion + " (" + versionInfo + ")");
+    function updateBridgeStats() {
+        var eventSource = new EventSource('http://127.0.0.1:8765/api/bridgeInfo');
 
-        $( "#bridgeMemoryUsed" ).text(numeral(data.bridgeMemoryUsed).format('0b'));
-        $( "#bridgeUptime" ).text(numeral(data.bridgeUptime).format('00:00:00'));
-        $( "#bridgeHostOS" ).text(data.bridgeHostOS);
-    });
+        eventSource.addEventListener('message', function(e) {
+            var result = JSON.parse(e.data);
+
+            if (result.type === 'bridgeInfo') {
+                $("#bridgeUptime").text(moment.duration(result.data.uptime, 'seconds').humanize());
+                $("#bridgeMemoryUsed").text(numeral(result.data.heap).format('0b'));
+                $("#bridgeHostOS").text(result.data.osInfo);
+                $("#bridgeVersion").text(result.data.hbVersion);
+            }
+            if (result.type === 'bridgeUpdateAvailable') {
+                var updateInfo = "";
+                var status = result.data.updateAvailable;
+                if (status == true) {
+                    updateInfo = "update available";
+                    if (result.data.latestVersion !== 'unknown') {
+                        updateInfo = updateInfo + ": " + result.data.latestVersion;
+                    }
+                }
+                $("#bridgeUpdate").text(updateInfo);
+            }
+        }, false);
+    }
+    updateBridgeStats();
     </script>
 </footer>
 </html>
