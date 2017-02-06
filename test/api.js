@@ -2,7 +2,8 @@
 
 var should = require('chai').should(),
     supertest = require('supertest'),
-    api = supertest('http://localhost:8765');
+    api = supertest('http://localhost:8765'),
+    EventSource = require('eventsource');
 
 describe('Testing the JSON API', function() {
     describe('/api/nonexisting', function() {
@@ -20,8 +21,24 @@ describe('Testing the JSON API', function() {
     });
 
     describe('/api/bridgeInfo', function() {
-        it('returns a JSON with bridge infos', function(done) {
-            api.get('/api/bridgeInfo')
+        it('can be subscribed to and returns bridgeInfo', function(done) {
+            var es = new EventSource("http://127.0.0.1:8765/api/bridgeInfo");
+            es.onmessage = function (m) {
+                var result = JSON.parse(m.data);
+                result.should.have.property('type', 'bridgeInfo');
+                result.should.have.property('data').that.is.an('object');
+                result.data.should.have.property('uptime');
+                result.data.should.have.property('heap');
+                result.data.should.have.property('osInfo');
+                result.data.should.have.property('hbVersion');
+                done();
+            };
+        });
+    });
+
+    describe('/api/bridgeConfig', function() {
+        it('returns a JSON with bridge config', function(done) {
+            api.get('/api/bridgeConfig')
             .expect(200)
             .expect('Content-Type', 'application/json')
             .end(function(err, res) {
@@ -32,11 +49,6 @@ describe('Testing the JSON API', function() {
                 res.body.should.have.property('bridgePin');
                 res.body.should.have.property('bridgeName');
                 res.body.should.have.property('bridgeUsername');
-                res.body.should.have.property('bridgeVersion');
-                res.body.should.have.property('latestVersion');
-                res.body.should.have.property('bridgeMemoryUsed');
-                res.body.should.have.property('bridgeUptime');
-                res.body.should.have.property('bridgeHostOS');
                 done();
             });
         });

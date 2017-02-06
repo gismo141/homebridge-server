@@ -61,7 +61,11 @@ function ServerPlatform(log, config) {
 
 
     var httpAPILib = require(path.resolve(hbsPath, 'api', 'HttpAPI.js'));
-    var httpAPI = new httpAPILib.HttpAPI(HomebridgeAPI, hbsPath, log);
+    var infoOptions = {
+        "updateFrequency" : 10000,
+        "updateCheckFrequency" : 3600000
+    }
+    var httpAPI = new httpAPILib.HttpAPI(HomebridgeAPI, hbsPath, log, infoOptions);
 
     /**
      * [handleAPIRequest description]
@@ -71,11 +75,13 @@ function ServerPlatform(log, config) {
      */
     function handleAPIRequest(req, res) {
         log("handleAPIRequest: " + req.url);
-        res.setHeader("Content-Type", "application/json");
         var path = require('url').parse(req.url).pathname;
         switch (path) {
             case '/api/bridgeInfo':
                 httpAPI.bridgeInfo(res);
+                break;
+            case '/api/bridgeConfig':
+                httpAPI.bridgeConfig(res);
                 break;
             case '/api/installedPlatforms':
                 httpAPI.installedPlatforms(res);

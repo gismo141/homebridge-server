@@ -6,8 +6,6 @@ module.exports = {
   API: API
 }
 
-var utils;
-
 var confMgr, pluginMgr, hbsPath;
 var hbLog = function() {};
 
@@ -25,10 +23,6 @@ function API(homebridge, libPath, log) {
 
     var PluginManagerLib = require(hbsPath + 'api/PluginManager.js');
     pluginMgr = new PluginManagerLib.PluginManager(hbsPath, hbLog);
-
-    var utilsLib = require(hbsPath + 'api/utils.js');
-    utils = new utilsLib.Utils();
-
 }
 
 /**
@@ -36,33 +30,14 @@ function API(homebridge, libPath, log) {
  * @param  {Function} callback [description]
  * @return {[type]}            [description]
  */
-API.prototype.getBridgeInfo = function(callback) {
-    var bridgeVersion = this.HomebridgeAPI.serverVersion !== undefined ? this.HomebridgeAPI.serverVersion : "unknown";
-    var options = {
-        host: 'api.npms.io',
-        port: 443,
-        path: '/v2/package/homebridge',
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    };
-    utils.getJSON(options, function(statusCode, result) {
-        var bridgeConfig = confMgr.config().bridge;
-        var os = require('os');
-        var osInfo = os.type() + " " + os.arch() + ", Release " + os.release();
-        var resultJSON = {
-            bridgePin: bridgeConfig.pin,
-            bridgeName: bridgeConfig.name,
-            bridgeUsername: bridgeConfig.username,
-            bridgeVersion: bridgeVersion,
-            latestVersion: result["collected"]["metadata"]["version"],
-            bridgeMemoryUsed: process.memoryUsage().heapUsed,
-            bridgeUptime: process.uptime(),
-            bridgeHostOS: osInfo
-        }
-        callback(resultJSON);
-    });
+API.prototype.getBridgeConfig = function(callback) {
+    var bridgeConfig = confMgr.config().bridge;
+    var resultJSON = {
+        bridgePin: bridgeConfig.pin,
+        bridgeName: bridgeConfig.name,
+        bridgeUsername: bridgeConfig.username,
+    }
+    callback(resultJSON);
 }
 
 API.prototype.saveBridgeConfig = function(configChanges, callback) {

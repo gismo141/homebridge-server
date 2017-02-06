@@ -6,16 +6,41 @@ module.exports = {
   HttpAPI: HttpAPI
 }
 
-var serverAPI
+var serverAPI;
+var infoEmitter;
 
-function HttpAPI(HomebridgeAPI, hbsPath, log) {
+function HttpAPI(HomebridgeAPI, hbsPath, log, infoOptions) {
     var apiLib = require(hbsPath + 'api/api.js')
     serverAPI = new apiLib.API(HomebridgeAPI, hbsPath, log);
+
+    var path = require('path');
+    var BridgeInfoEmitter = require(path.resolve(require.resolve('../lib/HomebridgeInfoEmitter/BridgeInfoEmitter.js')));
+    infoEmitter = BridgeInfoEmitter(infoOptions, HomebridgeAPI);
+    infoEmitter.start();
+}
+
+HttpAPI.prototype.bridgeInfo = function(res) {
+    res.setHeader("Content-Type", "text/event-stream");
+
+    // Send the current data to the client so he doesn't have to
+    // wait for the next update before he get's something.
+    res.write("data: " + JSON.stringify({'type': 'bridgeInfo', 'data': infoEmitter.initialInfo()}) + "\n\n");
+    res.write("data: " + JSON.stringify({'type': 'bridgeUpdateAvailable', 'data': infoEmitter.lastUpdateCheck()}) + "\n\n");
+
+    // From here we'll write whenever the emitter has something to say...
+    infoEmitter.on('bridgeInfo', function(data) {
+        res.write("data: " + JSON.stringify({'type': 'bridgeInfo', 'data': data}) + "\n\n");
+    });
+
+    infoEmitter.on('bridgeUpdateAvailable', function(data) {
+        res.write("data: " + JSON.stringify({'type': 'bridgeUpdateAvailable', 'data': data}) + "\n\n");
+    });
 }
 
 
-HttpAPI.prototype.bridgeInfo = function(res) {
-    serverAPI.getBridgeInfo(function (json) {
+HttpAPI.prototype.bridgeConfig = function(res) {
+    serverAPI.getBridgeConfig(function (json) {
+        res.setHeader("Content-Type", "application/json");
         res.write(JSON.stringify(json));
         res.end();
     });
