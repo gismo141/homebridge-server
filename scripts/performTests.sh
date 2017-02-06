@@ -5,9 +5,9 @@ HOMEBRIDGE_SERVER_DIR="../"
 HOMEBRIDGE_CONFIG="homebridge-test-config.json"
 
 # You can set variables to own values by the command line when calling 'npm test':
-# - 'HBB': Provide the full path to the 'homebridge' binary; otherwise make sure, that  'homebridge' is found by the shell.
+# - 'HBB': Provide the full path to the 'homebridge' binary; otherwise make sure, that 'homebridge' is found by the shell.
 # - 'HBS': Full path to the homebridge-server directory used for development.
-# - 'HBC': If you have a special config file for homebridge, provide the fullt path (e.g. for local testing).
+# - 'HBC': If you have a special config file for homebridge, provide the full path (e.g. for local testing).
 # Example:
 # $ HBB="/Development/homebridge/bin/homebridge" HBS="/Development/homebridge-server/" HBC="local_conf.json" npm test
 if [ $HBB ]; then
