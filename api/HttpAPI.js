@@ -23,6 +23,7 @@ HttpAPI.prototype.bridgeInfo = function(res) {
 
 HttpAPI.prototype.installedPlatforms = function(res) {
     serverAPI.getInstalledPlatforms(function (json) {
+        res.setHeader("Content-Type", "application/json");
         res.write(JSON.stringify(json));
         res.end();
     });
@@ -30,6 +31,7 @@ HttpAPI.prototype.installedPlatforms = function(res) {
 
 HttpAPI.prototype.accessories = function(res) {
     serverAPI.getInstalledAccessories(function (json) {
+        res.setHeader("Content-Type", "application/json");
         res.write(JSON.stringify(json));
         res.end();
     });
@@ -38,6 +40,7 @@ HttpAPI.prototype.accessories = function(res) {
 HttpAPI.prototype.searchPlugins = function(req, res) {
     var query = require('url').parse(req.url).query;
     serverAPI.getPluginsFromNPMS(query, function (json) {
+        res.setHeader("Content-Type", "application/json");
         res.write(JSON.stringify(json));
         res.end();
     });
@@ -45,6 +48,7 @@ HttpAPI.prototype.searchPlugins = function(req, res) {
 
 HttpAPI.prototype.installedPlugins = function(res) {
     serverAPI.getInstalledPlugins(function (json) {
+        res.setHeader("Content-Type", "application/json");
         res.write(JSON.stringify(json));
         res.end();
     })
@@ -64,6 +68,7 @@ HttpAPI.prototype.saveBridgeConfig = function(req, res) {
         var qs = require('querystring');
         var bodyJSON = qs.parse(body);
         serverAPI.saveBridgeConfig(bodyJSON, function (result, error) {
+            res.setHeader("Content-Type", "application/json");
             res.write(JSON.stringify({'success': result, 'msg': error}));
             res.end();
         });
@@ -72,6 +77,7 @@ HttpAPI.prototype.saveBridgeConfig = function(req, res) {
 
 HttpAPI.prototype.createConfigBackup = function(res) {
     serverAPI.createConfigBackup(function (result, error) {
+        res.setHeader("Content-Type", "application/json");
         res.write(JSON.stringify({'success': result, 'msg': error}));
         res.end();
     });
@@ -121,6 +127,7 @@ HttpAPI.prototype.removePlugin = function(req, res) {
 
 HttpAPI.prototype.restartHomebridge = function(res, config) {
     serverAPI.restartHomebridge(config, function (json) {
+        res.setHeader("Content-Type", "application/json");
         res.write(JSON.stringify(json));
         res.end();
     });
@@ -138,6 +145,7 @@ HttpAPI.prototype.addPlatformConfig = function(req, res) {
         var qs = require('querystring');
         var parts = qs.parse(body);
         serverAPI.addPlatformConfig(parts, function (json) {
+            res.setHeader("Content-Type", "application/json");
             res.write(JSON.stringify(json));
             res.end();
         });
@@ -156,6 +164,7 @@ HttpAPI.prototype.addAccessoryConfig = function(req, res) {
         var qs = require('querystring');
         var parts = qs.parse(body);
         serverAPI.addAccessoryConfig(parts, function (json) {
+            res.setHeader("Content-Type", "application/json");
             res.write(JSON.stringify(json));
             res.end();
         });
