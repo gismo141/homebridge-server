@@ -10,7 +10,6 @@ describe('Testing the JSON API', function() {
         it('returns an error when the method is unknown', function(done) {
             api.get('/api/nonexisting')
             .expect(404)
-            .expect('Content-Type', 'application/json')
             .end(function(err) {
                 if (err) {
                     return done(err);
