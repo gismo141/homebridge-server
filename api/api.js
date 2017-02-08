@@ -18,10 +18,12 @@ function API(homebridge, libPath, log) {
     hbsPath = libPath;
     hbLog = log;
 
-    var ConfigManagerLib = require(hbsPath + 'api/ConfigManager.js');
+    var pathLib = require('path');
+
+    var ConfigManagerLib = require(pathLib.resolve(hbsPath, 'api', 'ConfigManager.js'));
     confMgr = new ConfigManagerLib.ConfigManager(this.HomebridgeAPI, hbLog);
 
-    var PluginManagerLib = require(hbsPath + 'api/PluginManager.js');
+    var PluginManagerLib = require(pathLib.resolve(hbsPath, 'api', 'PluginManager.js'));
     pluginMgr = new PluginManagerLib.PluginManager(hbsPath, hbLog);
 }
 

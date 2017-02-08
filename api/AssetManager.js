@@ -13,7 +13,8 @@ var assetPath;
 var headerHTML, navBarHTML, footerHTML, mainHTML, pluginsHTML, addPlatformHTML, addAccessoryHTML, styleCSS, libJS;
 
 function AssetManager(hbsPath, log) {
-    assetPath = hbsPath + "content/";
+    assetPath = require('path').resolve(hbsPath, 'content');
+
     hbLog = log;
     this.reload();
 }
@@ -42,7 +43,7 @@ AssetManager.prototype.reload = function() {
 
 
 function loadContentAsset(name, callback) {
-    var fullPath = assetPath + name;
+    var fullPath = require('path').resolve(assetPath, name);
     fs.readFile(fullPath, 'utf8', function(err, data) {
         if (err) {
             hbLog(err);

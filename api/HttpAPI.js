@@ -10,11 +10,11 @@ var serverAPI;
 var infoEmitter;
 
 function HttpAPI(HomebridgeAPI, hbsPath, log, infoOptions) {
-    var apiLib = require(hbsPath + 'api/api.js')
+    var pathLib = require('path');
+    var apiLib = require(pathLib.resolve(hbsPath, 'api', 'api.js'));
     serverAPI = new apiLib.API(HomebridgeAPI, hbsPath, log);
 
-    var path = require('path');
-    var BridgeInfoEmitter = require(path.resolve(require.resolve('../lib/HomebridgeInfoEmitter/BridgeInfoEmitter.js')));
+    var BridgeInfoEmitter = require(pathLib.resolve(require.resolve('../lib/HomebridgeInfoEmitter/BridgeInfoEmitter.js')));
     infoEmitter = BridgeInfoEmitter(infoOptions, HomebridgeAPI);
     infoEmitter.start();
 }
