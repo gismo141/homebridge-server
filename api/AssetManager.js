@@ -10,7 +10,7 @@ var fs = require('fs');
 var hbLog = function() {};
 
 var assetPath;
-var headerHTML, navBarHTML, footerHTML, mainHTML, pluginsHTML, addPlatformHTML, addAccessoryHTML, styleCSS, libJS;
+var headerHTML, navBarHTML, footerHTML, mainHTML, pluginsHTML, addPlatformHTML, addAccessoryHTML, styleCSS, libJS, showLogHTML;
 
 function AssetManager(hbsPath, log) {
     assetPath = require('path').resolve(hbsPath, 'content');
@@ -36,6 +36,8 @@ AssetManager.prototype.addAccessoryHTML = function() { return addAccessoryHTML};
 AssetManager.prototype.styleCSS = function() { return styleCSS};
 
 AssetManager.prototype.libJS = function() { return libJS};
+
+AssetManager.prototype.showLogHTML = function() { return showLogHTML};
 
 AssetManager.prototype.reload = function() {
     loadAllContentAssets();
@@ -63,4 +65,5 @@ function loadAllContentAssets() {
     loadContentAsset("addAccessory.html", function(data) { addAccessoryHTML = data; });
     loadContentAsset("style.css", function(data) { styleCSS = data; });
     loadContentAsset("lib.js", function(data) { libJS = data; });
+    loadContentAsset("showLog.html", function(data) { showLogHTML = data; });
 }
