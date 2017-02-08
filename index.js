@@ -65,7 +65,7 @@ function ServerPlatform(log, config) {
         "updateFrequency" : 10000,
         "updateCheckFrequency" : 3600000
     }
-    var httpAPI = new httpAPILib.HttpAPI(HomebridgeAPI, hbsPath, log, infoOptions);
+    var httpAPI = new httpAPILib.HttpAPI(HomebridgeAPI, hbsPath, log, infoOptions, config);
 
     /**
      * [handleAPIRequest description]
@@ -118,6 +118,18 @@ function ServerPlatform(log, config) {
                 break;
             case '/api/addAccessoryConfig':
                 httpAPI.addAccessoryConfig(req, res);
+                break;
+            case '/api/logFileContent':
+                httpAPI.logFileContent(req, res);
+                break;
+            case '/api/subscribeToLogFileTail':
+                httpAPI.subscribeToLogFileTail(res);
+                break;
+            case '/api/unsubscribeFromLogFileTail':
+                httpAPI.unsubscribeFromLogFileTail(req, res);
+                break;
+            case '/api/logFileTail':
+                httpAPI.logFileTail(req, res);
                 break;
             default:
                 log("unhandled API request: " + req);
