@@ -78,3 +78,8 @@ input[type='radio'],input[type='checkbox'] {
     content: '\26aa';
     font-size: 12px;
 }
+
+.logHighlight {
+    font-weight: bold;
+    background-color: yellow;
+}

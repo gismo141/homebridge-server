@@ -163,6 +163,7 @@ function showLogContent(page) {
                                 .replace(/>/g, "&#62;");
             $("#logContent").append(cleanLine + "<br />");
         });
+        highlightLogText();
 
         // reset the paging links
         // firstPageLink stay always the same
@@ -241,6 +242,36 @@ function showLogContentTail() {
             }
             return;
         }
-        $("#logContent").append(result.data + "<br />");
+        var cleanLine = result.data.replace(/</g, "&#60;")
+                                   .replace(/>/g, "&#62;");
+        $("#logContent").append(cleanLine + "<br />");
+        highlightLogText();
     }, false);
+}
+
+/* exported highlightLogText */
+function highlightLogText() {
+    var text = $("#highlightText").val();
+
+    // remove the highlight
+    var currentText = $("#logContent").html();
+    var cleanText = currentText.replace(/<span class=\"logHighlight\">/gi, '')
+                               .replace(/<\/span>/gi, '');
+
+    var higlightedText;
+    if (text === "") {
+        higlightedText = cleanText;
+    } else {
+        // escape regex characters
+        var escapedText = text.replace(/\//gi, '\\/')
+                              .replace(/\./gi, '\\.')
+                              .replace(/\$/gi, '\\$')
+                              .replace(/\*/gi, '\\*')
+                              .replace(/\^/gi, '\\^');
+        var regex = new RegExp(escapedText, 'gi');
+        var subst = '<span class="logHighlight">' + text + '</span>';
+        higlightedText = cleanText.replace(regex, subst);
+    }
+
+    $("#logContent").html(higlightedText);
 }

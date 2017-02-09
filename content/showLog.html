@@ -13,6 +13,12 @@
     </script>
 
 </fieldset>
+<div>Highlight text: <input type="text" id="highlightText" name="highlightText" width="20"></div>
+    <script>
+        $("#highlightText").keyup(function () {
+            highlightLogText();
+        });
+    </script>
 <div id="paging" style="float: right;">
     <span>Page: </span>
     <span><a href="#" id="firstPageLink" onclick="showLogContent(1)">1 </a></span>
