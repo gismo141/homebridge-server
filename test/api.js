@@ -9,13 +9,7 @@ describe('Testing the JSON API', function() {
     describe('/api/nonexisting', function() {
         it('returns an error when the method is unknown', function(done) {
             api.get('/api/nonexisting')
-            .expect(404)
-            .end(function(err) {
-                if (err) {
-                    return done(err);
-                }
-                done();
-            });
+            .expect(404, done);
         });
     });
 

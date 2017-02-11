@@ -38,7 +38,7 @@ PluginManager.prototype.plugins = function() {
 
 
 PluginManager.prototype.search = function(query, callback) {
-    var path = require(path);
+    var path = require('path');
     var utilsLib = require(path.resolve(hbsPath, 'api', 'utils.js'));
     var utils = new utilsLib.Utils();
 

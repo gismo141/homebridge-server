@@ -132,7 +132,7 @@ API.prototype.getInstalledAccessories = function(callback) {
  */
 API.prototype.getPluginsFromNPMS = function(query, callback) {
     pluginMgr.search(query, function(results) {
-            callback(results)
+        callback(results)
     });
 }
 

@@ -134,7 +134,6 @@ function ServerPlatform(log, config) {
             default:
                 log("unhandled API request: " + req);
                 res.statusCode = 404;
-                res.write(JSON.stringify({error: "The called API doesn't exist."}));
                 res.end();
         }
     }
