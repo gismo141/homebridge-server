@@ -70,6 +70,22 @@ ConfigManager.prototype.addPlatformConfig = function(platformConfig, callback) {
     this.save(callback);
 }
 
+ConfigManager.prototype.removePlatformConfig = function(platformConfigID, callback) {
+    var posOfRemoveCandidate = -1;
+    for (var pos in _platformsJSON) {
+        if (_platformsJSON[pos].hbServer_confDigest === platformConfigID) {
+            posOfRemoveCandidate = pos;
+        }
+    }
+    if (posOfRemoveCandidate == -1) {
+        callback(false, "Invalid configDigest: " + platformConfigID);
+        return;
+    }
+    _platformsJSON.splice(posOfRemoveCandidate, 1);
+    callback(true, "Deleted platform config with configDigest " + platformConfigID);
+    this.save(callback);
+}
+
 ConfigManager.prototype.addAccessoryConfig = function(accessoryConfig, callback) {
     _accessoriesJSON.push(accessoryConfig);
     this.save(callback);
@@ -167,6 +183,12 @@ function loadConfig() {
     }
     for (var pf_ID in _platformsJSON) {
         var pf = _platformsJSON[pf_ID];
+
+        var crypto = require('crypto');
+        var hash = crypto.createHash('sha256');
+        hash.update(JSON.stringify(pf));
+        var digest = hash.digest('hex');
+        _platformsJSON[pf_ID]["hbServer_confDigest"] = digest;
 
         _platformsJSON[pf_ID]["hbServer_pluginName"] = platformPluginMap[pf.platform];
         if (activePlatforms.indexOf(pf.platform) === -1) {

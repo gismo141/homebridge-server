@@ -162,6 +162,14 @@ HttpAPI.prototype.restartHomebridge = function(res, config) {
     });
 }
 
+HttpAPI.prototype.removePlatformConfig = function(req, res) {
+    var platformID = require('url').parse(req.url).query;
+    serverAPI.removePlatformConfig(platformID, function(success, msg) {
+        res.setHeader("Content-Type", "application/json");
+        res.end(JSON.stringify({'success': success, 'msg': msg}));
+    })
+}
+
 HttpAPI.prototype.addPlatformConfig = function(req, res) {
     var body = '';
     req.on('data', function (data) {
