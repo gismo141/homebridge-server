@@ -175,20 +175,58 @@ function ServerPlatform(log, config) {
                 res.write(Assets.headerHTML() + Assets.navBarHTML() + Assets.showLogHTML() + Assets.footerHTML());
                 res.end();
                 break;
-            case '/content/lib.js':
-                log("serving /content/lib.js");
-                res.setHeader("Content-Type", "application/javascript");
-                res.write(Assets.libJS());
-                res.end();
-                break;
             case '/style.css':
                 log("serving style.css");
                 res.setHeader("Content-Type", "text/css");
                 res.write(Assets.styleCSS());
                 res.end();
                 break;
+            case '/js/global.js':
+                log("serving /js/global.js");
+                res.setHeader("Content-Type", "text/javascript");
+                res.write(Assets.globalJS());
+                res.end();
+                break;
+            case '/js/main.js':
+                log("serving /js/main.js");
+                res.setHeader("Content-Type", "text/javascript");
+                res.write(Assets.mainJS());
+                res.end();
+                break;
+            case '/js/plugins.js':
+                log("serving /js/plugins.js");
+                res.setHeader("Content-Type", "text/javascript");
+                res.write(Assets.pluginsJS());
+                res.end();
+                break;
+            case '/js/showLog.js':
+                log("serving /js/showLog.js");
+                res.setHeader("Content-Type", "text/javascript");
+                res.write(Assets.showLogJS());
+                res.end();
+                break;
+            case '/js/addAccessory.js':
+                log("serving /js/addAccessory.js");
+                res.setHeader("Content-Type", "text/javascript");
+                res.write(Assets.addAccessoryJS());
+                res.end();
+                break;
+            case '/js/addPlatform.js':
+                log("serving /js/addPlatform.js");
+                res.setHeader("Content-Type", "text/javascript");
+                res.write(Assets.addAccessoryJS());
+                res.end();
+                break;
+            case '/js/footer.js':
+                log("serving /js/footer.js");
+                res.setHeader("Content-Type", "text/javascript");
+                res.write(Assets.footerJS());
+                res.end();
+                break;
             default:
                 log("unhandled request: " + req.url);
+                res.statusCode = 404;
+                res.end();
                 // var url = req.url;
                 // if (url.indexOf('/remove') !== -1) {
                 //     object = url.replace('/remove', '');

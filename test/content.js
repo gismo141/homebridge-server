@@ -78,24 +78,6 @@ describe('Testing the content requests', function() {
         });
     });
 
-    describe('/content/lib.js', function() {
-        it('returns /content/lib.js', function(done) {
-            api.get('/content/lib.js')
-            .expect(200)
-            .expect('Content-Type', 'application/javascript')
-            .end(function(err, res) {
-                if (err) {
-                    return done(err);
-                }
-                res.text.should.have.length.of.at.least(300);
-                res.text.should.not.contain("<!-- file: header.html -->")
-                res.text.should.not.contain("<!-- file: navbar.html -->")
-                res.text.should.not.contain("<!-- file: footer.html -->")
-                done();
-            });
-        });
-    });
-
     describe('/style.css', function() {
         it('returns /style.css', function(done) {
             api.get('/style.css')
@@ -111,6 +93,89 @@ describe('Testing the content requests', function() {
                 res.text.should.not.contain("<!-- file: footer.html -->")
                 done();
             });
+        });
+    });
+
+    describe('Serving JS files works...', function() {
+        it('/js/global.js returns javascript file', function(done) {
+            api.get('/js/global.js')
+            .expect(200)
+            .expect('Content-Type', 'text/javascript')
+            .end(function(err, res) {
+                if (err) { return done(err); }
+                res.text.should.have.length.of.at.least(10);
+                done();
+            });
+        });
+        it('/js/plugins.js returns javascript file', function(done) {
+            api.get('/js/plugins.js')
+            .expect(200)
+            .expect('Content-Type', 'text/javascript')
+            .end(function(err, res) {
+                if (err) { return done(err); }
+                res.text.should.have.length.of.at.least(10);
+                done();
+            });
+        });
+        it('/js/showLog.js returns javascript file', function(done) {
+            api.get('/js/showLog.js')
+            .expect(200)
+            .expect('Content-Type', 'text/javascript')
+            .end(function(err, res) {
+                if (err) { return done(err); }
+                res.text.should.have.length.of.at.least(10);
+                done();
+            });
+        });
+        it('/js/main.js returns javascript file', function(done) {
+            api.get('/js/main.js')
+            .expect(200)
+            .expect('Content-Type', 'text/javascript')
+            .end(function(err, res) {
+                if (err) { return done(err); }
+                res.text.should.have.length.of.at.least(10);
+                done();
+            });
+        });
+        it('/js/addAccessory.js returns javascript file', function(done) {
+            api.get('/js/addAccessory.js')
+            .expect(200)
+            .expect('Content-Type', 'text/javascript')
+            .end(function(err, res) {
+                if (err) { return done(err); }
+                res.text.should.have.length.of.at.least(10);
+                done();
+            });
+        });
+        it('/js/addPlatform.js returns javascript file', function(done) {
+            api.get('/js/addPlatform.js')
+            .expect(200)
+            .expect('Content-Type', 'text/javascript')
+            .end(function(err, res) {
+                if (err) { return done(err); }
+                res.text.should.have.length.of.at.least(10);
+                done();
+            });
+        });
+        it('/js/footer.js returns javascript file', function(done) {
+            api.get('/js/footer.js')
+            .expect(200)
+            .expect('Content-Type', 'text/javascript')
+            .end(function(err, res) {
+                if (err) { return done(err); }
+                res.text.should.have.length.of.at.least(10);
+                done();
+            });
+        });
+    });
+
+    describe('Requesting unknown file', function() {
+        it('returns 404 error', function(done) {
+            api.get('/imnotexisting.html')
+            .expect(404, done);
+            // .end(function (err, res) {
+                // done();
+            // });
         });
     });
 });
