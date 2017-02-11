@@ -1,5 +1,7 @@
 /* eslint-env browser, jquery */
 
+/*global moment, numeral*/
+
 /* exported updateBridgeStats */
 
 function updateBridgeStats() {

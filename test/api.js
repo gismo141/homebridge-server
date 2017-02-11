@@ -106,4 +106,72 @@ describe('Testing the JSON API', function() {
             });
         });
     });
+
+    describe('Adding and removing a platform works', function() {
+        var newConfig = {
+            "platformConfig": {
+                "name": "newName",
+                "key1": "value1",
+                "key2": true
+            },
+            "plugin": "homebridge-test"
+        }
+        // make a copy
+        var expectation = JSON.parse(JSON.stringify(newConfig.platformConfig));
+        expectation.platform = newConfig.plugin;
+        expectation.hbServer_active_flag = 0;
+        expectation.hbServer_pluginName = 'homebridge-test';
+        expectation.hbServer_confDigest = '766d1e7dfeba99b9f61cac7818e84a40475d6296d5a990043b0558c69ca4adec';
+
+        it('can add a platform', function(done) {
+            api.post('/api/addPlatformConfig')
+            .send("platformConfig=" + JSON.stringify(newConfig.platformConfig))
+            .send("plugin=" + newConfig.plugin)
+            .expect(200)
+            .end(function functionName(err, res) {
+                if (err) { return done(err); }
+                done();
+            });
+        });
+        it('can fetch the added platform', function(done) {
+            api.get('/api/installedPlatforms')
+            .expect(200)
+            .end(function(err, res) {
+                if (err) { return done(err); }
+                res.body.should.be.a('array').and.have.length(2);
+                res.body.should.include(expectation);
+                done();
+            });
+        })
+        it('can remove the added platform', function(done) {
+            api.get('/api/removePlatform?' + expectation.hbServer_confDigest)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) { return done(err); }
+                res.body.success.should.be.true;
+                done();
+            });
+        })
+        it('the removed platform is no longer listed', function(done) {
+            api.get('/api/installedPlatforms')
+            .expect(200)
+            .end(function(err, res) {
+                if (err) { return done(err); }
+                res.body.should.be.a('array').and.have.length(1);
+                res.body.should.not.include(expectation);
+                done();
+            });
+        })
+        it('Calling remove with a invalid platform id fails', function(done) {
+            api.get('/api/removePlatform?' + 'invalid')
+            .expect(200)
+            .end(function(err, res) {
+                if (err) { return done(err); }
+                res.body.success.should.be.false;
+                done();
+            });
+        })
+
+        // call addPlatformConfig with invalid payload
+    })
 });

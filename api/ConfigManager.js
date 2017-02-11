@@ -64,8 +64,14 @@ ConfigManager.prototype.accessoriesJSON = function() {
 }
 
 ConfigManager.prototype.addPlatformConfig = function(platformConfig, callback) {
+    var crypto = require('crypto');
+    var hash = crypto.createHash('sha256');
+    hash.update(JSON.stringify(platformConfig));
+    platformConfig["hbServer_confDigest"] = hash.digest('hex');
+
     platformConfig["hbServer_active_flag"] = 0;
     platformConfig["hbServer_pluginName"] = platformConfig.platform;
+
     _platformsJSON.push(platformConfig);
     this.save(callback);
 }
@@ -82,7 +88,6 @@ ConfigManager.prototype.removePlatformConfig = function(platformConfigID, callba
         return;
     }
     _platformsJSON.splice(posOfRemoveCandidate, 1);
-    callback(true, "Deleted platform config with configDigest " + platformConfigID);
     this.save(callback);
 }
 

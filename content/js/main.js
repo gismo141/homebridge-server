@@ -47,14 +47,12 @@ function listPlatforms() {
 }
 
 function removePlatformConfigConfirm(platformID) {
-    console.log("removePlatformConfigConfirm: " + platformID);
     $('#confirmRemoveModal').modal('show');
     $("#confirmRemoveModalPlatformID").val(platformID);
 }
 
 function removePlatformConfig() {
     var platformID = $("#confirmRemoveModalPlatformID").val();
-    console.log("removePlatformConfig: " + platformID);
     $('#confirmRemoveModalStatus').text("Updateing config.json...");
 
     $.getJSON("/api/removePlatform?" + platformID, function(result) {

@@ -205,7 +205,7 @@ function ServerPlatform(log, config) {
             case '/js/addPlatform.js':
                 log("serving /js/addPlatform.js");
                 res.setHeader("Content-Type", "text/javascript");
-                res.end(Assets.addAccessoryJS);
+                res.end(Assets.addPlatformJS);
                 break;
             case '/js/footer.js':
                 log("serving /js/footer.js");
