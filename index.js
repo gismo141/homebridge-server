@@ -155,72 +155,59 @@ function ServerPlatform(log, config) {
         res.setHeader("Content-Type", "text/html");
         switch (req.url) {
             case '/':
-                res.write(Assets.headerHTML() + Assets.navBarHTML() + Assets.mainHTML() + Assets.footerHTML());
-                res.end();
+                res.end(Assets.headerHTML + Assets.navBarHTML + Assets.mainHTML + Assets.footerHTML);
                 break;
             case '/listInstallablePlugins':
-                res.write(Assets.headerHTML() + Assets.navBarHTML() + Assets.pluginsHTML() + Assets.footerHTML());
-                res.end();
+                res.end(Assets.headerHTML + Assets.navBarHTML + Assets.pluginsHTML + Assets.footerHTML);
                 break;
             case '/addPlatform':
-                res.write(Assets.headerHTML() + Assets.navBarHTML() + Assets.addPlatformHTML() + Assets.footerHTML());
-                res.end();
+                res.end(Assets.headerHTML + Assets.navBarHTML + Assets.addPlatformHTML + Assets.footerHTML);
                 break;
             case '/addAccessory':
-                res.write(Assets.headerHTML() + Assets.navBarHTML() + Assets.addAccessoryHTML() + Assets.footerHTML());
-                res.end();
+                res.end(Assets.headerHTML + Assets.navBarHTML + Assets.addAccessoryHTML + Assets.footerHTML);
                 break;
             case '/showLog':
-                res.write(Assets.headerHTML() + Assets.navBarHTML() + Assets.showLogHTML() + Assets.footerHTML());
-                res.end();
+                res.end(Assets.headerHTML + Assets.navBarHTML + Assets.showLogHTML + Assets.footerHTML);
                 break;
             case '/style.css':
                 log("serving style.css");
                 res.setHeader("Content-Type", "text/css");
-                res.write(Assets.styleCSS());
-                res.end();
+                res.end(Assets.styleCSS);
                 break;
             case '/js/global.js':
                 log("serving /js/global.js");
                 res.setHeader("Content-Type", "text/javascript");
-                res.write(Assets.globalJS());
-                res.end();
+                res.end(Assets.globalJS);
                 break;
             case '/js/main.js':
                 log("serving /js/main.js");
                 res.setHeader("Content-Type", "text/javascript");
-                res.write(Assets.mainJS());
-                res.end();
+                res.end(Assets.mainJS);
                 break;
             case '/js/plugins.js':
                 log("serving /js/plugins.js");
                 res.setHeader("Content-Type", "text/javascript");
-                res.write(Assets.pluginsJS());
-                res.end();
+                res.end(Assets.pluginsJS);
                 break;
             case '/js/showLog.js':
                 log("serving /js/showLog.js");
                 res.setHeader("Content-Type", "text/javascript");
-                res.write(Assets.showLogJS());
-                res.end();
+                res.end(Assets.showLogJS);
                 break;
             case '/js/addAccessory.js':
                 log("serving /js/addAccessory.js");
                 res.setHeader("Content-Type", "text/javascript");
-                res.write(Assets.addAccessoryJS());
-                res.end();
+                res.end(Assets.addAccessoryJS);
                 break;
             case '/js/addPlatform.js':
                 log("serving /js/addPlatform.js");
                 res.setHeader("Content-Type", "text/javascript");
-                res.write(Assets.addAccessoryJS());
-                res.end();
+                res.end(Assets.addAccessoryJS);
                 break;
             case '/js/footer.js':
                 log("serving /js/footer.js");
                 res.setHeader("Content-Type", "text/javascript");
-                res.write(Assets.footerJS());
-                res.end();
+                res.end(Assets.footerJS);
                 break;
             default:
                 log("unhandled request: " + req.url);
