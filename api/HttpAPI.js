@@ -189,6 +189,34 @@ HttpAPI.prototype.addPlatformConfig = function(req, res) {
     });
 }
 
+HttpAPI.prototype.updatePlatformConfig = function(req, res) {
+    // This actually just combines calling removePlatformConfig and (if successful) addPlatformConfig.
+    var body = '';
+    req.on('data', function (data) {
+        body += data;
+        if (body.length > 1e6) {
+            req.connection.destroy();
+        }
+    });
+    req.on('end', function () {
+        var qs = require('querystring');
+        var parts = qs.parse(body);
+        serverAPI.removePlatformConfig(parts.configID, function(success, msg) {
+            if (!success) {
+                res.setHeader("Content-Type", "application/json");
+                res.statusCode = 400;
+                res.end(JSON.stringify({"success": false, "msg": msg}));
+                return;
+            }
+            delete parts.configID;
+            serverAPI.addPlatformConfig(parts, function (json) {
+                res.setHeader("Content-Type", "application/json");
+                res.end(JSON.stringify(json));
+            });
+        });
+    });
+}
+
 HttpAPI.prototype.addAccessoryConfig = function(req, res) {
     var body = '';
     req.on('data', function (data) {

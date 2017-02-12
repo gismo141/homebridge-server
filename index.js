@@ -92,6 +92,9 @@ function ServerPlatform(log, config) {
             case '/api/removePlatform':
                 httpAPI.removePlatformConfig(req, res);
                 break;
+            case '/api/updatePlatform':
+                httpAPI.updatePlatformConfig(req, res);
+                break;
             case '/api/searchPlugins':
                 httpAPI.searchPlugins(req, res);
                 break;
