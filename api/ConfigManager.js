@@ -158,7 +158,7 @@ ConfigManager.prototype.backupConfigFile = function(callback) {
                 callback(false, err + " ");
                 return;
             }
-            callback(true, "Created 'config.json.bak'.");
+            callback(true, newFileName);
             return;
         })
     });

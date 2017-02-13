@@ -107,6 +107,24 @@ describe('Testing the JSON API', function() {
         });
     });
 
+    describe('/api/createConfigBackup', function() {
+        it('Creates config.json.bak in config dir', function(done) {
+            api.get('/api/createConfigBackup')
+            .expect(200)
+            .end(function(err, res) {
+                res.body.success.should.be.true;
+                var fs = require('fs');
+                res.body.msg.should.have.length.above(15);
+                res.body.msg.should.match(/\.bak$/);
+                fs.existsSync(res.body.msg).should.be.true;
+                var stats = fs.statSync(res.body.msg);
+                stats.isFile().should.be.true;
+                stats.size.should.be.at.least(500);
+                done();
+            })
+        })
+    });
+
     describe('Adding and removing a platform works', function() {
         var newConfig = {
             "platformConfig": {
