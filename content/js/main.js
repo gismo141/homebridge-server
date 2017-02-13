@@ -37,8 +37,10 @@ function listPlatforms() {
                             <div>" + platform.platform + "<br\>(" + platform.hbServer_pluginName + ")</div>\
                             <div>" + platform.name + "</div>\
                             <div><pre>" + conf + "</pre></div>\
-                            <div><a href='#' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;' onclick='removePlatformConfigConfirm(\"" + platform.hbServer_confDigest + "\");'><span style='font-size:25px;''>&#128465;</span></a></div>\
-                            <div><a href='#' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;' onclick='editPlatform(\"" + platform.hbServer_confDigest + "\");'><span style='font-size:25px;''>&#9997;</span></a></div>\
+                            <div>\
+                                <span><a href='#' class='btn btn-default' style='height: 34px; line-height: inherit; vertical-align:middle;outline:none !important;' onclick='removePlatformConfigConfirm(\"" + platform.hbServer_confDigest + "\");'><span style='font-size:18px;''>&#128465;</span></a></span>\
+                                <span><a href='#' class='btn btn-default' style='height: 34px; line-height: 20px; vertical-align:middle;outline:none !important;' onclick='editPlatform(\"" + platform.hbServer_confDigest + "\");'><span style='font-size:25px;''>&#9997;</span></a></span>\
+                            </div>\
                            </div>";
                 $("#platformsTable").append(row);
             });
@@ -72,16 +74,25 @@ function editPlatform(platformID) {
 
     $.getJSON("/api/installedPlatforms", function(data) {
         var thisPf;
+        $('#editModalPlugins').empty();
         $.each(data, function(id_pf, pf) {
+            var selected = false;
             if (pf.hbServer_confDigest === platformID) {
                 thisPf = pf;
+                selected = true;
             }
+            $('#editModalPlugins')
+                .append($("<option></option>")
+                    .attr("value", pf.hbServer_pluginName)
+                    .text(pf.hbServer_pluginName)
+                    .prop( "selected", selected ));
         });
         if (!thisPf) {
-            console.log("platform not loaded; digest not found.");
+            alert("Couldn't load the platform with this id.");
+            $('#editModal').modal('hide');
             return;
         }
-        var title = "Editing " + thisPf.platform + " (" + thisPf.hbServer_pluginName + ")";
+        var title = "Editing " + thisPf.name + " (" + thisPf.hbServer_pluginName + ")";
         $("#editModalTitle").text(title);
         var editedPlatformConf = configFromData(thisPf);
         $("#editModalContainer").text(editedPlatformConf);
@@ -90,23 +101,26 @@ function editPlatform(platformID) {
 
 function savePlatformEdit() {
     var newConf = $("#editModalContainer").val();
-    console.log("newConf: " + newConf);
-    var json = "";
-    var success = true;
-    var error;
+    newConf = newConf.replace(/\n/g, '');
     try {
-        json = JSON.parse(newConf);
-    } catch (e) {
-        success = false;
-        error = e.message;
+        JSON.parse(newConf);
+    } catch (error) {
+        $("#editModalStatus").text(error.message);
+        return;
     }
-    if (success) {
-        $("#editModalStatus").text("Valid.");
-        var platformID = $("#editModalplatformID").val();
-        $.getJSON("/api/removePlatform?" + platformID, function(data) {
-            // save platform config
-        });
-    } else {
-        $("#editModalStatus").text(error);
-    }
+
+    $("#editModalStatus").text("Valid.");
+    var payload = {
+        "configID": $("#editModalplatformID").val(),
+        "platformConfig": newConf,
+        "plugin": $("#editModalPlugins").val()
+    };
+    $.post("/api/updatePlatform", payload)
+    .done(function() {
+        $('#editModal').modal('hide');
+        listPlatforms();
+    })
+    .error(function(err) {
+        console.log("error: " + err);
+    })
 }

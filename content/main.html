@@ -102,6 +102,28 @@
     </div>
 </div>
 
+<div class="modal" tabindex="-1" role="dialog" id="editModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="editModalTitle"></h4>
+                <input type=hidden id="editModalplatformID" value="" />
+            </div>
+            <div class="modal-body">
+                <div>
+                    Plugin for this platform: <select name="editModalPlugin" id="editModalPlugins"></select>
+                </div>
+                <div><textarea id="editModalContainer" rows="10" cols="50"></textarea></div>
+            </div>
+            <div class="modal-footer">
+                <div id="editModalStatus" style="float: left;"></div>
+                <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="savePlatformEdit();">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     listPlatforms();
     $.getJSON( "/api/bridgeConfig", function( data ) {
