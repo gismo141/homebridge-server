@@ -45,7 +45,6 @@ cp scripts/$HOMEBRIDGE_CONFIG "$TEST_CONFIG_DIR/config.json"
 if [ "$TRAVIS_BUILD_DIR" != "" ]; then
     echo "We're running on travis-ci! Setting HOMEBRIDGE_SERVER_DIR to $TRAVIS_BUILD_DIR"
     HOMEBRIDGE_SERVER_DIR=$TRAVIS_BUILD_DIR
-    sed -i "s#\"modulePath.*#\"modulePath\": \"$TRAVIS_BUILD_DIR/\"#g" "$TEST_CONFIG_DIR/config.json"
 fi
 
 # Start homebridge

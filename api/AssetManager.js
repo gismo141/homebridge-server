@@ -11,8 +11,8 @@ var hbLog = function() {};
 
 var assetPath;
 
-function AssetManager(hbsPath, log) {
-    assetPath = require('path').resolve(hbsPath, 'content');
+function AssetManager(log) {
+    assetPath = require('path').resolve(__dirname, '..', 'content');
 
     hbLog = log;
     this.reload();

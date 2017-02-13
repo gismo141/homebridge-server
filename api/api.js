@@ -6,25 +6,24 @@ module.exports = {
   API: API
 }
 
-var confMgr, pluginMgr, hbsPath;
+var confMgr, pluginMgr;
 var hbLog = function() {};
 
 /**
  * [API description]
  * @param {[type]} homebridge [description]
  */
-function API(homebridge, libPath, log) {
+function API(homebridge, log) {
     this.HomebridgeAPI = homebridge;
-    hbsPath = libPath;
     hbLog = log;
 
     var pathLib = require('path');
 
-    var ConfigManagerLib = require(pathLib.resolve(hbsPath, 'api', 'ConfigManager.js'));
+    var ConfigManagerLib = require(pathLib.resolve(__dirname, 'ConfigManager.js'));
     confMgr = new ConfigManagerLib.ConfigManager(this.HomebridgeAPI, hbLog);
 
-    var PluginManagerLib = require(pathLib.resolve(hbsPath, 'api', 'PluginManager.js'));
-    pluginMgr = new PluginManagerLib.PluginManager(hbsPath, hbLog);
+    var PluginManagerLib = require(pathLib.resolve(__dirname, 'PluginManager.js'));
+    pluginMgr = new PluginManagerLib.PluginManager(hbLog);
 }
 
 /**
