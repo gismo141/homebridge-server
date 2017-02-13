@@ -121,6 +121,8 @@ function savePlatformEdit() {
         listPlatforms();
     })
     .error(function(err) {
-        console.log("error: " + err);
+        $('#editModal').modal('hide');
+        alert("Update failed: " + err);
+        return;
     })
 }
