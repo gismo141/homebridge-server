@@ -1,0 +1,43 @@
+<script type="text/javascript" src="/js/showLog.js"></script>
+
+<div class='container'>
+<h2>Log</h2>
+
+<fieldset>
+    <input type="radio" id="page" name="showMethod" value="page" checked="true">
+    <label for="page"> Page through the complete logfile.</label><br>
+    <input type="radio" id="tail" name="showMethod" value="tail">
+    <label for="tail"> Show the last lines.</label><br>
+    <script>
+        $('input[name="showMethod"]').change(function () {
+            triggerLogFileMethod($('input[name="showMethod"]').filter(':checked').val());
+        });
+    </script>
+
+</fieldset>
+<div>Highlight text: <input type="text" id="highlightText" name="highlightText" width="20"></div>
+    <script>
+        $("#highlightText").keyup(function () {
+            highlightLogText();
+        });
+    </script>
+<div id="paging" style="float: right;">
+    <span>Page: </span>
+    <span><a href="#" id="firstPageLink" onclick="showLogContent(1)">1 </a></span>
+    <span><a href="#" id="prevPageLink">&lt;</a></span>
+    <span id="currentPage"></span>
+    <span><a href="#" id="nextPageLink">&gt;</a></span>
+    <span><a href="#" id="lastPageLink"> last</a></span>
+</div>
+<div id="tailing" style="float: right;">
+    <span>New lines will be displayed automatically.</span>
+</div>
+<div>
+    <br />
+    <pre id="logContent"></pre>
+</div>
+</div>
+
+<script>
+    triggerLogFileMethod("page");
+</script>

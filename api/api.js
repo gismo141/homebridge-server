@@ -18,10 +18,12 @@ function API(homebridge, libPath, log) {
     hbsPath = libPath;
     hbLog = log;
 
-    var ConfigManagerLib = require(hbsPath + 'api/ConfigManager.js');
+    var pathLib = require('path');
+
+    var ConfigManagerLib = require(pathLib.resolve(hbsPath, 'api', 'ConfigManager.js'));
     confMgr = new ConfigManagerLib.ConfigManager(this.HomebridgeAPI, hbLog);
 
-    var PluginManagerLib = require(hbsPath + 'api/PluginManager.js');
+    var PluginManagerLib = require(pathLib.resolve(hbsPath, 'api', 'PluginManager.js'));
     pluginMgr = new PluginManagerLib.PluginManager(hbsPath, hbLog);
 }
 
@@ -130,7 +132,7 @@ API.prototype.getInstalledAccessories = function(callback) {
  */
 API.prototype.getPluginsFromNPMS = function(query, callback) {
     pluginMgr.search(query, function(results) {
-            callback(results)
+        callback(results)
     });
 }
 
@@ -181,6 +183,12 @@ API.prototype.addPlatformConfig = function(newConfig, callback) {
     });
 }
 
+API.prototype.removePlatformConfig = function(platformID, callback) {
+    confMgr.removePlatformConfig(platformID, function(success, msg) {
+        callback(success, msg);
+        return;
+    });
+}
 
 /**
  * [addAccessoryConfig description]

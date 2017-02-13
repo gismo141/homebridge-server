@@ -38,7 +38,7 @@ PluginManager.prototype.plugins = function() {
 
 
 PluginManager.prototype.search = function(query, callback) {
-    var path = require(path);
+    var path = require('path');
     var utilsLib = require(path.resolve(hbsPath, 'api', 'utils.js'));
     var utils = new utilsLib.Utils();
 
@@ -173,7 +173,8 @@ function getInstalledPlugins() {
  * Updates _plugins with this information.
  */
 function enrichUsageInfo() {
-    var utilsLib = require(hbsPath + 'api/utils.js');
+    var pathLib = require('path');
+    var utilsLib = require(pathLib.resolve(hbsPath, 'api', 'utils.js'));
     var utils = new utilsLib.Utils();
 
     var options = {
@@ -249,7 +250,8 @@ function enrichMetadata() {
  * @param  {Function} callback Called with the query result.
  */
 function fetchPluginMetaData(pluginName, pluginID, callback) {
-    var utilsLib = require(hbsPath + 'api/utils.js');
+    var pathLib = require('path');
+    var utilsLib = require(pathLib.resolve(hbsPath, 'api', 'utils.js'));
     var utils = new utilsLib.Utils();
 
     var searchname = (pluginName.toLowerCase().replace(/ /g, '-'));

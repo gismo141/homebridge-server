@@ -65,7 +65,7 @@ function ServerPlatform(log, config) {
         "updateFrequency" : 10000,
         "updateCheckFrequency" : 3600000
     }
-    var httpAPI = new httpAPILib.HttpAPI(HomebridgeAPI, hbsPath, log, infoOptions);
+    var httpAPI = new httpAPILib.HttpAPI(HomebridgeAPI, hbsPath, log, infoOptions, config);
 
     /**
      * [handleAPIRequest description]
@@ -88,6 +88,12 @@ function ServerPlatform(log, config) {
                 break;
             case '/api/accessories':
                 httpAPI.accessories(res);
+                break;
+            case '/api/removePlatform':
+                httpAPI.removePlatformConfig(req, res);
+                break;
+            case '/api/updatePlatform':
+                httpAPI.updatePlatformConfig(req, res);
                 break;
             case '/api/searchPlugins':
                 httpAPI.searchPlugins(req, res);
@@ -119,10 +125,21 @@ function ServerPlatform(log, config) {
             case '/api/addAccessoryConfig':
                 httpAPI.addAccessoryConfig(req, res);
                 break;
+            case '/api/logFileContent':
+                httpAPI.logFileContent(req, res);
+                break;
+            case '/api/subscribeToLogFileTail':
+                httpAPI.subscribeToLogFileTail(res);
+                break;
+            case '/api/unsubscribeFromLogFileTail':
+                httpAPI.unsubscribeFromLogFileTail(req, res);
+                break;
+            case '/api/logFileTail':
+                httpAPI.logFileTail(req, res);
+                break;
             default:
                 log("unhandled API request: " + req);
                 res.statusCode = 404;
-                res.write(JSON.stringify({error: "The called API doesn't exist."}));
                 res.end();
         }
     }
@@ -144,63 +161,64 @@ function ServerPlatform(log, config) {
         res.setHeader("Content-Type", "text/html");
         switch (req.url) {
             case '/':
-                res.write(Assets.headerHTML() + Assets.navBarHTML() + Assets.mainHTML() + Assets.footerHTML());
-                res.end();
+                res.end(Assets.headerHTML + Assets.navBarHTML + Assets.mainHTML + Assets.footerHTML);
                 break;
             case '/listInstallablePlugins':
-                res.write(Assets.headerHTML() + Assets.navBarHTML() + Assets.pluginsHTML() + Assets.footerHTML());
-                res.end();
+                res.end(Assets.headerHTML + Assets.navBarHTML + Assets.pluginsHTML + Assets.footerHTML);
                 break;
             case '/addPlatform':
-                res.write(Assets.headerHTML() + Assets.navBarHTML() + Assets.addPlatformHTML() + Assets.footerHTML());
-                res.end();
+                res.end(Assets.headerHTML + Assets.navBarHTML + Assets.addPlatformHTML + Assets.footerHTML);
                 break;
             case '/addAccessory':
-                res.write(Assets.headerHTML() + Assets.navBarHTML() + Assets.addAccessoryHTML() + Assets.footerHTML());
-                res.end();
+                res.end(Assets.headerHTML + Assets.navBarHTML + Assets.addAccessoryHTML + Assets.footerHTML);
                 break;
             case '/showLog':
-                if (config.log == "systemd") {
-                      var exec = require('child_process').exec;
-                      var cmd = "journalctl --no-pager -u homebridge --since yesterday";
-                      exec(cmd, function(error, stdout, stderr) {       // eslint-disable-line
-                          log("Executing: " + cmd);
-                          res.write(Assets.headerHTML() + Assets.navBarHTML());
-                          res.write("<div class='container'>");
-                          res.write("<h2>Log</h2>");
-                          res.write("<code>" + stdout.replace(/(?:\r\n|\r|\n)/g, '<br />') + "</code>");
-                          res.write("</div>");
-                          res.end(Assets.footerHTML());
-                      });
-                } else {
-                  var logFile = require('fs');
-                  logFile.readFile(path.normalize(config.log), 'utf8', function(err, log) {
-                      if (err) {
-                          return log(err);
-                      }
-                      res.write(Assets.headerHTML() + Assets.navBarHTML());
-                      res.write("<div class='container'>");
-                      res.write("<h2>Log</h2>");
-                      res.write("<code>" + log.replace(/(?:\r\n|\r|\n)/g, '<br />') + "</code>");
-                      res.write("</div>");
-                      res.end(Assets.footerHTML());
-                  });
-                }
-                break;
-            case '/content/lib.js':
-                log("serving /content/lib.js");
-                res.setHeader("Content-Type", "application/javascript");
-                res.write(Assets.libJS());
-                res.end();
+                res.end(Assets.headerHTML + Assets.navBarHTML + Assets.showLogHTML + Assets.footerHTML);
                 break;
             case '/style.css':
                 log("serving style.css");
                 res.setHeader("Content-Type", "text/css");
-                res.write(Assets.styleCSS());
-                res.end();
+                res.end(Assets.styleCSS);
+                break;
+            case '/js/global.js':
+                log("serving /js/global.js");
+                res.setHeader("Content-Type", "text/javascript");
+                res.end(Assets.globalJS);
+                break;
+            case '/js/main.js':
+                log("serving /js/main.js");
+                res.setHeader("Content-Type", "text/javascript");
+                res.end(Assets.mainJS);
+                break;
+            case '/js/plugins.js':
+                log("serving /js/plugins.js");
+                res.setHeader("Content-Type", "text/javascript");
+                res.end(Assets.pluginsJS);
+                break;
+            case '/js/showLog.js':
+                log("serving /js/showLog.js");
+                res.setHeader("Content-Type", "text/javascript");
+                res.end(Assets.showLogJS);
+                break;
+            case '/js/addAccessory.js':
+                log("serving /js/addAccessory.js");
+                res.setHeader("Content-Type", "text/javascript");
+                res.end(Assets.addAccessoryJS);
+                break;
+            case '/js/addPlatform.js':
+                log("serving /js/addPlatform.js");
+                res.setHeader("Content-Type", "text/javascript");
+                res.end(Assets.addPlatformJS);
+                break;
+            case '/js/footer.js':
+                log("serving /js/footer.js");
+                res.setHeader("Content-Type", "text/javascript");
+                res.end(Assets.footerJS);
                 break;
             default:
                 log("unhandled request: " + req.url);
+                res.statusCode = 404;
+                res.end();
                 // var url = req.url;
                 // if (url.indexOf('/remove') !== -1) {
                 //     object = url.replace('/remove', '');

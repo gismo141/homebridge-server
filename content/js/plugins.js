@@ -1,29 +1,10 @@
 /* eslint-env browser, jquery */
-$( document ).tooltip({
-  classes: {
-    "ui-tooltip": "highlight"
-  },
-  show: false
-});
 
-// main.html
-/* exported configFromData */
-function configFromData(configData) {
-    // TODO: use internalPropertiesReplacer approach like in ConfigManager
-    var config = JSON.parse(JSON.stringify(configData));
-    delete config.platform;
-    delete config.accessory;
-    delete config.name;
-    delete config.hbServer_active_flag;
-    delete config.hbServer_latestVersion;
-    delete config.hbServer_installedVersion;
-    delete config.hbServer_pluginName;
-    return (JSON.stringify(config, null, ' '));
-}
-
-
-// plugins.html
 /* exported listInstalledPlugins */
+/* exported callPluginOperation */
+/* exported addPlatformConfig */
+
+
 function listInstalledPlugins() {
     $.getJSON("/api/installedPlugins", function(installedPlugins) {
         $("#installedPluginsTable").empty();
@@ -49,7 +30,6 @@ function listInstalledPlugins() {
     });
 }
 
-/* exported callPluginOperation */
 function callPluginOperation(pluginName, operation) {
     $('#progressModal').modal('show');
 
@@ -91,23 +71,5 @@ function callPluginOperation(pluginName, operation) {
             }
             $("#progressModalLogContainer").scrollTop($("#progressModalLogContainer").prop("scrollHeight"));
         }
-    });
-}
-
-/* exported addPlatformConfig */
-function addPlatformConfig() {
-    var payload = $("#submitPlatformConfig").serialize();
-    $.post( "/api/addPlatformConfig", payload, function(result) {
-        alert(result.success + "\n" + result.msg);
-    });
-}
-
-
-// addAccessory.html
-/* exported addAccessoryConfig */
-function addAccessoryConfig() {
-    var payload = $("#submitAccessoryConfig").serialize();
-    $.post( "/api/addAccessoryConfig", payload, function(result) {
-        alert(result.success + "\n" + result.msg);
     });
 }

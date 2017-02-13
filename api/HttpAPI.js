@@ -8,15 +8,19 @@ module.exports = {
 
 var serverAPI;
 var infoEmitter;
+var logProvider;
 
-function HttpAPI(HomebridgeAPI, hbsPath, log, infoOptions) {
-    var apiLib = require(hbsPath + 'api/api.js')
+function HttpAPI(HomebridgeAPI, hbsPath, log, infoOptions, hbsConfig) {
+    var pathLib = require('path');
+    var apiLib = require(pathLib.resolve(hbsPath, 'api', 'api.js'));
     serverAPI = new apiLib.API(HomebridgeAPI, hbsPath, log);
 
-    var path = require('path');
-    var BridgeInfoEmitter = require(path.resolve(require.resolve('../lib/HomebridgeInfoEmitter/BridgeInfoEmitter.js')));
+    var BridgeInfoEmitter = require(pathLib.resolve(require.resolve('../lib/HomebridgeInfoEmitter/BridgeInfoEmitter.js')));
     infoEmitter = BridgeInfoEmitter(infoOptions, HomebridgeAPI);
     infoEmitter.start();
+
+    var LogProviderLib = require(pathLib.resolve(hbsPath, 'api', 'LogProvider.js'));
+    logProvider = new LogProviderLib.LogProvider(hbsConfig.log);
 }
 
 HttpAPI.prototype.bridgeInfo = function(res) {
@@ -158,6 +162,14 @@ HttpAPI.prototype.restartHomebridge = function(res, config) {
     });
 }
 
+HttpAPI.prototype.removePlatformConfig = function(req, res) {
+    var platformID = require('url').parse(req.url).query;
+    serverAPI.removePlatformConfig(platformID, function(success, msg) {
+        res.setHeader("Content-Type", "application/json");
+        res.end(JSON.stringify({'success': success, 'msg': msg}));
+    })
+}
+
 HttpAPI.prototype.addPlatformConfig = function(req, res) {
     var body = '';
     req.on('data', function (data) {
@@ -173,6 +185,34 @@ HttpAPI.prototype.addPlatformConfig = function(req, res) {
             res.setHeader("Content-Type", "application/json");
             res.write(JSON.stringify(json));
             res.end();
+        });
+    });
+}
+
+HttpAPI.prototype.updatePlatformConfig = function(req, res) {
+    // This actually just combines calling removePlatformConfig and (if successful) addPlatformConfig.
+    var body = '';
+    req.on('data', function (data) {
+        body += data;
+        if (body.length > 1e6) {
+            req.connection.destroy();
+        }
+    });
+    req.on('end', function () {
+        var qs = require('querystring');
+        var parts = qs.parse(body);
+        serverAPI.removePlatformConfig(parts.configID, function(success, msg) {
+            if (!success) {
+                res.setHeader("Content-Type", "application/json");
+                res.statusCode = 400;
+                res.end(JSON.stringify({"success": false, "msg": msg}));
+                return;
+            }
+            delete parts.configID;
+            serverAPI.addPlatformConfig(parts, function (json) {
+                res.setHeader("Content-Type", "application/json");
+                res.end(JSON.stringify(json));
+            });
         });
     });
 }
@@ -194,4 +234,71 @@ HttpAPI.prototype.addAccessoryConfig = function(req, res) {
             res.end();
         });
     });
+}
+
+
+HttpAPI.prototype.logFileContent = function(req, res) {
+    var page = require('url').parse(req.url).query;
+    page = page * 1;   // make sure, this is not a string...
+    res.setHeader("Content-Type", "application/json");
+    logProvider.logFileContent(page, function (success, data) {
+        if (success) {
+            res.write(JSON.stringify({'success': success, 'data': data}));
+            res.end();
+        } else {
+            res.write(JSON.stringify({'success': success, 'msg': data}));
+            res.end();
+        }
+    });
+}
+
+
+HttpAPI.prototype.logFileTail = function(req, res) {
+    var subscriptionID = require('url').parse(req.url).query;
+    res.setHeader("Content-Type", "text/event-stream");
+    logProvider.output(subscriptionID, function(success, line) {
+        // console.log("logFileTail httpapi port " + require('util').inspect(req.socket.remotePort, { depth: null }));
+        // console.log("logFileTail httpapi destroyed " + require('util').inspect(req.socket.destroyed, { depth: null }));
+        // console.log("logFileTail httpapi called for " + subscriptionID);
+
+        // Test if the socket is still living. If not, the client
+        // has called event.close() on its EventSource object and doesn't want
+        // to receive further messages; so we'll unsubscribe the subscriptionID
+        // and end the connection.
+        if (req.socket.destroyed === true) {
+            logProvider.unsubscribe(subscriptionID);
+            res.end();
+            return;
+        }
+
+        // Send the message to the client.
+        if (success) {
+            res.write("data: " + JSON.stringify({'success': true, 'data': line}) + "\n\n");
+        } else {
+            res.write("data: " + JSON.stringify({'success': false, 'data': line}) + "\n\n");
+            res.end();
+        }
+    });
+}
+
+HttpAPI.prototype.subscribeToLogFileTail = function(res) {
+    logProvider.subscribe(function (success, msg) {
+        res.setHeader("Content-Type", "application/json");
+        if (!success) {
+            res.write(JSON.stringify({'success': false, 'msg': msg}));
+            res.end();
+            return;
+        }
+        res.write(JSON.stringify({'success': true, 'subscriptionID': msg}));
+        res.end();
+    });
+}
+
+HttpAPI.prototype.unsubscribeFromLogFileTail = function(req, res) {
+    var subscriptionID = require('url').parse(req.url).query;
+    logProvider.unsubscribe(subscriptionID);
+    res.setHeader("Content-Type", "application/json");
+    var msg = 'Unsubscribed ' + subscriptionID;
+    res.write(JSON.stringify({'msg': msg}));
+    res.end();
 }

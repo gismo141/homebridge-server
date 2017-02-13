@@ -1,3 +1,5 @@
+<script type="text/javascript" src="/js/main.js"></script>
+
 <div class='container'>
     <h2>Configuration</h2>
     <form id='submitBridgeConfig'>
@@ -38,31 +40,7 @@
             <div>Config</div>
             <div>Usage</div>
         </div>
-        <div id="platformsTable">
-            <script>
-                $.getJSON("/api/installedPlatforms", function(data) {
-                    if (data.length === 0) {
-                        $("#platformsTableHeader").hide();
-                        $("#platformsTable").text("No platforms installed or configured!");
-                    } else {
-                        $("#platformsTableHeader").show();
-                        $("#platformsTable").empty();
-                        $.each(data, function(id_platform, platform) {
-                            var conf = configFromData(platform);
-                            var activeIndicator = platform.hbServer_active_flag === 1 ? "   <span class='activityActive'></span>" : "<span class='activityInactive'></span>";
-                            var row = "<div class='row content'> \
-                                        <div>" + activeIndicator + "</div>\
-                                        <div>" + platform.platform + "<br\>(" + platform.hbServer_pluginName + ")</div>\
-                                        <div>" + platform.name + "</div>\
-                                        <div><pre>" + conf + "</pre></div>\
-                                        <div><a href='/removePlatform?id=" + id_platform + "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>&#128465;</span></a></div>\
-                                       </div>";
-                            $("#platformsTable").append(row);
-                        });
-                    }
-                });
-            </script>
-        </div>
+        <div id="platformsTable"></div>
     </div>
     <a href='/addPlatform' name='AddPlatform' class='btn btn-default center-block' style='width:135px'>Add</a><br>
 
@@ -105,8 +83,50 @@
     <a href='/addAccessory' name='AddAccessory' class='btn btn-default center-block' style='width:135px'>Add</a><br>
 </div>
 
+<div class="modal" tabindex="-1" role="dialog" id="confirmRemoveModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Really remove this platform?</h4>
+                <div>Do you really want to delete this platform? This cannot be undone.<br />
+                    Consider making a backup first.
+                </div>
+                <input type=hidden id="confirmRemoveModalPlatformID" value="" />
+            </div>
+            <div class="modal-footer">
+                <div id="confirmRemoveModalStatus" style="float: left;"></div>
+                <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="removePlatformConfig();">Remove</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="editModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="editModalTitle"></h4>
+                <input type=hidden id="editModalplatformID" value="" />
+            </div>
+            <div class="modal-body">
+                <div>
+                    Plugin for this platform: <select name="editModalPlugin" id="editModalPlugins"></select>
+                </div>
+                <div><textarea id="editModalContainer" rows="10" cols="50"></textarea></div>
+            </div>
+            <div class="modal-footer">
+                <div id="editModalStatus" style="float: left;"></div>
+                <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="savePlatformEdit();">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-    $.getJSON( "/api/bridgeInfo", function( data ) {
+    listPlatforms();
+    $.getJSON( "/api/bridgeConfig", function( data ) {
         $( "input[name='bridgeName']" ).val(data.bridgeName);
         $( "input[name='bridgeUsername']" ).val(data.bridgeUsername);
         $( "input[name='bridgePin']" ).val(data.bridgePin);
