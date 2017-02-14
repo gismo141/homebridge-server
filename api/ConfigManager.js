@@ -99,18 +99,18 @@ ConfigManager.prototype.addAccessoryConfig = function(accessoryConfig, callback)
 ConfigManager.prototype.updateBridgeConfig = function(changes, callback) {
 
     // Apply the changes to a copy of _config
-    var newConfig = _config;
+    var newConfig = JSON.parse(JSON.stringify(_config));
     for (var key in changes) {
         newConfig.bridge[key] = changes[key];
     }
 
     // Validate all bridge config fields
-    if(/^([0-9A-F]{2}[:]){5}([0-9A-F]{2})$/.test(newConfig.username) === false) {
-        callback(false, "Invalid username! (Style: XX:XX:XX:XX)");
+    if(/^([0-9A-F]{2}[:]){5}([0-9A-F]{2})$/.test(newConfig.bridge.username) === false) {
+        callback(false, "Invalid username! (Style: AA:BB:77:88:22:11)");
         return;
     }
-    if(/^(([0-9]{3})[-]([0-9]{2})[-]([0-9]{3}))$/.test(newConfig.pin) === false) {
-        callback(false, "Invalid pin! (Style: XXX-XX-XXX)");
+    if(/^(([0-9]{3})[-]([0-9]{2})[-]([0-9]{3}))$/.test(newConfig.bridge.pin) === false) {
+        callback(false, "Invalid pin! (Style: 111-22-333)");
         return;
     }
 
