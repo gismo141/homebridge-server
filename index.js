@@ -13,12 +13,6 @@ function ServerPlatform(log, config) {
     var http = require('http');
     var path = require('path');
 
-    var globalNPMDir = require('global-modules');
-    var hbsPath = path.resolve(globalNPMDir, "homebridge-server");
-    if (config.modulePath) {
-        hbsPath = path.normalize(config.modulePath);
-    }
-
     function reloadConfig(res) {
         loadConfig();       // eslint-disable-line
         printMainPage(res);       // eslint-disable-line
@@ -60,12 +54,13 @@ function ServerPlatform(log, config) {
     }
 
 
-    var httpAPILib = require(path.resolve(hbsPath, 'api', 'HttpAPI.js'));
+    var httpAPILib = require(path.resolve(__dirname, 'api', 'HttpAPI.js'));
+
     var infoOptions = {
         "updateFrequency" : 10000,
         "updateCheckFrequency" : 3600000
     }
-    var httpAPI = new httpAPILib.HttpAPI(HomebridgeAPI, hbsPath, log, infoOptions, config);
+    var httpAPI = new httpAPILib.HttpAPI(HomebridgeAPI, log, infoOptions, config);
 
     /**
      * [handleAPIRequest description]
@@ -145,9 +140,8 @@ function ServerPlatform(log, config) {
     }
 
 
-
-    var AssetManagerLib = require(path.resolve(hbsPath, 'api', 'AssetManager.js'));
-    var Assets = new AssetManagerLib.AssetManager(hbsPath, log);
+    var AssetManagerLib = require(path.resolve(__dirname, 'api', 'AssetManager.js'));
+    var Assets = new AssetManagerLib.AssetManager(log);
 
     /**
      * [handleContentRequest description]

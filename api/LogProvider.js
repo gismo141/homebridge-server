@@ -7,7 +7,7 @@ module.exports = {
 }
 
 // Used for generating the subscriptionIDs
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 
 // The path to the logfile
 var logFilePath;

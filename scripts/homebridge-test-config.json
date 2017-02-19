@@ -13,8 +13,7 @@
             "port": 8765,
             "name": "Homebridge Server",
             "log": "/var/log/homebridge.log",
-            "restart": "killall homebridge",
-            "modulePath": ""
+            "restart": "killall homebridge"
         }
     ]
 }

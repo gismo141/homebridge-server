@@ -21,7 +21,7 @@
     "global-modules": "^0.2.3",
     "homebridge": ">=0.4.9",
     "line-reader": "^0.4.0",
-    "node-uuid": "^1.4.7",
+    "uuid": "^3.0.1",
     "tail": "^1.2.1"
   },
   "scripts": {
@@ -31,6 +31,7 @@
     "chai": "^3.5.0",
     "eventsource": "^0.2.1",
     "mocha": "^3.2.0",
+    "superagent": "^3.4.1",
     "supertest": "^2.0.1"
   }
 }

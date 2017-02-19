@@ -1,6 +1,7 @@
 /* eslint-env node, mocha */
 
 var should = require('chai').should(),
+    superagent = require('superagent'),
     supertest = require('supertest'),
     api = supertest('http://localhost:8765'),
     EventSource = require('eventsource');
@@ -46,6 +47,134 @@ describe('Testing the JSON API', function() {
             });
         });
     });
+
+    describe('/api/saveBridgeConfig', function() {
+        var fixtureConf = {
+            "bridgeName": "orig name",
+            "bridgeUsername": "AA:BB:77:88:22:11",
+            "bridgePin": "000-11-222"
+        };
+        var changesConf = {
+            "bridgeName": "changed name",
+            "bridgeUsername": "CC:22:3D:E3:CE:30",
+            "bridgePin": "123-45-678"
+        };
+
+        beforeEach(function() {
+            superagent.post('http://127.0.0.1:8765/api/saveBridgeConfig')
+            .type('form')
+            .send(fixtureConf)
+            .end();
+        });
+
+        it('Succeeds if nothing has changed', function(done) {
+            api.post('/api/saveBridgeConfig')
+            .expect(200)
+            .end(function(saveErr) {
+                if (saveErr) { return done(saveErr); }
+                api.get('/api/bridgeConfig')
+                .end(function(checkErr, checkRes) {
+                    checkRes.body.should.be.eql(fixtureConf);
+                    done();
+                });
+            });
+        });
+
+        it('Succeeds with change of bridgeName', function(done) {
+            api.post('/api/saveBridgeConfig')
+            .send("bridgeName=" + changesConf.bridgeName)
+            .expect(200)
+            .end(function(saveErr) {
+                if (saveErr) { return done(saveErr); }
+                api.get('/api/bridgeConfig')
+                .end(function(checkErr, checkRes) {
+                    checkRes.body.bridgePin.should.be.eql(fixtureConf.bridgePin);
+                    checkRes.body.bridgeUsername.should.be.eql(fixtureConf.bridgeUsername);
+                    checkRes.body.bridgeName.should.be.eql(changesConf.bridgeName);
+                    done();
+                });
+            })
+        })
+
+        it('Doesn\'t overwrite username with empty string', function(done) {
+            api.post('/api/saveBridgeConfig')
+            .send("bridgeUsername=" + "")
+            .expect(200)
+            .end(function(saveErr, saveRes) {
+                if (saveErr) { return done(saveErr); }
+                saveRes.body.success.should.be.true;
+                api.get('/api/bridgeConfig')
+                .end(function(checkErr, checkRes) {
+                    checkRes.body.should.be.eql(fixtureConf);
+                    done();
+                });
+            })
+        })
+
+        it('Succeeds with valid pin', function(done) {
+            api.post('/api/saveBridgeConfig')
+            .send("bridgePin=" + changesConf.bridgePin)
+            .expect(200)
+            .end(function(saveErr) {
+                if (saveErr) { return done(saveErr); }
+                api.get('/api/bridgeConfig')
+                .end(function(checkErr, checkRes) {
+                    checkRes.body.bridgePin.should.be.eql(changesConf.bridgePin);
+                    checkRes.body.bridgeUsername.should.be.eql(fixtureConf.bridgeUsername);
+                    checkRes.body.bridgeName.should.be.eql(fixtureConf.bridgeName);
+                    done();
+                });
+            })
+        })
+
+        it('Fails with invalid pin', function(done) {
+            api.post('/api/saveBridgeConfig')
+            .send("bridgePin=" + "invalid")
+            .expect(200)
+            .end(function(saveErr, saveRes) {
+                if (saveErr) { return done(saveErr); }
+                saveRes.body.success.should.be.false;
+                api.get('/api/bridgeConfig')
+                .end(function(checkErr, checkRes) {
+                    checkRes.body.should.be.eql(fixtureConf);
+                    done();
+                });
+            })
+        })
+
+        it('Succeeds with valid username', function(done) {
+            api.post('/api/saveBridgeConfig')
+            .send("bridgeUsername=" + changesConf.bridgeUsername)
+            .expect(200)
+            .end(function(saveErr, saveRes) {
+                if (saveErr) { return done(saveErr); }
+                saveRes.body.success.should.be.true;
+                api.get('/api/bridgeConfig')
+                .end(function(checkErr, checkRes) {
+                    checkRes.body.bridgePin.should.be.eql(fixtureConf.bridgePin);
+                    checkRes.body.bridgeUsername.should.be.eql(changesConf.bridgeUsername);
+                    checkRes.body.bridgeName.should.be.eql(fixtureConf.bridgeName);
+                    done();
+                });
+            })
+        })
+
+        it('Fails with invalid username', function(done) {
+            api.post('/api/saveBridgeConfig')
+            .send("bridgeUsername=" + "invalid")
+            .expect(200)
+            .end(function(saveErr, saveRes) {
+                if (saveErr) { return done(saveErr); }
+                saveRes.body.success.should.be.false;
+                api.get('/api/bridgeConfig')
+                .end(function(checkErr, checkRes) {
+                    checkRes.body.should.be.eql(fixtureConf);
+                    done();
+                });
+            })
+        })
+    });
+
 
     describe('/api/installedPlatforms', function() {
         it('returns a JSON with a list of installed platforms', function(done) {
@@ -105,6 +234,24 @@ describe('Testing the JSON API', function() {
                 done();
             });
         });
+    });
+
+    describe('/api/createConfigBackup', function() {
+        it('Creates config.json.bak in config dir', function(done) {
+            api.get('/api/createConfigBackup')
+            .expect(200)
+            .end(function(err, res) {
+                res.body.success.should.be.true;
+                var fs = require('fs');
+                res.body.msg.should.have.length.above(15);
+                res.body.msg.should.match(/\.bak$/);
+                fs.existsSync(res.body.msg).should.be.true;
+                var stats = fs.statSync(res.body.msg);
+                stats.isFile().should.be.true;
+                stats.size.should.be.at.least(500);
+                done();
+            })
+        })
     });
 
     describe('Adding and removing a platform works', function() {

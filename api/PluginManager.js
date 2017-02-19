@@ -23,11 +23,9 @@ module.exports = {
 // - accessoryUsage : Number of accessories using this plugin
 var _plugins = {};
 
-var hbsPath = "";
 var hbLog = function() {};       // eslint-disable-line
 
-function PluginManager(libPath, log) {
-    hbsPath = libPath;
+function PluginManager(log) {
     hbLog = log;
     getInstalledPlugins();
 }
@@ -38,8 +36,8 @@ PluginManager.prototype.plugins = function() {
 
 
 PluginManager.prototype.search = function(query, callback) {
-    var path = require('path');
-    var utilsLib = require(path.resolve(hbsPath, 'api', 'utils.js'));
+    var pathLib = require('path');
+    var utilsLib = require(pathLib.resolve(__dirname, 'utils.js'));
     var utils = new utilsLib.Utils();
 
     var options = {
@@ -134,7 +132,8 @@ function getInstalledPlugins() {
     var plugins = [];
 
     var globalModulePath = require('global-modules') + "/";
-    var possiblePaths = [globalModulePath, hbsPath + "../"];
+    var possiblePaths = [globalModulePath, path.resolve(__dirname, '..', '..') + "/"];
+
     possiblePaths.forEach(function(modulePath) {
         if (! fs.existsSync(path.normalize(modulePath))) {
             return;
@@ -174,7 +173,7 @@ function getInstalledPlugins() {
  */
 function enrichUsageInfo() {
     var pathLib = require('path');
-    var utilsLib = require(pathLib.resolve(hbsPath, 'api', 'utils.js'));
+    var utilsLib = require(pathLib.resolve(__dirname, 'utils.js'));
     var utils = new utilsLib.Utils();
 
     var options = {
@@ -251,7 +250,7 @@ function enrichMetadata() {
  */
 function fetchPluginMetaData(pluginName, pluginID, callback) {
     var pathLib = require('path');
-    var utilsLib = require(pathLib.resolve(hbsPath, 'api', 'utils.js'));
+    var utilsLib = require(pathLib.resolve(__dirname, 'utils.js'));
     var utils = new utilsLib.Utils();
 
     var searchname = (pluginName.toLowerCase().replace(/ /g, '-'));
