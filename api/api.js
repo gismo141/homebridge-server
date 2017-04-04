@@ -88,6 +88,14 @@ API.prototype.getInstalledPlatforms = function(callback) {
     callback(confMgr.platformsJSON());
 }
 
+/**
+ * [getInstalledAccessories description]
+ * @param  {Function} callback [description]
+ * @return {[type]}            [description]
+ */
+API.prototype.getInstalledAccessories = function(callback) {
+    callback(confMgr.accessoriesJSON());
+}
 
 API.prototype.installPlugin = function(pluginName, callback) {
     pluginMgr.installPlugin(pluginName, function(success, msg, closed) {
@@ -111,17 +119,6 @@ API.prototype.removePlugin = function(pluginName, callback) {
         return;
     })
 }
-
-
-/**
- * [getInstalledAccessories description]
- * @param  {Function} callback [description]
- * @return {[type]}            [description]
- */
-API.prototype.getInstalledAccessories = function(callback) {
-    callback(confMgr.accessoriesJSON());
-}
-
 
 /**
  * [getPluginsFromNPMS description]
@@ -176,7 +173,7 @@ API.prototype.addPlatformConfig = function(newConfig, callback) {
         callback({success: false, msg: 'Invalid JSON.'});
         return;
     }
-    newConfigJSON.platform = newConfig.plugin;
+    //newConfigJSON.platform = newConfig.plugin;
     confMgr.addPlatformConfig(newConfigJSON, function(success, msg) {
         callback({success: success, msg: msg});
     });
@@ -203,8 +200,15 @@ API.prototype.addAccessoryConfig = function(newConfig, callback) {
         callback({success: false, msg: 'Invalid JSON.'});
         return;
     }
-    newConfigJSON.accessory = newConfig.plugin;
+    //newConfigJSON.accessory = newConfig.plugin;
     confMgr.addAccessoryConfig(newConfigJSON, function(success, msg) {
         callback({success: success, msg: msg});
+    });
+}
+
+API.prototype.removeAccessoryConfig = function(accessoryID, callback) {
+    confMgr.removeAccessoryConfig(accessoryID, function(success, msg) {
+        callback(success, msg);
+        return;
     });
 }

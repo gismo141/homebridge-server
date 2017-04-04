@@ -48,37 +48,13 @@
     <h2>Accessories</h2>
     <div class="responsive-wrapper">
         <div class="row header" id="accessoriesTableHeader">
-            <div>Status</div>
+            <div><span style='font-size: larger;'>&#x2139;</span></div>
             <div>Type</div>
             <div>Name</div>
             <div>Config</div>
-            <div></div>
+            <div>Usage</div>
         </div>
-        <div id="accessoriesTable">
-            <script>
-                $.getJSON("/api/accessories", function(data) {
-                    if (data.length === 0) {
-                        $("#accessoriesTableHeader").hide();
-                        $("#accessoriesTable").text("No accessories installed or configured!");
-                    } else {
-                        $("#accessoriesTableHeader").show();
-                        $("#accessoriesTable").empty();
-                        $.each(data, function(id_accessory, accessory) {
-                            var conf = configFromData(accessory);
-                            var activeIndicator = accessory.hbServer_active_flag === 1 ? "active" : "inactive";
-                            var row = "<div class='row content'> \
-                                        <div>" + activeIndicator + "</div>\
-                                        <div>" + accessory.accessory + "<br\>(" + accessory.hbServer_pluginName + ")</div>\
-                                        <div>" + accessory.name + "</div> \
-                                        <div><pre>" + conf + "</pre></div>\
-                                        <div><a href='/removeAccessory?id=" + id_accessory + "' class='btn btn-default center-block' style='height: 34px; line-height: 16px; vertical-align:middle;outline:none !important;'><span style='font-size:25px;''>&#128465;</span></a></div>\
-                                      </div>";
-                            $("#accessoriesTable").append(row);
-                        });
-                    }
-                });
-            </script>
-        </div>
+        <div id="accessoriesTable"></div>
     </div>
     <a href='/addAccessory' name='AddAccessory' class='btn btn-default center-block' style='width:135px'>Add</a><br>
 </div>
@@ -88,6 +64,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">Really remove this platform?</h4>
+
+            </div>
+            <div class="modal-body">
                 <div>Do you really want to delete this platform? This cannot be undone.<br />
                     Consider making a backup first.
                 </div>
@@ -113,6 +92,7 @@
                 <div>
                     Plugin for this platform: <select name="editModalPlugin" id="editModalPlugins"></select>
                 </div>
+                <br>
                 <div><textarea id="editModalContainer" rows="10" cols="50"></textarea></div>
             </div>
             <div class="modal-footer">
@@ -124,11 +104,59 @@
     </div>
 </div>
 
+<!-- =========== -->
+<!-- Accessories -->
+<!-- =========== -->
+
+<div class="modal" tabindex="-1" role="dialog" id="confirmRemoveModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Really remove this accessory?</h4>
+
+            </div>
+            <div class="modal-body">
+                <div>Do you really want to delete this accessory? This cannot be undone.<br />
+                    Consider making a backup first.
+                </div>
+                <input type=hidden id="confirmRemoveModalAccessoryID" value="" />
+            </div>
+            <div class="modal-footer">
+                <div id="confirmRemoveModalStatus" style="float: left;"></div>
+                <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="removeAccessoryConfig();">Remove</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="editModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="editModalTitle"></h4>
+                <input type=hidden id="editModalaccessoryID" value="" />
+            </div>
+            <div class="modal-body">
+                <div>
+                    Plugin for this accessory: <select name="editModalPlugin" id="editModalPlugins"></select>
+                </div>
+                <br>
+                <div><textarea id="editModalContainer" rows="10" cols="50"></textarea></div>
+            </div>
+            <div class="modal-footer">
+                <div id="editModalStatus" style="float: left;"></div>
+                <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveAccessoryEdit();">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripte -->
+
 <script>
+    listBridgeInfo();
     listPlatforms();
-    $.getJSON( "/api/bridgeConfig", function( data ) {
-        $( "input[name='bridgeName']" ).val(data.bridgeName);
-        $( "input[name='bridgeUsername']" ).val(data.bridgeUsername);
-        $( "input[name='bridgePin']" ).val(data.bridgePin);
-    });
+    listAccessories();
 </script>

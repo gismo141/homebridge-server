@@ -92,7 +92,30 @@ ConfigManager.prototype.removePlatformConfig = function(platformConfigID, callba
 }
 
 ConfigManager.prototype.addAccessoryConfig = function(accessoryConfig, callback) {
+    var crypto = require('crypto');
+    var hash = crypto.createHash('sha256');
+    hash.update(JSON.stringify(accessoryConfig));
+    accessoryConfig["hbServer_confDigest"] = hash.digest('hex');
+
+    accessoryConfig["hbServer_active_flag"] = 0;
+    accessoryConfig["hbServer_pluginName"] = accessoryConfig.accessory;
+
     _accessoriesJSON.push(accessoryConfig);
+    this.save(callback);
+}
+
+ConfigManager.prototype.removeAccessoryConfig = function(accessoryConfigID, callback) {
+    var posOfRemoveCandidate = -1;
+    for (var pos in _accessoriesJSON) {
+        if (_accessoriesJSON[pos].hbServer_confDigest === accessoryConfigID) {
+            posOfRemoveCandidate = pos;
+        }
+    }
+    if (posOfRemoveCandidate == -1) {
+        callback(false, "Invalid configDigest: " + accessoryConfigID);
+        return;
+    }
+    _accessoriesJSON.splice(posOfRemoveCandidate, 1);
     this.save(callback);
 }
 
@@ -203,6 +226,31 @@ function loadConfig() {
         }
     }
 
-    // TODO: implement accessories like platforms...
     _accessoriesJSON = _config.accessories != undefined ? _config.accessories : {};
+
+    var activeAccessories = [];
+    var accessoryPluginMap = [];
+    for (var fullName in homebridgeAPI._accessories) {
+        var parts = fullName.split('.');
+        var pluginName = parts[0];
+        var accessory = parts[1];
+        activeAccessories.push(accessory);
+        accessoryPluginMap[accessory] = pluginName;
+    }
+    for (var ac_ID in _accessoriesJSON) {
+        var ac = _accessoriesJSON[ac_ID];
+
+        var crypto = require('crypto');
+        var hash = crypto.createHash('sha256');
+        hash.update(JSON.stringify(ac));
+        var digest = hash.digest('hex');
+        _accessoriesJSON[ac_ID]["hbServer_confDigest"] = digest;
+
+        _accessoriesJSON[ac_ID]["hbServer_pluginName"] = accessoryPluginMap[ac.accessory];
+        if (activeAccessories.indexOf(ac.accessory) === -1) {
+            _accessoriesJSON[ac_ID]["hbServer_active_flag"] = 0;
+        } else {
+            _accessoriesJSON[ac_ID]["hbServer_active_flag"] = 1;
+        }
+    }
 }
