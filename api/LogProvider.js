@@ -42,8 +42,19 @@ LogProvider.prototype.logFileContent = function(page, callback) {
     var fs = require('fs');
     fs.access(logFilePath, fs.R_OK , function(err) {
         if (err) {
+          switch(err.code) {
+            case 'ENOENT':
+            fs.writeFile(logFilePath, "Log-File created", function(err) {
+              if(err) {
+                return console.log(err);
+              }
+              console.log("The file was saved!");
+            });
+            break;
+            default:
             callback(false, "Problem reading file: " + logFilePath + " " + err);
             return;
+          }
         }
 
         var lineReader = require('line-reader');
