@@ -27,7 +27,7 @@ function ServerPlatform(log, config) {
     // - fontface with Apple-like Open Sans
     // - general header with responsive design
     // - JS with Twitter bootstrap
-    var bootstrap = "<link rel='stylesheet' href='//maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css'>"
+    var bootstrap = "<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'>"
         //+ "<link href='//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css' rel='stylesheet'/>"
     ;
     var font = "<link href='https://fonts.googleapis.com/css?family=Open+Sans:300,600' rel='stylesheet' type='text/css'>";
@@ -75,7 +75,7 @@ function ServerPlatform(log, config) {
         //+ "<script> $(document).ready(function() { $.fn.editable.defaults.mode = 'popup';  $('#username').editable(); }); </script>"
         //+ "<script defer='defer' src='//code.jquery.com/jquery-ui-latest.min.js'></script>"
         + "<script defer='defer' src='//code.jquery.com/jquery-latest.min.js' type='text/javascript'></script>"
-        + "<script defer='defer' src='//maxcdn.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js' type='text/javascript'></script>" +
+        + "<script defer='defer' src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js' type='text/javascript'></script>" +
         "</html>";
     var navBar = (function() {/*
       <nav class="navbar navbar-default navbar-fixed-top">
