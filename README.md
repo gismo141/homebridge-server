@@ -29,7 +29,7 @@ See my blog post [Configure your Homebridge with Homebridge-Server](https://gism
 Fast way:
 
 ```Bash
-[sudo] npm install homebridge-server@latest -g
+npm install homebridge-server@latest -g
 ```
 
 Add this snippet to your `config.json`:
